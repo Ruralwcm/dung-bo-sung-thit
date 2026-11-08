@@ -364,10 +364,16 @@ body{
       <!-- BỔ SUNG THỊT Form -->
       <div id="boSungThitForm" style="display:none">
         <div class="form-group">
-          <label class="form-label">SKU thịt cần bổ sung</label>
+          <label class="form-label">Nhóm thịt</label>
+          <select class="form-select" id="nhomThit" onchange="onNhomThitChange()">
+            <option value="">-- Chọn nhóm thịt --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sản phẩm</label>
           <div class="sku-search-wrap">
             <input type="text" class="form-input" id="skuSearch"
-              placeholder="Tìm SKU (gõ để tìm...)" autocomplete="off"
+              placeholder="Chọn nhóm thịt trước..." autocomplete="off" disabled
               oninput="filterSKU()" onfocus="filterSKU()">
             <div class="sku-dropdown" id="skuDropdown"></div>
           </div>
@@ -381,14 +387,6 @@ body{
         <div class="pack-warning" id="packWarning">
           <span class="warn-icon">⚠️</span>
           <span class="warn-text" id="packWarnText"></span>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Loại thịt</label>
-          <select class="form-select" id="loaiThitBoSung">
-            <option value="">-- Tự động theo SKU --</option>
-            <option value="Gà">🐔 Gà</option>
-            <option value="Heo">🐖 Heo</option>
-          </select>
         </div>
       </div>
 
@@ -495,27 +493,69 @@ let state = {
 // ============================================================
 // SKU DATABASE
 // ============================================================
-const SKU_LIST = [
-  { code:'HEO001', name:'Heo đùi', group:'Heo' },
-  { code:'HEO002', name:'Heo ba chỉ', group:'Heo' },
-  { code:'HEO003', name:'Heo nạc vai', group:'Heo' },
-  { code:'HEO004', name:'Heo sườn non', group:'Heo' },
-  { code:'HEO005', name:'Heo cốt lết', group:'Heo' },
-  { code:'HEO006', name:'Heo xay', group:'Heo' },
-  { code:'HEO007', name:'Heo chân giò', group:'Heo' },
-  { code:'HEO008', name:'Heo mỡ', group:'Heo' },
-  { code:'HEO009', name:'Heo nạc thăn', group:'Heo' },
-  { code:'HEO010', name:'Heo sườn già', group:'Heo' },
-  { code:'HEO011', name:'Heo tai', group:'Heo' },
-  { code:'HEO012', name:'Heo lòng', group:'Heo' },
-  { code:'GA001', name:'Gà nguyên con', group:'Gà' },
-  { code:'GA002', name:'Gà đùi', group:'Gà' },
-  { code:'GA003', name:'Gà ức', group:'Gà' },
-  { code:'GA004', name:'Gà cánh', group:'Gà' },
-  { code:'GA005', name:'Gà xay', group:'Gà' },
-  { code:'GA006', name:'Gà chân', group:'Gà' },
-  { code:'GA007', name:'Gà lườn', group:'Gà' },
-  { code:'GA008', name:'Gà đầu cổ', group:'Gà' },
+const DANH_MUC_THIT = [
+  { group:'Lợn (heo)', items: [
+    { code:'10617947', name:'MEAT DELI Thịt heo xay', qc:0.37 },
+    { code:'10617959', name:'MEAT DELI Ba rọi heo', qc:0.38 },
+    { code:'10617963', name:'MEAT DELI [SIG] Thịt heo xay đặc biệt', qc:0.37 },
+    { code:'10140306', name:'MEAT DELI Thịt viên ướp sẵn', qc:0.37 },
+    { code:'10617957', name:'MEAT DELI Nạc dăm heo', qc:0.33 },
+    { code:'10618635', name:'MEAT DELI Xương heo', qc:0.42 },
+    { code:'10617956', name:'MEAT DELI Thịt vai heo', qc:0.4 },
+    { code:'10617948', name:'MEAT DELI Sườn vai heo', qc:0.37 },
+    { code:'10617950', name:'MEAT DELI Chân giò heo rút xương', qc:0.35 },
+    { code:'10281593', name:'MEAT DELI [SIG] Sườn thăn (sườn non)', qc:0.35 },
+    { code:'10617961', name:'MEAT DELI Thịt đùi heo', qc:0.4 },
+    { code:'10276854', name:'MEAT DELI Thịt heo xay (XS)', qc:0.2 },
+    { code:'10274189', name:'Meat Deli Heo bọc sả', qc:0.44 },
+    { code:'10276855', name:'MEAT DELI Xương heo đặc biệt', qc:1 },
+    { code:'10281595', name:'MEAT DELI Móng giò', qc:0.4 },
+    { code:'10183398', name:'MEAT DELI [SIG] Sụn heo cắt lát', qc:0.4 },
+    { code:'10281594', name:'MEAT DELI [SIG] Bắp giò cuộn', qc:0.35 },
+    { code:'10140279', name:'MEAT DELI Nạc vai heo (S)', qc:0.4 },
+    { code:'10276856', name:'MEAT DELI Thịt đùi heo (XS)', qc:0.3 },
+    { code:'10281592', name:'MEAT DELI [SIG] Sườn St. Louis', qc:0.35 },
+    { code:'10274488', name:'MEAT DELI Mỡ heo nguyên chất 330g', qc:1 },
+    { code:'10281333', name:'MEAT DELI Giò sống 200g', qc:1 },
+    { code:'10618634', name:'MEAT DELI Xương ống heo', qc:0.45 },
+    { code:'10617958', name:'MEAT DELI Nạc thăn heo', qc:0.4 },
+    { code:'10617962', name:'MEAT DELI Nạc đùi heo', qc:0.4 },
+    { code:'10281597', name:'MEAT DELI [SIG] Nạc nọng', qc:0.45 },
+    { code:'10183114', name:'MEAT DELI [SIG] Nạc dăm đầu giòn', qc:0.33 },
+    { code:'10281596', name:'MEAT DELI [SIG] Đuôi heo', qc:0.3 },
+    { code:'10282425', name:'MEAT DELI Ba rọi heo đa năng (F)', qc:0.35 },
+    { code:'10183374', name:'MEAT DELI [PRE] Ba rọi rút sườn (S)', qc:0.5 },
+    { code:'10274277', name:'MEAT DELI Thịt heo đặc biệt xiên que', qc:0.605 },
+    { code:'10274278', name:'MEAT DELI Thịt heo tảng cho món nướng', qc:0.605 },
+    { code:'10273392', name:'MEAT DELI Bắp hoa heo', qc:0.495 }
+  ]},
+  { group:'Lợn (heo) - SC', items: [
+    { code:'10292618', name:'MEAT Deli - Nem chua rán 300g', qc:1 },
+    { code:'10271849', name:'MEAT DELI Mọc viên nấm hương 250g', qc:1 },
+    { code:'10271848', name:'MEAT DELI Chả cốm 300g', qc:1 },
+    { code:'10291535', name:'MEAT DELI Heo cuốn lá lốt', qc:0.3 },
+    { code:'10292528', name:'MEAT DELI Thịt xiên tẩm xốt vị BBQ', qc:0.3 },
+    { code:'10292530', name:'MEAT DELI Thịt xiên tẩm lá mắc mật', qc:0.3 }
+  ]},
+  { group:'Thịt gà', items: [
+    { code:'10283202', name:'MEAT Deli Cánh gà', qc:0.455 },
+    { code:'10283203', name:'MEAT Deli Má đùi gà', qc:0.546 },
+    { code:'10283199', name:'MEAT Deli Đùi tỏi gà', qc:0.513 },
+    { code:'10283198', name:'MEAT DELI Phi lê ức gà', qc:0.547 },
+    { code:'10283205', name:'MEAT Deli Đùi gà rút xương', qc:0.508 },
+    { code:'10283201', name:'MEAT Deli Chân gà', qc:0.378 },
+    { code:'10283216', name:'MEAT Deli Ức gà Slim&Fit', qc:0.52 },
+    { code:'10276181', name:'MEAT Deli Gà ta chặt sẵn', qc:0.6 },
+    { code:'10283206', name:'MEAT Deli Xương ức gà', qc:0.452 },
+    { code:'10283204', name:'MEAT Deli Đùi gà tháo khớp', qc:0.637 },
+    { code:'10283208', name:'MEAT Deli Tim gà', qc:0.35 },
+    { code:'10283207', name:'MEAT Deli Sụn gà', qc:0.35 },
+    { code:'10243466', name:'MEAT Deli Cánh gà khúc giữa', qc:0.5 },
+    { code:'10292764', name:'MEAT DELI Cánh gà tẩm xốt Hồng Kông', qc:1 },
+    { code:'10292765', name:'MEAT DELI Đùi gà tẩm xốt Hồng Kông', qc:1 },
+    { code:'10292763', name:'3F Gà ta nửa con', qc:0.7 },
+    { code:'10620356', name:'3F Gà Ta', qc:1.3 }
+  ]}
 ];
 
 // ============================================================
@@ -536,6 +576,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('gasUrl').value = state.gasUrl;
   // Load storelist
   loadStorelist();
+  // Init nhóm thịt dropdown
+  initNhomThit();
   // Set default dates
   const today = new Date().toISOString().slice(0,10);
   document.getElementById('ngayDung').value = today;
@@ -777,45 +819,93 @@ function selectAction(action, el){
 }
 
 // ============================================================
-// SKU SEARCH
+// NHÓM THỊT & SKU
 // ============================================================
+function initNhomThit(){
+  const sel = document.getElementById('nhomThit');
+  DANH_MUC_THIT.forEach(function(g){
+    const opt = document.createElement('option');
+    opt.value = g.group;
+    opt.textContent = g.group + ' (' + g.items.length + ' SP)';
+    sel.appendChild(opt);
+  });
+}
+
+function onNhomThitChange(){
+  const nhom = document.getElementById('nhomThit').value;
+  const skuInput = document.getElementById('skuSearch');
+  const dropdown = document.getElementById('skuDropdown');
+  
+  // Reset SKU selection
+  state.selectedSKU = null;
+  skuInput.value = '';
+  dropdown.classList.remove('active');
+  
+  if(!nhom){
+    skuInput.disabled = true;
+    skuInput.placeholder = 'Chọn nhóm thịt trước...';
+    return;
+  }
+  
+  skuInput.disabled = false;
+  skuInput.placeholder = 'Gõ để tìm hoặc chọn bên dưới...';
+  
+  // Find group items
+  const group = DANH_MUC_THIT.find(function(g){ return g.group === nhom; });
+  if(!group) return;
+  
+  // Show all SP in group (keep order)
+  dropdown.innerHTML = group.items.map(function(s){
+    return '<div class="sku-option" onclick="selectSKU(\'' + s.code + '\',\'' + s.name.replace(/'/g,"\\'") + '\',\'' + nhom.replace(/'/g,"\\'") + '\',' + s.qc + ')">'
+      + '<span>' + s.code + ' — ' + s.name + '</span>'
+      + '<span class="sku-group">QC: ' + s.qc + '</span>'
+      + '</div>';
+  }).join('');
+  dropdown.classList.add('active');
+  
+  updatePackInfo();
+  updateSubmitBtn();
+}
+
 function filterSKU(){
+  const nhom = document.getElementById('nhomThit').value;
   const q = (document.getElementById('skuSearch').value||'').toLowerCase();
   const dropdown = document.getElementById('skuDropdown');
   
+  if(!nhom) return;
+  
+  const group = DANH_MUC_THIT.find(function(g){ return g.group === nhom; });
+  if(!group) return;
+  
   if(!q){
-    dropdown.innerHTML = SKU_LIST.map(s=>
-      `<div class="sku-option" onclick="selectSKU('${s.code}','${s.name}','${s.group}')">
-        <span>${s.name}</span><span class="sku-group">${s.group}</span>
-      </div>`
-    ).join('');
+    // Show all in group (keep order)
+    dropdown.innerHTML = group.items.map(function(s){
+      return '<div class="sku-option" onclick="selectSKU(\'' + s.code + '\',\'' + s.name.replace(/'/g,"\\'") + '\',\'' + nhom.replace(/'/g,"\\'") + '\',' + s.qc + ')">'
+        + '<span>' + s.code + ' — ' + s.name + '</span>'
+        + '<span class="sku-group">QC: ' + s.qc + '</span>'
+        + '</div>';
+    }).join('');
   }else{
-    const filtered = SKU_LIST.filter(s=>
-      s.name.toLowerCase().includes(q)||s.code.toLowerCase().includes(q)
-    );
+    const filtered = group.items.filter(function(s){
+      return s.name.toLowerCase().indexOf(q) >= 0 || s.code.toLowerCase().indexOf(q) >= 0;
+    });
     dropdown.innerHTML = filtered.length > 0
-      ? filtered.map(s=>
-          `<div class="sku-option" onclick="selectSKU('${s.code}','${s.name}','${s.group}')">
-            <span>${highlightMatch(s.name,q)}</span><span class="sku-group">${s.group}</span>
-          </div>`
-        ).join('')
-      : `<div class="sku-option" style="color:var(--text2)">Không tìm thấy SKU</div>`;
+      ? filtered.map(function(s){
+          return '<div class="sku-option" onclick="selectSKU(\'' + s.code + '\',\'' + s.name.replace(/'/g,"\\'") + '\',\'' + nhom.replace(/'/g,"\\'") + '\',' + s.qc + ')">'
+            + '<span>' + highlightMatch(s.code + ' — ' + s.name, q) + '</span>'
+            + '<span class="sku-group">QC: ' + s.qc + '</span>'
+            + '</div>';
+        }).join('')
+      : '<div class="sku-option" style="color:var(--text2)">Không tìm thấy SP</div>';
   }
   
   dropdown.classList.add('active');
 }
 
-function highlightMatch(text, q){
-  const idx = text.toLowerCase().indexOf(q.toLowerCase());
-  if(idx < 0) return text;
-  return text.slice(0,idx) + '<b style="color:var(--red)">' + text.slice(idx,idx+q.length) + '</b>' + text.slice(idx+q.length);
-}
-
-function selectSKU(code, name, group){
-  state.selectedSKU = {code, name, group};
-  document.getElementById('skuSearch').value = `${code} — ${name} (${group})`;
+function selectSKU(code, name, group, qc){
+  state.selectedSKU = {code: code, name: name, group: group, qc: qc};
+  document.getElementById('skuSearch').value = code + ' — ' + name;
   document.getElementById('skuDropdown').classList.remove('active');
-  document.getElementById('loaiThitBoSung').value = group;
   updatePackInfo();
   updateSubmitBtn();
 }
@@ -828,6 +918,12 @@ function getMaxPacks(){
   const nhom = state.currentStore.nhom_dt;
   const nMatch = (nhom||'').match(/N(\d+)/i);
   return nMatch ? parseInt(nMatch[1]) * 8 : 0;
+}
+
+function highlightMatch(text, q){
+  const idx = text.toLowerCase().indexOf(q.toLowerCase());
+  if(idx < 0) return text;
+  return text.slice(0,idx) + '<b style="color:var(--red)">' + text.slice(idx,idx+q.length) + '</b>' + text.slice(idx+q.length);
 }
 
 function updatePackInfo(){
