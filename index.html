@@ -256,18 +256,9 @@ body{
 .no-store .icon{font-size:3rem;margin-bottom:8px}
 .no-store .msg{font-size:.9rem;color:var(--text2);font-weight:600}
 
-/* ===== CONFIG SECTION ===== */
-.config-bar{
-  display:flex;gap:8px;align-items:center;margin-top:8px;font-size:.75rem;
-}
-.config-bar .config-input{
-  flex:1;padding:6px 10px;border:1px solid var(--border);
-  border-radius:4px;font-size:.75rem;
-}
-.config-bar .config-btn{
-  padding:6px 12px;background:var(--text2);color:#fff;border:none;
-  border-radius:4px;font-size:.75rem;cursor:pointer;
-}
+/* ===== MANUAL STORE SELECTOR ===== */
+.manual-store-section{margin-top:8px}
+.manual-store-section .sku-search-wrap{position:relative}
 
 /* ===== RESPONSIVE ===== */
 @media(min-width:768px){
@@ -489,7 +480,7 @@ let state = {
   selectedSKU: null,
   dashboardData: [],
   showVuotOnly: false,
-  gasUrl: localStorage.getItem('thitmdl_gas_url') || 'https://script.google.com/macros/s/AKfycbwWA-uReD1Mnp-wHDT4Pvtz0Mi-R5a2gUfj0uWz0TKDG4h7XYZKTnEaDUsnQAeoQRY_/exec'
+  gasUrl: localStorage.getItem('thitmdl_gas_url') || ''
 };
 
 // ============================================================
@@ -575,9 +566,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
   });
   // Config
-  document.getElementById('gasUrl').value = state.gasUrl;
+  // GAS URL loaded silently (hidden config)
   // Load storelist
-  loadStorelist();
+  loadStorelist().then(()=>{ document.getElementById('manualStoreSection').style.display='block'; });
   // Init nhóm thịt dropdown
   initNhomThit();
   // Set default dates
@@ -768,6 +759,7 @@ function findNearestStore(lat, lng, accuracy){
     document.getElementById('noStoreCard').classList.add('visible');
     document.getElementById('actionSection').classList.remove('visible');
     document.getElementById('storeCard').classList.remove('visible');
+    document.getElementById('manualStoreSection').style.display='block';
     state.currentStore = null;
   }
 }
@@ -1270,6 +1262,75 @@ function saveConfig(){
   showToast('✅ Đã lưu cấu hình!', 'success');
   // Try to sync local data
   if(url) syncLocalToGAS();
+}
+
+
+// ============================================================
+// MANUAL STORE SELECTION
+// ============================================================
+function filterManualStore(){
+  const q = (document.getElementById('manualStoreSearch').value||'').toLowerCase();
+  const dropdown = document.getElementById('manualStoreDropdown');
+  if(!state.storelist || state.storelist.length===0){
+    dropdown.innerHTML = '<div class="sku-option" style="color:var(--text2)">Đang tải danh sách CH...</div>';
+    dropdown.classList.add('active');
+    return;
+  }
+  if(!q){
+    // show first 50 stores
+    const top = state.storelist.slice(0,50);
+    dropdown.innerHTML = top.map(function(s){
+      return '<div class="sku-option" onclick="selectManualStore(\''+escapeQuote(s.ma_sap)+'\')">'
+        + '<span>'+escapeHTML(s.ma_sap)+' — '+escapeHTML(s.ten_ch)+'</span>'
+        + '<span class="sku-group">'+escapeHTML(s.nhom_dt||'--')+'</span>'
+        + '</div>';
+    }).join('');
+  }else{
+    const filtered = state.storelist.filter(function(s){
+      return (s.ten_ch||'').toLowerCase().indexOf(q)>=0 || (s.ma_sap||'').toLowerCase().indexOf(q)>=0;
+    }).slice(0,50);
+    dropdown.innerHTML = filtered.length>0
+      ? filtered.map(function(s){
+          return '<div class="sku-option" onclick="selectManualStore(\''+escapeQuote(s.ma_sap)+'\')">'
+            + '<span>'+highlightText(s.ma_sap+' — '+s.ten_ch, q)+'</span>'
+            + '<span class="sku-group">'+escapeHTML(s.nhom_dt||'--')+'</span>'
+            + '</div>';
+        }).join('')
+      : '<div class="sku-option" style="color:var(--text2)">Không tìm thấy CH</div>';
+  }
+  dropdown.classList.add('active');
+}
+
+function selectManualStore(ma_sap){
+  const store = state.storelist.find(function(s){ return s.ma_sap===ma_sap; });
+  if(!store) return;
+  
+  state.currentStore = {...store, distance: 0};
+  document.getElementById('manualStoreSearch').value = store.ma_sap + ' — ' + store.ten_ch;
+  document.getElementById('manualStoreDropdown').classList.remove('active');
+  
+  // Display store info
+  displayStoreInfo(store, 0);
+  document.getElementById('actionSection').classList.add('visible');
+  document.getElementById('noStoreCard').classList.remove('visible');
+  
+  // Update GPS button state
+  const btn = document.getElementById('gpsBtn');
+  btn.classList.remove('searching');
+  btn.classList.add('success');
+  btn.innerHTML = '<span class="gps-icon">✅</span> ĐÃ CHỌN CH';
+  document.getElementById('gpsStatus').textContent = '✅ Chọn thủ công: '+store.ma_sap;
+  document.getElementById('gpsStatus').className = 'gps-status';
+}
+
+function highlightText(text, q){
+  const idx = text.toLowerCase().indexOf(q.toLowerCase());
+  if(idx<0) return escapeHTML(text);
+  return escapeHTML(text.slice(0,idx)) + '<b style="color:var(--red)">' + escapeHTML(text.slice(idx,idx+q.length)) + '</b>' + escapeHTML(text.slice(idx+q.length));
+}
+
+function escapeQuote(str){
+  return (str||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
 }
 
 // ============================================================
