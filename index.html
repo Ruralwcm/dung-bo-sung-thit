@@ -412,6 +412,17 @@ body{
         </div>
       </div>
 
+          <!-- Deadline Note -->
+    <div class="card" id="deadlineNote" style="display:none;background:#FFF8E1;border-left:4px solid var(--amber);margin-bottom:12px">
+      <div style="font-size:.8rem;font-weight:700;color:var(--orange);margin-bottom:4px">⏰ LƯU Ý — DEADLINE 11H00 HÀNG NGÀY</div>
+      <div style="font-size:.75rem;color:var(--text);line-height:1.5">
+        🛑 <b>Dừng thịt:</b><br>
+        &nbsp;&nbsp;• Miền Bắc, Miền Nam, Miền Tây: <b>D-2</b> (trước 2 ngày)<br>
+        &nbsp;&nbsp;• Miền Trung: <b>D-3</b> (trước 3 ngày)<br>
+        ➕ <b>Bổ sung thịt:</b> trước <b>11h00</b> cùng ngày
+      </div>
+    </div>
+
       <!-- DỪNG THỊT Form -->
       <div id="dungThitForm" style="display:none">
         <div class="form-group">
@@ -932,6 +943,7 @@ function selectAction(action, el){
   
   document.getElementById('dungThitForm').style.display = action==='dung' ? 'block' : 'none';
   document.getElementById('boSungThitForm').style.display = action==='bo-sung' ? 'block' : 'none';
+  document.getElementById('deadlineNote').style.display = 'block';
   
   if(action==='dung'){
     document.getElementById('packWarning').classList.remove('visible');
