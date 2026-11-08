@@ -570,6 +570,7 @@ let state = {
   currentStore: null,
   currentAction: null, // 'dung' | 'bo-sung'
   selectedSKU: null,
+  asmData: null,
   dashboardData: [],
   showVuotOnly: false,
   gasUrl: localStorage.getItem('thitmdl_gas_url') || ''
@@ -643,6 +644,36 @@ const DANH_MUC_THIT = [
   ]}
 ];
 
+
+// ============================================================
+// ASSORTMENT LOADING (per-store SKU filter)
+// ============================================================
+const ASM_JSON_URL = 'asm_meat.json';
+const ASM_CACHE_KEY = 'thitmdl_asm';
+const ASM_CACHE_TS = 'thitmdl_asm_ts';
+
+async function loadAssortment(){
+  const cached = localStorage.getItem(ASM_CACHE_KEY);
+  const ts = parseInt(localStorage.getItem(ASM_CACHE_TS)||'0');
+  if(cached && (Date.now()-ts < ASM_CACHE_TTL)){
+    try{ state.asmData = JSON.parse(cached); return; }catch(e){/* ignore */}
+  }
+  try{
+    const resp = await fetch(ASM_JSON_URL);
+    state.asmData = await resp.json();
+    localStorage.setItem(ASM_CACHE_KEY, JSON.stringify(state.asmData));
+    localStorage.setItem(ASM_CACHE_TS, String(Date.now()));
+  }catch(e){
+    console.warn('Assortment load failed, showing all SKUs:', e);
+    state.asmData = null;
+  }
+}
+
+function getStoreArticles(ma_sap){
+  if(!state.asmData) return null; // null = no filter (show all)
+  return state.asmData[ma_sap] || null; // null = store not in assortment → show all
+}
+
 // ============================================================
 // INIT
 // ============================================================
@@ -667,6 +698,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // GAS URL loaded silently (config hidden)
   // Load storelist
   loadStorelist();
+  loadAssortment();
   // Init nhóm thịt dropdown
   initNhomThit();
   // Set default dates
@@ -968,7 +1000,7 @@ function filterSKU(lineIndex){
         + '</div>';
     }).join('');
   }else{
-    const filtered = group.items.filter(function(s){
+    const filtered = baseItems.filter(function(s){
       return s.name.toLowerCase().indexOf(q) >= 0 || s.code.toLowerCase().indexOf(q) >= 0;
     });
     dropdown.innerHTML = filtered.length > 0
