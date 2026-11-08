@@ -314,12 +314,23 @@ body{
         <span class="gps-icon">📍</span> ĐỊNH VỊ CỬA HÀNG
       </button>
       <div class="gps-status" id="gpsStatus">Bấm nút để xác định cửa hàng đang đứng</div>
+      <div style="margin-top:10px;font-size:.8rem;color:var(--text2)">
+        <a href="javascript:void(0)" onclick="toggleManualSearch()" style="color:var(--red);text-decoration:underline">hoặc chọn CH thủ công</a>
+      </div>
+      <div id="manualSearchWrap" style="display:none;margin-top:8px">
+        <input type="text" class="form-input" id="manualCHInput2" oninput="filterManualCH2()" placeholder="Nhập mã CH hoặc tên CH..." style="font-size:.85rem">
+        <div class="sku-dropdown" id="manualCHDropdown2" style="max-height:200px;position:static"></div>
+      </div>
     </div>
 
     <!-- No Store Found -->
     <div class="card no-store" id="noStoreCard">
       <div class="icon">📭</div>
       <div class="msg">Không tìm thấy cửa hàng trong phạm vi 50m</div>
+      <div style="margin-top:12px">
+        <input type="text" class="form-input" id="manualCHInput" oninput="filterManualCH()" placeholder="🔍 Hoặc tìm cửa hàng thủ công..." style="margin-bottom:8px">
+        <div class="sku-dropdown" id="manualCHDropdown" style="max-height:200px;position:static"></div>
+      </div>
     </div>
 
     <!-- Store Info -->
@@ -588,13 +599,20 @@ document.addEventListener('DOMContentLoaded', ()=>{
 // ============================================================
 // TAB SWITCHING
 // ============================================================
-function switchTab(tab){}
+function switchTab(tab){
+  if(tab==='dash'){
+    document.getElementById('declareSection').style.display='none';
+    document.getElementById('dashboardSection').classList.add('visible');
+    document.querySelector('.tab-btn:nth-child(1)').classList?.remove('active');
+    document.q uerySelector('.tab-btn:nth-child(2)')?.classList?.add('active');
+    loadDashboard();
+  }else{
+    document.getElementById('declareSection').style.display='';
+    document.getElementById('dashboardSection').classList.remove('visible');
+    document.querySelector('.tab-btn:nth-child(2)')?.classList?.remove('active');
+    document.querySelector('.tab-btn:nth-child(1)')?.classList?.add('active');
+  }
 }
-
-// ============================================================
-// STORELIST LOADING
-// ============================================================
-async function loadStorelist(){
   // Check cache first
   const cached = localStorage.getItem(STORELIST_CACHE_KEY);
   const cachedTs = parseInt(localStorage.getItem(STORELIST_CACHE_TS)||'0');
@@ -675,6 +693,51 @@ function parseCSVLine(line){
   }
   result.push(current);
   return result;
+}
+
+// ============================================================
+// MANUAL STORE SEARCH (fallback)
+// ============================================================
+function toggleManualSearch(){
+  const wrap = document.getElementById('manualSearchWrap');
+  wrap.style.display = wrap.style.display==='none'?'block':'none';
+  if(wrap.style.display==='block') document.getElementById('manualCHInput2').focus();
+}
+
+function filterManualCH2(){
+  const q = (document.getElementById('manualCHInput2').value||'').toLowerCase().trim();
+  const dd = document.getElementById('manualCHDropdown2');
+  if(!q || state.storelist.length===0){ dd.innerHTML=''; return; }
+  const results = state.storelist.filter(s=>{
+    return (s.maSAP||'').toLowerCase().includes(q) ||
+           (s.tenCH||'').toLowerCase().includes(q) ||
+           (s.qlkv||'').toLowerCase().includes(q) ||
+           (s.tinh||'').toLowerCase().includes(q);
+  }).slice(0,30);
+  dd.innerHTML = results.map(s=>`<div class="sku-item" onclick="selectManualCH2('${s.maSAP}')">
+    <b>${s.maSAP}</b> — ${s.tenCH||''}<br><small>${s.qlkv||''} · ${s.tinh||''} · N${s.nhom||'?'}</small>
+  </div>`).join('');
+  dd.classList.add('active');
+}
+
+function selectManualCH2(maSAP){
+  const s = state.storelist.find(s=>s.maSAP===maSAP);
+  if(!s) return;
+  document.getElementById('manualCHInput2').value = '';
+  document.getElementById('manualCHDropdown2').innerHTML='';
+  document.getElementById('manualCHDropdown2').classList.remove('active');
+  document.getElementById('manualSearchWrap').style.display='none';
+  
+  document.getElementById('gpsBtn').classList.remove('searching');
+  document.getElementById('gpsBtn').classList.add('success');
+  document.getElementById('gpsBtn').innerHTML = '<span class="gps-icon">✅</span> ĐÃ CHỌN';
+  document.getElementById('gpsStatus').textContent = '✅ Chọn thủ công: '+s.maSAP+' — '+ (s.tenCH||'');
+  document.getElementById('gpsStatus').className = 'gps-status';
+  
+  state.currentStore = {...s, distance: 0};
+  displayStoreInfo(s, 0);
+  document.getElementById('actionSection').classList.add('visible');
+  document.getElementById('noStoreCard').classList.remove('visible');
 }
 
 // ============================================================
