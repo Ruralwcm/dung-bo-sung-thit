@@ -1384,41 +1384,6 @@ function saveConfig(){
 
 
 // ============================================================
-// MANUAL STORE SELECTION
-// ============================================================
-function filterManualStore(){
-  const q = (document.getElementById('manualStoreSearch').value||'').toLowerCase();
-  const dropdown = document.getElementById('manualStoreDropdown');
-  if(!state.storelist || state.storelist.length===0){
-    dropdown.innerHTML = '<div class="sku-option" style="color:var(--text2)">Đang tải danh sách CH...</div>';
-    dropdown.classList.add('active');
-    return;
-  }
-  if(!q){
-    // show first 50 stores
-    const top = state.storelist.slice(0,50);
-    dropdown.innerHTML = top.map(function(s){
-      return '<div class="sku-option" onclick="selectManualStore(\''+escapeQuote(s.ma_sap)+'\')">'
-        + '<span>'+escapeHTML(s.ma_sap)+' — '+escapeHTML(s.ten_ch)+'</span>'
-        + '<span class="sku-group">'+escapeHTML(s.nhom_dt||'--')+'</span>'
-        + '</div>';
-    }).join('');
-  }else{
-    const filtered = state.storelist.filter(function(s){
-      return (s.ten_ch||'').toLowerCase().indexOf(q)>=0 || (s.ma_sap||'').toLowerCase().indexOf(q)>=0;
-    }).slice(0,50);
-    dropdown.innerHTML = filtered.length>0
-      ? filtered.map(function(s){
-          return '<div class="sku-option" onclick="selectManualStore(\''+escapeQuote(s.ma_sap)+'\')">'
-            + '<span>'+highlightText(s.ma_sap+' — '+s.ten_ch, q)+'</span>'
-            + '<span class="sku-group">'+escapeHTML(s.nhom_dt||'--')+'</span>'
-            + '</div>';
-        }).join('')
-      : '<div class="sku-option" style="color:var(--text2)">Không tìm thấy CH</div>';
-  }
-  dropdown.classList.add('active');
-}
-
 function selectManualStore(ma_sap){
   const store = state.storelist.find(function(s){ return s.ma_sap===ma_sap; });
   if(!store) return;
