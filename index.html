@@ -192,6 +192,17 @@ body{
   border-radius:10px;margin-left:6px;
 }
 
+
+/* ===== MULTI-SKU LINES ===== */
+.sku-line{display:flex;gap:6px;align-items:flex-start;margin-bottom:8px}
+.sku-line .sku-search-wrap{flex:1;min-width:0}
+.sku-line .sku-search-wrap .form-input{width:100%}
+.sku-line .pack-input{width:70px;flex-shrink:0}
+.sku-line .rm-line-btn{width:32px;height:38px;flex-shrink:0;border:1px solid var(--red-light);border-radius:6px;background:#fff;color:var(--red);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.sku-line .rm-line-btn:hover{background:#FFF5F5}
+.sku-line:first-child .rm-line-btn{visibility:hidden}
+.add-line-btn{width:100%;padding:8px;border:2px dashed var(--border);border-radius:8px;background:none;color:var(--red);font-weight:600;cursor:pointer;font-size:.85rem;margin-bottom:12px}
+.add-line-btn:hover{background:#FFF5F5;border-color:var(--red-light)}
 /* ===== PACK LIMIT WARNING ===== */
 .pack-info{font-size:.8rem;color:var(--text2);margin-top:4px}
 .pack-warning{
@@ -418,7 +429,7 @@ body{
         </div>
       </div>
 
-      <!-- BỔ SUNG THỊT Form -->
+      <!-- BỔ SUNG THỊT Form (Multi-SKU) -->
       <div id="boSungThitForm" style="display:none">
         <div class="form-group">
           <label class="form-label">Nhóm thịt</label>
@@ -427,27 +438,18 @@ body{
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">Sản phẩm</label>
-          <div class="sku-search-wrap">
-            <input type="text" class="form-input" id="skuSearch"
-              placeholder="Chọn nhóm thịt trước..." autocomplete="off" disabled
-              oninput="filterSKU()" onfocus="filterSKU()">
-            <div class="sku-dropdown" id="skuDropdown"></div>
-          </div>
+          <label class="form-label">Sản phẩm cần bổ sung</label>
+          <div id="skuLines"></div>
+          <button class="add-line-btn" id="addLineBtn" onclick="addSkuLine()">+ Thêm sản phẩm</button>
         </div>
-        <div class="form-group">
-          <label class="form-label">Số pack bổ sung</label>
-          <input type="number" class="form-input" id="soPack" min="1" value="1"
-            placeholder="Nhập số pack" oninput="checkPackLimit()">
-          <div class="pack-info" id="packInfo"></div>
-        </div>
+        <div class="pack-info" id="packInfo"></div>
         <div class="pack-warning" id="packWarning">
           <span class="warn-icon">⚠️</span>
           <span class="warn-text" id="packWarnText"></span>
         </div>
         <div class="form-group">
           <label class="form-label">Lý do bổ sung</label>
-          <select class="form-select" id="lyDoBoSung">
+          <select class="form-select" id="lyDoBoSung" onchange="onLyDoChange()">
             <option value="">-- Chọn lý do --</option>
             <option value="Khách đặt">Khách đặt</option>
             <option value="CTKM">CTKM</option>
@@ -458,6 +460,10 @@ body{
             <option value="NSO">NSO</option>
             <option value="FC Rau">FC Rau</option>
           </select>
+        </div>
+        <div class="form-group" id="khachHangGroup" style="display:none">
+          <label class="form-label">Thông tin khách hàng <span style="color:var(--red)">*</span></label>
+          <input type="text" class="form-input" id="thongTinKhach" placeholder="Tên, SĐT khách hàng...">
         </div>
       </div>
 
@@ -648,7 +654,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // Close SKU dropdown on outside click
   document.addEventListener('click',(e)=>{
     if(!e.target.closest('.sku-search-wrap')){
-      document.getElementById('skuDropdown').classList.remove('active');
+      document.querySelectorAll('.sku-dropdown').forEach(function(d){d.classList.remove('active');});
+    }
+  });
+  // Close manual store dropdown on outside click
+  document.addEventListener('click',(e)=>{
+    if(!e.target.closest('#manualStoreSection .sku-search-wrap')){
+      document.getElementById('manualStoreDropdown').classList.remove('active');
     }
   });
   // Config
@@ -883,16 +895,21 @@ function displayStoreInfo(store, dist){
 // ============================================================
 function selectAction(action, el){
   state.currentAction = action;
-  document.querySelectorAll('.action-radio').forEach(r=>r.classList.remove('selected'));
+  document.querySelectorAll('.action-radio').forEach(function(r){r.classList.remove('selected');});
   el.classList.add('selected');
   
   document.getElementById('dungThitForm').style.display = action==='dung' ? 'block' : 'none';
   document.getElementById('boSungThitForm').style.display = action==='bo-sung' ? 'block' : 'none';
   
   if(action==='dung'){
-    state.selectedSKU = null;
     document.getElementById('packWarning').classList.remove('visible');
-    document.getElementById('soPack').value = 1;
+  }else{
+    // Init SKU lines if empty
+    const skuLines = document.getElementById('skuLines');
+    if(skuLines && skuLines.children.length === 0){
+      skuLines.innerHTML = createSkuLineHTML(0);
+    }
+    updateAddLineBtn();
   }
   
   updateSubmitBtn();
@@ -913,54 +930,39 @@ function initNhomThit(){
 
 function onNhomThitChange(){
   const nhom = document.getElementById('nhomThit').value;
-  const skuInput = document.getElementById('skuSearch');
-  const dropdown = document.getElementById('skuDropdown');
-  
-  // Reset SKU selection
-  state.selectedSKU = null;
-  skuInput.value = '';
-  dropdown.classList.remove('active');
-  
-  if(!nhom){
-    skuInput.disabled = true;
-    skuInput.placeholder = 'Chọn nhóm thịt trước...';
-    return;
-  }
-  
-  skuInput.disabled = false;
-  skuInput.placeholder = 'Gõ để tìm hoặc chọn bên dưới...';
-  
-  // Find group items
-  const group = DANH_MUC_THIT.find(function(g){ return g.group === nhom; });
-  if(!group) return;
-  
-  // Show all SP in group (keep order)
-  dropdown.innerHTML = group.items.map(function(s){
-    return '<div class="sku-option" onclick="selectSKU(\'' + s.code + '\',\'' + s.name.replace(/'/g,"\\'") + '\',\'' + nhom.replace(/'/g,"\\'") + '\',' + s.qc + ')">'
-      + '<span>' + s.code + ' — ' + s.name + '</span>'
-      + '<span class="sku-group">QC: ' + s.qc + '</span>'
-      + '</div>';
-  }).join('');
-  dropdown.classList.add('active');
-  
+  // Reset all SKU line selections for this group change
+  const lines = document.querySelectorAll('#skuLines .sku-line');
+  lines.forEach(function(line, i){
+    const searchEl = line.querySelector('.sku-search-input');
+    const codeEl = line.querySelector('.sku-code-input');
+    const dropdown = line.querySelector('.sku-dropdown');
+    if(searchEl) searchEl.value = '';
+    if(codeEl) codeEl.value = '';
+    if(dropdown) dropdown.classList.remove('active');
+    if(searchEl){
+      searchEl.disabled = !nhom;
+      searchEl.placeholder = nhom ? 'Gõ để tìm SKU...' : 'Chọn nhóm thịt trước...';
+    }
+  });
   updatePackInfo();
   updateSubmitBtn();
 }
 
-function filterSKU(){
+function filterSKU(lineIndex){
   const nhom = document.getElementById('nhomThit').value;
-  const q = (document.getElementById('skuSearch').value||'').toLowerCase();
-  const dropdown = document.getElementById('skuDropdown');
-  
   if(!nhom) return;
+  const line = document.querySelectorAll('#skuLines .sku-line')[lineIndex];
+  if(!line) return;
+  const searchEl = line.querySelector('.sku-search-input');
+  const dropdown = line.querySelector('.sku-dropdown');
+  const q = (searchEl.value||'').toLowerCase();
   
   const group = DANH_MUC_THIT.find(function(g){ return g.group === nhom; });
   if(!group) return;
   
   if(!q){
-    // Show all in group (keep order)
     dropdown.innerHTML = group.items.map(function(s){
-      return '<div class="sku-option" onclick="selectSKU(\'' + s.code + '\',\'' + s.name.replace(/'/g,"\\'") + '\',\'' + nhom.replace(/'/g,"\\'") + '\',' + s.qc + ')">'
+      return '<div class="sku-option" onclick="selectSKU('+lineIndex+',\'' + s.code + '\',\'' + s.name.replace(/'/g,"\\'") + '\',\'' + nhom.replace(/'/g,"\\'") + '\',' + s.qc + ')">'
         + '<span>' + s.code + ' — ' + s.name + '</span>'
         + '<span class="sku-group">QC: ' + s.qc + '</span>'
         + '</div>';
@@ -971,7 +973,7 @@ function filterSKU(){
     });
     dropdown.innerHTML = filtered.length > 0
       ? filtered.map(function(s){
-          return '<div class="sku-option" onclick="selectSKU(\'' + s.code + '\',\'' + s.name.replace(/'/g,"\\'") + '\',\'' + nhom.replace(/'/g,"\\'") + '\',' + s.qc + ')">'
+          return '<div class="sku-option" onclick="selectSKU('+lineIndex+',\'' + s.code + '\',\'' + s.name.replace(/'/g,"\\'") + '\',\'' + nhom.replace(/'/g,"\\'") + '\',' + s.qc + ')">'
             + '<span>' + highlightMatch(s.code + ' — ' + s.name, q) + '</span>'
             + '<span class="sku-group">QC: ' + s.qc + '</span>'
             + '</div>';
@@ -982,10 +984,15 @@ function filterSKU(){
   dropdown.classList.add('active');
 }
 
-function selectSKU(code, name, group, qc){
-  state.selectedSKU = {code: code, name: name, group: group, qc: qc};
-  document.getElementById('skuSearch').value = code + ' — ' + name;
-  document.getElementById('skuDropdown').classList.remove('active');
+function selectSKU(lineIndex, code, name, group, qc){
+  const line = document.querySelectorAll('#skuLines .sku-line')[lineIndex];
+  if(!line) return;
+  const searchEl = line.querySelector('.sku-search-input');
+  const codeEl = line.querySelector('.sku-code-input');
+  const dropdown = line.querySelector('.sku-dropdown');
+  searchEl.value = code + ' — ' + name;
+  codeEl.value = code;
+  dropdown.classList.remove('active');
   updatePackInfo();
   updateSubmitBtn();
 }
@@ -1009,18 +1016,26 @@ function highlightMatch(text, q){
 function updatePackInfo(){
   const max = getMaxPacks();
   const info = document.getElementById('packInfo');
-  info.textContent = max > 0 ? `Giới hạn: tối đa ${max} pack/ngày (${state.currentStore?.nhom_dt||'--'})` : '';
+  info.textContent = max > 0 ? 'Giới hạn: tối đa ' + max + ' pack/ngày (' + (state.currentStore?state.currentStore.nhom_dt||'--':'--') + ')' : '';
 }
 
+function getTotalPacks(){
+  let total = 0;
+  document.querySelectorAll('#skuLines .sku-line').forEach(function(line){
+    const packEl = line.querySelector('.pack-input');
+    if(packEl) total += parseInt(packEl.value) || 0;
+  });
+  return total;
+}
 function checkPackLimit(){
   const max = getMaxPacks();
-  const soPack = parseInt(document.getElementById('soPack').value) || 0;
+  const totalPacks = getTotalPacks();
   const warning = document.getElementById('packWarning');
   const warnText = document.getElementById('packWarnText');
   
-  if(max > 0 && soPack > max){
+  if(max > 0 && totalPacks > max){
     warning.classList.add('visible');
-    warnText.textContent = `⚠️ VƯỢT GIỚI HẠN! Tối đa ${max} pack (${state.currentStore.nhom_dt} × 8). Cần phê duyệt từ cấp quản lý!`;
+    warnText.textContent = '⚠️ VƯỢT GIỚI HẠN! Tổng ' + totalPacks + ' pack vượt mức tối đa ' + max + ' pack (' + (state.currentStore?state.currentStore.nhom_dt||'--':'--') + ' × 8). Cần phê duyệt từ cấp quản lý!';
   }else{
     warning.classList.remove('visible');
   }
@@ -1037,13 +1052,95 @@ function updateSubmitBtn(){
     const loai = document.getElementById('loaiThitDung').value;
     btn.disabled = !loai;
   }else{
-    btn.disabled = !state.selectedSKU;
+    // bo-sung: need at least one SKU selected
+    let hasSKU = false;
+    document.querySelectorAll('#skuLines .sku-line').forEach(function(line){
+      const codeEl = line.querySelector('.sku-code-input');
+      if(codeEl && codeEl.value) hasSKU = true;
+    });
+    btn.disabled = !hasSKU;
+  }
+}
+
+
+// ============================================================
+// MULTI-SKU LINE MANAGEMENT
+// ============================================================
+function createSkuLineHTML(lineIndex){
+  return '<div class="sku-line" data-line="'+lineIndex+'">'
+    + '<div class="sku-search-wrap">'
+    + '<input type="text" class="form-input sku-search-input"'
+    + ' placeholder="Gõ để tìm SKU..." autocomplete="off"'
+    + ' oninput="filterSKU('+lineIndex+')" onfocus="filterSKU('+lineIndex+')" disabled>'
+    + '<div class="sku-dropdown"></div>'
+    + '</div>'
+    + '<input type="number" class="form-input pack-input" min="1" value="1"'
+    + ' oninput="checkPackLimit()" placeholder="Pack">'
+    + '<input type="hidden" class="sku-code-input" value="">'
+    + '<button class="rm-line-btn" onclick="removeSkuLine('+lineIndex+')" title="Xóa dòng này">✕</button>'
+    + '</div>';
+}
+function addSkuLine(){
+  const container = document.getElementById('skuLines');
+  const count = container.children.length;
+  if(count >= 10){
+    showToast('⚠️ Tối đa 10 sản phẩm mỗi lần khai báo', 'error');
+    return;
+  }
+  container.insertAdjacentHTML('beforeend', createSkuLineHTML(count));
+  // Enable/disable search input based on nhomThit selection
+  const nhom = document.getElementById('nhomThit').value;
+  const newLine = container.lastElementChild;
+  const searchEl = newLine.querySelector('.sku-search-input');
+  if(searchEl){
+    searchEl.disabled = !nhom;
+    searchEl.placeholder = nhom ? 'Gõ để tìm SKU...' : 'Chọn nhóm thịt trước...';
+  }
+  updateAddLineBtn();
+  updateSubmitBtn();
+}
+function removeSkuLine(lineIndex){
+  const container = document.getElementById('skuLines');
+  if(container.children.length <= 1) return; // minimum 1 line
+  const line = container.querySelector('.sku-line[data-line="'+lineIndex+'"]');
+  if(line) line.remove();
+  // Re-index remaining lines
+  Array.from(container.children).forEach(function(l, i){
+    l.setAttribute('data-line', i);
+    const searchEl = l.querySelector('.sku-search-input');
+    if(searchEl){
+      searchEl.setAttribute('oninput', 'filterSKU('+i+')');
+      searchEl.setAttribute('onfocus', 'filterSKU('+i+')');
+    }
+    const rmBtn = l.querySelector('.rm-line-btn');
+    if(rmBtn) rmBtn.setAttribute('onclick', 'removeSkuLine('+i+')');
+  });
+  updateAddLineBtn();
+  checkPackLimit();
+}
+function updateAddLineBtn(){
+  const container = document.getElementById('skuLines');
+  const btn = document.getElementById('addLineBtn');
+  if(btn){
+    if(container.children.length >= 10){
+      btn.style.display = 'none';
+    }else{
+      btn.style.display = '';
+      btn.textContent = '+ Thêm sản phẩm ('+container.children.length+'/10)';
+    }
   }
 }
 
 // ============================================================
 // FORM SUBMISSION
 // ============================================================
+
+function onLyDoChange(){
+  var lyDo = document.getElementById('lyDoBoSung').value;
+  var khGroup = document.getElementById('khachHangGroup');
+  if(khGroup) khGroup.style.display = (lyDo === 'Khách đặt') ? 'block' : 'none';
+}
+
 async function submitForm(){
   if(!state.currentStore || !state.currentAction){
     showToast('⚠️ Vui lòng định vị CH và chọn hành động', 'error');
@@ -1056,66 +1153,120 @@ async function submitForm(){
     return;
   }
   
+  const ghiChu = document.getElementById('ghiChu').value.trim();
   const max = getMaxPacks();
-  let vuotMuc = false;
-  let soPack = 0;
-  let loaiThit = '';
-  let ngayDung = '';
-  let sku = '';
   
   if(state.currentAction === 'dung'){
-    loaiThit = document.getElementById('loaiThitDung').value;
-    ngayDung = document.getElementById('ngayDung').value;
+    const loaiThit = document.getElementById('loaiThitDung').value;
+    const ngayDung = document.getElementById('ngayDung').value;
     if(!loaiThit){ showToast('⚠️ Vui lòng chọn loại thịt dừng', 'error'); return; }
     if(!ngayDung){ showToast('⚠️ Vui lòng chọn ngày dừng', 'error'); return; }
-  }else{
-    soPack = parseInt(document.getElementById('soPack').value) || 0;
-    if(!state.selectedSKU){ showToast('⚠️ Vui lòng chọn SKU', 'error'); return; }
-    if(soPack <= 0){ showToast('⚠️ Vui lòng nhập số pack > 0', 'error'); return; }
-    sku = state.selectedSKU.code + ' — ' + state.selectedSKU.name;
-    loaiThit = state.selectedSKU.group;
-    vuotMuc = (max > 0 && soPack > max);
-    const lyDoEl = document.getElementById('lyDoBoSung');
-    const lyDo = lyDoEl ? lyDoEl.value : '';
-  }
-  
-  const record = {
-    ma_ch: state.currentStore.ma_sap,
-    ten_ch: state.currentStore.ten_ch,
-    nhom_dt: state.currentStore.nhom_dt,
-    lat: state.currentStore.lat,
-    lng: state.currentStore.lng,
-    hanh_dong: state.currentAction === 'dung' ? 'Dừng thịt' : 'Bổ sung thịt',
-    loai_thit: loaiThit,
-    ngay_dung: ngayDung || '',
-    sku: sku,
-    so_pack: soPack,
-    vuot_muc: vuotMuc,
-    ly_do: lyDo || '',
-    nguoi_khai: nguoiKhai,
-    ghi_chu: document.getElementById('ghiChu').value.trim(),
-    created_at: new Date().toISOString(),
-  };
-  
-  // Save to GAS backend
-  showLoading('Đang lưu khai báo...');
-  try{
-    const result = await saveToGAS(record);
-    hideLoading();
-    if(result && result.success){
-      showToast('✅ Đã lưu khai báo thành công!', 'success');
-      resetForm();
-    }else{
-      showToast('❌ Lỗi lưu: ' + (result?.error || 'Vui lòng thử lại'), 'error');
-      // Fallback: save locally
+    
+    const record = {
+      ma_ch: state.currentStore.ma_sap,
+      ten_ch: state.currentStore.ten_ch,
+      nhom_dt: state.currentStore.nhom_dt,
+      lat: state.currentStore.lat,
+      lng: state.currentStore.lng,
+      hanh_dong: 'Dừng thịt',
+      loai_thit: loaiThit,
+      ngay_dung: ngayDung,
+      sku: '',
+      so_pack: 0,
+      vuot_muc: false,
+      ly_do: '',
+      nguoi_khai: nguoiKhai,
+      ghi_chu: ghiChu,
+      created_at: new Date().toISOString(),
+    };
+    
+    showLoading('Đang lưu khai báo...');
+    try{
+      const result = await saveToGAS(record);
+      hideLoading();
+      if(result && result.success){
+        showToast('✅ Đã lưu khai báo thành công!', 'success');
+        resetForm();
+      }else{
+        showToast('❌ Lỗi lưu: ' + (result?result.error||'Vui lòng thử lại':'Vui lòng thử lại'), 'error');
+        saveLocal(record);
+        showToast('⚠️ Đã lưu tạm vào máy. Sẽ đồng bộ khi có kết nối.', 'error');
+      }
+    }catch(e){
+      console.error('Submit error:', e);
+      hideLoading();
       saveLocal(record);
-      showToast('⚠️ Đã lưu tạm vào máy. Sẽ đồng bộ khi có kết nối.', 'error');
+      showToast('⚠️ Đã lưu tạm vào máy. Kiểm tra GAS URL hoặc kết nối mạng.', 'error');
     }
-  }catch(e){
-    console.error('Submit error:', e);
+  }else{
+    // bo-sung: collect all SKU lines
+    const lyDo = (document.getElementById('lyDoBoSung').value||'').trim();
+    if(!lyDo){ showToast('⚠️ Vui lòng chọn lý do bổ sung', 'error'); return; }
+    
+    const records = [];
+    document.querySelectorAll('#skuLines .sku-line').forEach(function(line){
+      const codeEl = line.querySelector('.sku-code-input');
+      const packEl = line.querySelector('.pack-input');
+      const searchEl = line.querySelector('.sku-search-input');
+      const code = codeEl ? codeEl.value : '';
+      const soPack = packEl ? (parseInt(packEl.value) || 0) : 0;
+      const displayText = searchEl ? searchEl.value : '';
+      
+      if(code && soPack > 0){
+        // Extract SKU name from display text (code — name)
+        const namePart = displayText.replace(code + ' — ', '');
+        const nhom = document.getElementById('nhomThit').value;
+        const vuotMuc = (max > 0 && soPack > max);
+        
+        records.push({
+          ma_ch: state.currentStore.ma_sap,
+          ten_ch: state.currentStore.ten_ch,
+          nhom_dt: state.currentStore.nhom_dt,
+          lat: state.currentStore.lat,
+          lng: state.currentStore.lng,
+          hanh_dong: 'Bổ sung thịt',
+          loai_thit: nhom,
+          ngay_dung: '',
+          sku: code + ' — ' + namePart,
+          so_pack: soPack,
+          vuot_muc: vuotMuc,
+          ly_do: lyDo,
+          nguoi_khai: nguoiKhai,
+          ghi_chu: ghiChu,
+          created_at: new Date().toISOString(),
+        });
+      }
+    });
+    
+    if(records.length === 0){
+      showToast('⚠️ Vui lòng chọn ít nhất 1 SKU và nhập số pack > 0', 'error');
+      return;
+    }
+    
+    showLoading('Đang lưu ' + records.length + ' sản phẩm...');
+    let saved = 0;
+    let hasGASError = false;
+    for(let i=0; i<records.length; i++){
+      try{
+        const result = await saveToGAS(records[i]);
+        if(result && result.success) saved++;
+        else hasGASError = true;
+      }catch(e){
+        console.error('Submit error (line ' + i + '):', e);
+        saveLocal(records[i]);
+        hasGASError = true;
+      }
+    }
     hideLoading();
-    saveLocal(record);
-    showToast('⚠️ Đã lưu tạm vào máy. Kiểm tra GAS URL hoặc kết nối mạng.', 'error');
+    if(saved === records.length){
+      showToast('✅ Đã lưu ' + saved + ' sản phẩm!', 'success');
+      resetForm();
+    }else if(saved > 0){
+      showToast('⚠️ Đã lưu ' + saved + '/' + records.length + ' sản phẩm. Phần còn lại lưu tạm.', 'error');
+    }else{
+      // All failed, all saved locally
+      showToast('⚠️ Đã lưu tạm ' + records.length + ' sản phẩm vào máy. Sẽ đồng bộ khi có kết nối.', 'error');
+    }
   }
 }
 
@@ -1140,23 +1291,28 @@ function saveLocal(record){
 
 function resetForm(){
   state.currentAction = null;
-  state.selectedSKU = null;
-  document.querySelectorAll('.action-radio').forEach(r=>r.classList.remove('selected'));
+  document.querySelectorAll('.action-radio').forEach(function(r){r.classList.remove('selected');});
   document.getElementById('dungThitForm').style.display = 'none';
   document.getElementById('boSungThitForm').style.display = 'none';
-  document.getElementById('skuSearch').value = '';
-  document.getElementById('skuDropdown').classList.remove('active');
-  document.getElementById('soPack').value = 1;
+  // Reset SKU lines to 1 empty line
+  const skuLines = document.getElementById('skuLines');
+  if(skuLines) skuLines.innerHTML = createSkuLineHTML(0);
   const lyDoEl2 = document.getElementById('lyDoBoSung');
   if(lyDoEl2) lyDoEl2.value = '';
+  const ttKhachEl = document.getElementById('thongTinKhach');
+  if(ttKhachEl) ttKhachEl.value = '';
+  const khGroupEl = document.getElementById('khachHangGroup');
+  if(khGroupEl) khGroupEl.style.display = 'none';
+  const nhomThitEl = document.getElementById('nhomThit');
+  if(nhomThitEl) nhomThitEl.value = '';
   document.getElementById('packWarning').classList.remove('visible');
   document.getElementById('packInfo').textContent = '';
   document.getElementById('nguoiKhai').value = '';
   document.getElementById('ghiChu').value = '';
   document.getElementById('submitBtn').disabled = true;
   document.getElementById('loaiThitDung').value = '';
-  document.getElementById('loaiThitBoSung').value = '';
   updatePackInfo();
+  updateAddLineBtn();
 }
 
 // ============================================================
