@@ -49,6 +49,57 @@ body{
 .tab-btn.active{color:var(--red);border-bottom-color:var(--red)}
 .tab-btn:hover{color:var(--red-light)}
 .tabs{display:none}
+/* ===== DASHBOARD SUB-TABS ===== */
+.dash-subtabs{
+  display:flex;background:var(--white);border-radius:var(--radius-sm);
+  overflow:hidden;margin-bottom:16px;border:2px solid var(--border);
+}
+.dash-subtab{
+  flex:1;padding:12px 8px;text-align:center;font-size:.9rem;font-weight:600;
+  border:none;background:none;color:var(--text2);cursor:pointer;
+  transition:all .2s;-webkit-tap-highlight-color:transparent;
+  border-bottom:3px solid transparent;
+}
+.dash-subtab.active{
+  color:var(--red);border-bottom-color:var(--red);background:#FFF5F5;
+}
+.dash-subtab .count{
+  display:inline-block;background:var(--border);color:var(--text2);
+  border-radius:20px;padding:2px 10px;font-size:.72rem;margin-left:6px;
+  font-weight:700;
+}
+.dash-subtab.active .count{background:var(--red);color:#fff}
+.dash-panel{display:none}
+.dash-panel.active{display:block}
+
+/* ===== RESPONSIVE: PC LAYOUT ===== */
+@media(min-width:768px){
+  .container{max-width:960px;padding:24px 32px}
+  .header{padding:16px 24px}
+  .header h1{font-size:1.2rem}
+  .tabs{top:80px}
+  .store-row{gap:24px}
+  .data-table{font-size:.82rem;min-width:auto}
+  .data-table th{font-size:.76rem;padding:8px 10px}
+  .data-table td{padding:8px 10px}
+  .action-radios{gap:12px}
+  .action-radio{padding:16px 12px;font-size:.9rem}
+  .action-radio .emoji{font-size:1.5rem}
+  .filter-row{gap:10px}
+  .filter-row .form-input,.filter-row .form-select{min-width:140px}
+  .gps-section{padding:24px 20px}
+  .gps-btn{padding:16px 36px;font-size:1.15rem}
+  .dash-subtabs{max-width:500px}
+  .dash-subtab{padding:14px 12px;font-size:.95rem}
+  /* Two-column declare form on PC */
+  .declare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .declare-grid .form-group:last-child{grid-column:1/-1}
+  .export-bar{justify-content:flex-end}
+}
+@media(min-width:1024px){
+  .container{max-width:1100px}
+}
+
 
 /* ===== MAIN CONTAINER ===== */
 .container{max-width:640px;margin:0 auto;padding:16px}
@@ -408,49 +459,63 @@ body{
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
         <div style="font-weight:700;font-size:1rem">📊 Báo cáo khai báo</div>
-        <button class="export-btn" onclick="switchTab('declare')">← Quay lại</button>
-        <button class="export-btn" onclick="exportCSV()">📥 Export CSV</button>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="export-btn" onclick="switchTab('declare')">← Quay lại</button>
+          <button class="export-btn" onclick="exportCSV('dung')">📥 Export Dừng</button>
+          <button class="export-btn" onclick="exportCSV('bosung')">📥 Export Bổ sung</button>
+        </div>
       </div>
 
-      <!-- Filters -->
-      <div class="filter-row">
-        <input type="date" class="form-input" id="filterDateFrom" onchange="applyDashboardFilter()" style="min-width:120px">
-        <input type="date" class="form-input" id="filterDateTo" onchange="applyDashboardFilter()" style="min-width:120px">
-        <select class="form-select" id="filterAction" onchange="applyDashboardFilter()" style="min-width:130px">
-          <option value="">Tất cả hành động</option>
-          <option value="Dừng thịt">🛑 Dừng thịt</option>
-          <option value="Bổ sung thịt">➕ Bổ sung thịt</option>
-        </select>
-        <input type="text" class="form-input" id="filterCH" placeholder="Tìm CH..." oninput="applyDashboardFilter()" style="min-width:140px">
-        <button class="filter-btn" onclick="clearDashboardFilters()">↩ Xoá lọc</button>
-        <button class="filter-btn" id="btnShowVuot" onclick="toggleVuotFilter()">⚠️ Chỉ vượt mức</button>
+      <!-- Dashboard Sub-Tabs -->
+      <div class="dash-subtabs">
+        <button class="dash-subtab active" onclick="switchDashTab('dung')" id="dashTabDung">
+          🛑 Dừng thịt <span class="count" id="countDung">0</span>
+        </button>
+        <button class="dash-subtab" onclick="switchDashTab('bosung')" id="dashTabBosung">
+          ➕ Bổ sung thịt <span class="count" id="countBosung">0</span>
+        </button>
       </div>
 
-      <div class="summary-text" id="dashboardSummary"></div>
+      <!-- Panel: DỪNG THỊT -->
+      <div class="dash-panel active" id="panelDung">
+        <div class="filter-row">
+          <input type="date" class="form-input" id="dungDateFrom" onchange="applyDashSubFilter()" style="min-width:120px">
+          <input type="date" class="form-input" id="dungDateTo" onchange="applyDashSubFilter()" style="min-width:120px">
+          <input type="text" class="form-input" id="dungFilterCH" placeholder="Tìm CH..." oninput="applyDashSubFilter()" style="min-width:140px">
+          <button class="filter-btn" onclick="clearDashSubFilter('dung')">↩ Xoá lọc</button>
+        </div>
+        <div class="summary-text" id="summaryDung"></div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr>
+              <th>Ngày</th><th>Mã CH</th><th>Tên CH</th><th>Nhóm DT</th>
+              <th>Loại thịt</th><th>Ngày dừng</th><th>Người khai</th><th>Ghi chú</th>
+            </tr></thead>
+            <tbody id="tbodyDung"></tbody>
+          </table>
+        </div>
+      </div>
 
-      <!-- Table -->
-      <div class="table-wrap">
-        <table class="data-table" id="dataTable">
-          <thead>
-            <tr>
-              <th>Ngày</th>
-              <th>Mã CH</th>
-              <th>Tên CH</th>
-              <th>Nhóm DT</th>
-              <th>Hành động</th>
-              <th>Loại thịt</th>
-              <th>Ngày dừng</th>
-              <th>SKU</th>
-              <th>Số Pack</th>
-              <th>Vượt mức</th>
-              <th>Người khai</th>
-              <th>Ghi chú</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody">
-            <tr><td colspan="12" class="data-empty"><span class="empty-icon">📭</span>Chưa có dữ liệu. Bấm nút 🔄 để tải.</td></tr>
-          </tbody>
-        </table>
+      <!-- Panel: BỔ SUNG THỊT -->
+      <div class="dash-panel" id="panelBosung">
+        <div class="filter-row">
+          <input type="date" class="form-input" id="bsDateFrom" onchange="applyDashSubFilter()" style="min-width:120px">
+          <input type="date" class="form-input" id="bsDateTo" onchange="applyDashSubFilter()" style="min-width:120px">
+          <input type="text" class="form-input" id="bsFilterCH" placeholder="Tìm CH..." oninput="applyDashSubFilter()" style="min-width:140px">
+          <button class="filter-btn" id="btnBsVuot" onclick="toggleBsVuot()">⚠️ Vượt mức</button>
+          <button class="filter-btn" onclick="clearDashSubFilter('bosung')">↩ Xoá lọc</button>
+        </div>
+        <div class="summary-text" id="summaryBosung"></div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr>
+              <th>Ngày</th><th>Mã CH</th><th>Tên CH</th><th>Nhóm DT</th>
+              <th>Loại thịt</th><th>SKU</th><th>Số Pack</th>
+              <th>Vượt mức</th><th>Người khai</th><th>Ghi chú</th>
+            </tr></thead>
+            <tbody id="tbodyBosung"></tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -1062,162 +1127,208 @@ function resetForm(){
 }
 
 // ============================================================
-// DASHBOARD
+// DASHBOARD (v3: 2 tabs - Dừng / Bổ sung)
 // ============================================================
+var dashState = {activeTab:'dung', bsVuotOnly:false};
+
 async function loadDashboard(){
   showLoading('Đang tải dữ liệu...');
   try{
     if(state.gasUrl){
       const resp = await fetch(state.gasUrl + '?action=list');
       const result = await resp.json();
-      if(result && result.data){
-        state.dashboardData = result.data;
-      }
+      if(result && result.data){ state.dashboardData = result.data; }
     }
-    // Merge local pending
     const local = JSON.parse(localStorage.getItem('thitmdl_local_pending')||'[]');
-    state.dashboardData = [...state.dashboardData, ...local.map(r=>({...r, local:true}))];
+    state.dashboardData = [...state.dashboardData, ...local.map(function(r){return Object.assign({},r,{local:true});})];
   }catch(e){
     console.error('Dashboard load error:', e);
-    // Fallback: local only
-    state.dashboardData = JSON.parse(localStorage.getItem('thitmdl_local_pending')||'[]').map(r=>({...r, local:true}));
+    state.dashboardData = JSON.parse(localStorage.getItem('thitmdl_local_pending')||'[]').map(function(r){return Object.assign({},r,{local:true});});
   }
   hideLoading();
-  applyDashboardFilter();
+  // Set default dates
+  var today = new Date().toISOString().slice(0,10);
+  var el;
+  el=document.getElementById('dungDateFrom');if(el)el.value=today;
+  el=document.getElementById('dungDateTo');if(el)el.value=today;
+  el=document.getElementById('bsDateFrom');if(el)el.value=today;
+  el=document.getElementById('bsDateTo');if(el)el.value=today;
+  applyDashSubFilter();
 }
 
-function applyDashboardFilter(){
-  const dateFrom = document.getElementById('filterDateFrom').value;
-  const dateTo = document.getElementById('filterDateTo').value;
-  const actionFilter = document.getElementById('filterAction').value;
-  const chFilter = (document.getElementById('filterCH').value||'').toLowerCase();
-  
-  let data = [...state.dashboardData];
-  
-  // Filter by date range (using created_at)
-  if(dateFrom) data = data.filter(r=>{
-    const d = (r.created_at||'').slice(0,10);
-    return d >= dateFrom;
-  });
-  if(dateTo) data = data.filter(r=>{
-    const d = (r.created_at||'').slice(0,10);
-    return d <= dateTo;
-  });
-  
-  // Filter by action type
-  if(actionFilter) data = data.filter(r=>r.hanh_dong === actionFilter);
-  
-  // Filter by CH name/code
-  if(chFilter) data = data.filter(r=>
-    (r.ten_ch||'').toLowerCase().includes(chFilter)||
-    (r.ma_ch||'').toLowerCase().includes(chFilter)
-  );
-  
-  // Filter vượt mức only
-  if(state.showVuotOnly) data = data.filter(r=>r.vuot_muc===true||r.vuot_muc==='true');
-  
-  // Sort by created_at descending
-  data.sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
-  
-  renderDashboardTable(data);
+function switchDashTab(tab){
+  dashState.activeTab = tab;
+  document.querySelectorAll('.dash-subtab').forEach(function(b){b.classList.remove('active');});
+  document.getElementById(tab==='dung'?'dashTabDung':'dashTabBosung').classList.add('active');
+  document.getElementById('panelDung').classList.toggle('active', tab==='dung');
+  document.getElementById('panelBosung').classList.toggle('active', tab==='bosung');
 }
 
-function toggleVuotFilter(){
-  state.showVuotOnly = !state.showVuotOnly;
-  const btn = document.getElementById('btnShowVuot');
-  btn.classList.toggle('active', state.showVuotOnly);
-  btn.textContent = state.showVuotOnly ? '⚠️ Đang lọc vượt mức (bỏ)' : '⚠️ Chỉ vượt mức';
-  applyDashboardFilter();
+function toggleBsVuot(){
+  dashState.bsVuotOnly = !dashState.bsVuotOnly;
+  var btn = document.getElementById('btnBsVuot');
+  btn.classList.toggle('active', dashState.bsVuotOnly);
+  btn.textContent = dashState.bsVuotOnly ? '⚠️ Đang lọc vượt mức' : '⚠️ Vượt mức';
+  applyDashSubFilter();
 }
 
-function clearDashboardFilters(){
-  document.getElementById('filterDateFrom').value = new Date().toISOString().slice(0,10);
-  document.getElementById('filterDateTo').value = new Date().toISOString().slice(0,10);
-  document.getElementById('filterAction').value = '';
-  document.getElementById('filterCH').value = '';
-  state.showVuotOnly = false;
-  document.getElementById('btnShowVuot').classList.remove('active');
-  document.getElementById('btnShowVuot').textContent = '⚠️ Chỉ vượt mức';
-  applyDashboardFilter();
+function clearDashSubFilter(tab){
+  var today = new Date().toISOString().slice(0,10);
+  if(tab==='dung'){
+    document.getElementById('dungDateFrom').value = today;
+    document.getElementById('dungDateTo').value = today;
+    document.getElementById('dungFilterCH').value = '';
+  }else{
+    document.getElementById('bsDateFrom').value = today;
+    document.getElementById('bsDateTo').value = today;
+    document.getElementById('bsFilterCH').value = '';
+    dashState.bsVuotOnly = false;
+    var btn = document.getElementById('btnBsVuot');
+    if(btn){btn.classList.remove('active');btn.textContent='⚠️ Vượt mức';}
+  }
+  applyDashSubFilter();
 }
 
-function renderDashboardTable(data){
-  const tbody = document.getElementById('tableBody');
-  const summary = document.getElementById('dashboardSummary');
-  
-  const totalDung = data.filter(r=>r.hanh_dong==='Dừng thịt').length;
-  const totalBoSung = data.filter(r=>r.hanh_dong==='Bổ sung thịt').length;
-  const totalVuot = data.filter(r=>r.vuot_muc===true||r.vuot_muc==='true').length;
-  
-  summary.textContent = `Tổng: ${data.length} khai báo | 🛑 Dừng: ${totalDung} | ➕ Bổ sung: ${totalBoSung} | ⚠️ Vượt mức: ${totalVuot}`;
-  
-  if(data.length === 0){
-    tbody.innerHTML = `<tr><td colspan="12" class="data-empty"><span class="empty-icon">📭</span>${state.showVuotOnly?'Không có khai báo vượt mức':'Chưa có dữ liệu khai báo'}</td></tr>`;
+function applyDashSubFilter(){
+  // Split data
+  var dungData = state.dashboardData.filter(function(r){return r.hanh_dong==='Dừng thịt';});
+  var bsData = state.dashboardData.filter(function(r){return r.hanh_dong==='Bổ sung thịt';});
+
+  // Sort
+  dungData.sort(function(a,b){return (b.created_at||'').localeCompare(a.created_at||'');});
+  bsData.sort(function(a,b){return (b.created_at||'').localeCompare(a.created_at||'');});
+
+  // Filter Dừng
+  var dFrom = document.getElementById('dungDateFrom').value;
+  var dTo = document.getElementById('dungDateTo').value;
+  var dCH = (document.getElementById('dungFilterCH').value||'').toLowerCase();
+  if(dFrom) dungData = dungData.filter(function(r){return (r.created_at||'').slice(0,10) >= dFrom;});
+  if(dTo) dungData = dungData.filter(function(r){return (r.created_at||'').slice(0,10) <= dTo;});
+  if(dCH) dungData = dungData.filter(function(r){return (r.ten_ch||'').toLowerCase().indexOf(dCH)>=0||(r.ma_ch||'').toLowerCase().indexOf(dCH)>=0;});
+
+  // Filter Bổ sung
+  var bFrom = document.getElementById('bsDateFrom').value;
+  var bTo = document.getElementById('bsDateTo').value;
+  var bCH = (document.getElementById('bsFilterCH').value||'').toLowerCase();
+  if(bFrom) bsData = bsData.filter(function(r){return (r.created_at||'').slice(0,10) >= bFrom;});
+  if(bTo) bsData = bsData.filter(function(r){return (r.created_at||'').slice(0,10) <= bTo;});
+  if(bCH) bsData = bsData.filter(function(r){return (r.ten_ch||'').toLowerCase().indexOf(bCH)>=0||(r.ma_ch||'').toLowerCase().indexOf(bCH)>=0;});
+  if(dashState.bsVuotOnly) bsData = bsData.filter(function(r){return r.vuot_muc===true||r.vuot_muc==='true';});
+
+  // Update counts
+  var totalDung = state.dashboardData.filter(function(r){return r.hanh_dong==='Dừng thịt';}).length;
+  var totalBs = state.dashboardData.filter(function(r){return r.hanh_dong==='Bổ sung thịt';}).length;
+  document.getElementById('countDung').textContent = totalDung;
+  document.getElementById('countBosung').textContent = totalBs;
+
+  // Render tables
+  renderDungTable(dungData);
+  renderBosungTable(bsData);
+}
+
+function renderDungTable(data){
+  var tbody = document.getElementById('tbodyDung');
+  document.getElementById('summaryDung').textContent = '🛑 Dừng thịt: '+data.length+' khai báo';
+  if(data.length===0){
+    tbody.innerHTML = '<tr><td colspan="8" class="data-empty"><span class="empty-icon">📭</span>Chưa có khai báo dừng thịt</td></tr>';
     return;
   }
-  
-  tbody.innerHTML = data.map(r=>{
-    const vuotClass = (r.vuot_muc===true||r.vuot_muc==='true') ? ' warning-row' : '';
-    const vuotBadge = (r.vuot_muc===true||r.vuot_muc==='true') ? '<span class="vuot-badge">VƯỢT MỨC</span>' : '—';
-    const localBadge = r.local ? ' 📱' : '';
-    return `<tr class="${vuotClass}">
-      <td>${escapeHTML(formatDate(r.created_at))}${localBadge}</td>
-      <td>${escapeHTML(r.ma_ch||'')}</td>
-      <td>${escapeHTML(r.ten_ch||'')}</td>
-      <td>${escapeHTML(r.nhom_dt||'')}</td>
-      <td>${r.hanh_dong==='Dừng thịt'?'🛑':'➕'} ${escapeHTML(r.hanh_dong||'')}</td>
-      <td>${escapeHTML(r.loai_thit||'')}</td>
-      <td>${formatDate(r.ngay_dung)}</td>
-      <td>${escapeHTML(r.sku||'—')}</td>
-      <td>${r.so_pack||'—'}</td>
-      <td>${vuotBadge}</td>
-      <td>${escapeHTML(r.nguoi_khai||'')}</td>
-      <td>${escapeHTML(r.ghi_chu||'')}</td>
-    </tr>`;
+  tbody.innerHTML = data.map(function(r){
+    return '<tr>'
+      + '<td>'+escH(fmtD(r.created_at))+(r.local?' 📱':'')+'</td>'
+      + '<td>'+escH(r.ma_ch||'')+'</td>'
+      + '<td>'+escH(r.ten_ch||'')+'</td>'
+      + '<td>'+escH(r.nhom_dt||'')+'</td>'
+      + '<td>'+escH(r.loai_thit||'')+'</td>'
+      + '<td>'+fmtD(r.ngay_dung)+'</td>'
+      + '<td>'+escH(r.nguoi_khai||'')+'</td>'
+      + '<td>'+escH(r.ghi_chu||'')+'</td>'
+      + '</tr>';
   }).join('');
 }
 
+function renderBosungTable(data){
+  var tbody = document.getElementById('tbodyBosung');
+  var vuotCount = data.filter(function(r){return r.vuot_muc===true||r.vuot_muc==='true';}).length;
+  document.getElementById('summaryBosung').textContent = '➕ Bổ sung thịt: '+data.length+' khai báo'+(vuotCount>0?' | ⚠️ Vượt mức: '+vuotCount:'');
+  if(data.length===0){
+    tbody.innerHTML = '<tr><td colspan="10" class="data-empty"><span class="empty-icon">📭</span>Chưa có khai báo bổ sung thịt</td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.map(function(r){
+    var vuotClass = (r.vuot_muc===true||r.vuot_muc==='true')?' warning-row':'';
+    var vuotBadge = (r.vuot_muc===true||r.vuot_muc==='true')?'<span class="vuot-badge">VƯỢT</span>':'—';
+    return '<tr class="'+vuotClass+'">'
+      + '<td>'+escH(fmtD(r.created_at))+(r.local?' 📱':'')+'</td>'
+      + '<td>'+escH(r.ma_ch||'')+'</td>'
+      + '<td>'+escH(r.ten_ch||'')+'</td>'
+      + '<td>'+escH(r.nhom_dt||'')+'</td>'
+      + '<td>'+escH(r.loai_thit||'')+'</td>'
+      + '<td>'+escH(r.sku||'—')+'</td>'
+      + '<td>'+escH(String(r.so_pack||'—'))+'</td>'
+      + '<td>'+vuotBadge+'</td>'
+      + '<td>'+escH(r.nguoi_khai||'')+'</td>'
+      + '<td>'+escH(r.ghi_chu||'')+'</td>'
+      + '</tr>';
+  }).join('');
+}
+
+// Short aliases for cleaner code
+function fmtD(d){return formatDate(d);}
+function escH(s){return escapeHTML(s);}
+
 // ============================================================
-// EXPORT CSV
+// EXPORT CSV (v3: per-tab)
 // ============================================================
-function exportCSV(){
-  // Get currently filtered data
-  const dateFrom = document.getElementById('filterDateFrom').value;
-  const dateTo = document.getElementById('filterDateTo').value;
-  const actionFilter = document.getElementById('filterAction').value;
-  const chFilter = (document.getElementById('filterCH').value||'').toLowerCase();
-  
-  let data = [...state.dashboardData];
-  if(dateFrom) data = data.filter(r=>(r.created_at||'').slice(0,10) >= dateFrom);
-  if(dateTo) data = data.filter(r=>(r.created_at||'').slice(0,10) <= dateTo);
-  if(actionFilter) data = data.filter(r=>r.hanh_dong === actionFilter);
-  if(chFilter) data = data.filter(r=>(r.ten_ch||'').toLowerCase().includes(chFilter)||(r.ma_ch||'').toLowerCase().includes(chFilter));
-  if(state.showVuotOnly) data = data.filter(r=>r.vuot_muc===true||r.vuot_muc==='true');
-  data.sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
-  
-  const headers = ['Ngày tạo','Mã CH','Tên CH','Nhóm DT','Hành động','Loại thịt','Ngày dừng','SKU','Số Pack','Vượt mức','Người khai','Ghi chú'];
-  const rows = data.map(r=>[
-    formatDate(r.created_at),
-    r.ma_ch||'',
-    r.ten_ch||'',
-    r.nhom_dt||'',
-    r.hanh_dong||'',
-    r.loai_thit||'',
-    formatDate(r.ngay_dung),
-    r.sku||'',
-    r.so_pack||'',
-    (r.vuot_muc===true||r.vuot_muc==='true')?'CÓ':'Không',
-    r.nguoi_khai||'',
-    r.ghi_chu||'',
-  ]);
-  
-  const csvContent = [headers,...rows].map(row=>row.map(cell=>'"'+String(cell).replace(/"/g,'""')+'"').join(',')).join('\n');
-  const BOM = '\uFEFF';
-  const blob = new Blob([BOM+csvContent], {type:'text/csv;charset=utf-8'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+function exportCSV(tab){
+  var data, headers, filename;
+  if(tab==='dung'){
+    data = state.dashboardData.filter(function(r){return r.hanh_dong==='Dừng thịt';});
+    var dFrom = document.getElementById('dungDateFrom').value;
+    var dTo = document.getElementById('dungDateTo').value;
+    var dCH = (document.getElementById('dungFilterCH').value||'').toLowerCase();
+    if(dFrom) data = data.filter(function(r){return (r.created_at||'').slice(0,10) >= dFrom;});
+    if(dTo) data = data.filter(function(r){return (r.created_at||'').slice(0,10) <= dTo;});
+    if(dCH) data = data.filter(function(r){return (r.ten_ch||'').toLowerCase().indexOf(dCH)>=0||(r.ma_ch||'').toLowerCase().indexOf(dCH)>=0;});
+    data.sort(function(a,b){return (b.created_at||'').localeCompare(a.created_at||'');});
+    headers = ['Ngày tạo','Mã CH','Tên CH','Nhóm DT','Loại thịt','Ngày dừng','Người khai','Ghi chú'];
+    filename = 'dung_thit_';
+  }else{
+    data = state.dashboardData.filter(function(r){return r.hanh_dong==='Bổ sung thịt';});
+    var bFrom = document.getElementById('bsDateFrom').value;
+    var bTo = document.getElementById('bsDateTo').value;
+    var bCH = (document.getElementById('bsFilterCH').value||'').toLowerCase();
+    if(bFrom) data = data.filter(function(r){return (r.created_at||'').slice(0,10) >= bFrom;});
+    if(bTo) data = data.filter(function(r){return (r.created_at||'').slice(0,10) <= bTo;});
+    if(bCH) data = data.filter(function(r){return (r.ten_ch||'').toLowerCase().indexOf(bCH)>=0||(r.ma_ch||'').toLowerCase().indexOf(bCH)>=0;});
+    if(dashState.bsVuotOnly) data = data.filter(function(r){return r.vuot_muc===true||r.vuot_muc==='true';});
+    data.sort(function(a,b){return (b.created_at||'').localeCompare(a.created_at||'');});
+    headers = ['Ngày tạo','Mã CH','Tên CH','Nhóm DT','Loại thịt','SKU','Số Pack','Vượt mức','Người khai','Ghi chú'];
+    filename = 'bo_sung_thit_';
+  }
+
+  var rows;
+  if(tab==='dung'){
+    rows = data.map(function(r){return [
+      formatDate(r.created_at),r.ma_ch||'',r.ten_ch||'',r.nhom_dt||'',
+      r.loai_thit||'',formatDate(r.ngay_dung),r.nguoi_khai||'',r.ghi_chu||''
+    ];});
+  }else{
+    rows = data.map(function(r){return [
+      formatDate(r.created_at),r.ma_ch||'',r.ten_ch||'',r.nhom_dt||'',
+      r.loai_thit||'',r.sku||'',r.so_pack||'',
+      (r.vuot_muc===true||r.vuot_muc==='true')?'CÓ':'Không',
+      r.nguoi_khai||'',r.ghi_chu||''
+    ];});
+  }
+
+  var csvContent = [headers].concat(rows).map(function(row){return row.map(function(cell){return '"'+String(cell).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var BOM = '\uFEFF';
+  var blob = new Blob([BOM+csvContent], {type:'text/csv;charset=utf-8'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
   a.href = url;
-  a.download = `thit_mdl_khai_bao_${new Date().toISOString().slice(0,10)}.csv`;
+  a.download = filename + new Date().toISOString().slice(0,10) + '.csv';
   a.click();
   URL.revokeObjectURL(url);
   showToast('✅ Đã export CSV!', 'success');
