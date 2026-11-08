@@ -359,6 +359,20 @@ body{
       <div class="gps-status" id="gpsStatus">Bấm nút để xác định cửa hàng đang đứng</div>
     </div>
 
+    <!-- Manual Store Selector (always visible) -->
+    <div class="card" id="manualStoreSection" style="background:#FFF8F6;border:2px dashed var(--red-light);border-radius:var(--radius)">
+      <div style="font-size:.85rem;font-weight:700;color:var(--red-dark);margin-bottom:8px;text-align:center">
+        🔍 Hoặc chọn CH thủ công (không cần GPS)
+      </div>
+      <div class="sku-search-wrap">
+        <input type="text" class="form-input" id="manualStoreSearch" 
+          placeholder="Gõ tên hoặc mã CH để tìm..." 
+          oninput="filterManualStore()" onfocus="filterManualStore()"
+          autocomplete="off" style="border-color:var(--red-light)">
+        <div class="sku-dropdown" id="manualStoreDropdown"></div>
+      </div>
+    </div>
+
     <!-- No Store Found -->
     <div class="card no-store" id="noStoreCard">
       <div class="icon">📭</div>
@@ -626,7 +640,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // Config
   // GAS URL loaded silently (config hidden)
   // Load storelist
-  loadStorelist().then(()=>{ document.getElementById('manualStoreSection').style.display='block'; });
+  loadStorelist();
   // Init nhóm thịt dropdown
   initNhomThit();
   // Set default dates
@@ -817,7 +831,7 @@ function findNearestStore(lat, lng, accuracy){
     document.getElementById('noStoreCard').classList.add('visible');
     document.getElementById('actionSection').classList.remove('visible');
     document.getElementById('storeCard').classList.remove('visible');
-    document.getElementById('manualStoreSection').style.display='block';
+    // manualStoreSection always visible
     state.currentStore = null;
   }
 }
@@ -1439,7 +1453,6 @@ function escapeQuote(str){
 
 
 // ============================================================
-// MANUAL STORE SELECTION
 // ============================================================
 function filterManualStore(){
   var q = (document.getElementById('manualStoreSearch').value||'').toLowerCase();
