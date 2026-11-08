@@ -413,7 +413,7 @@ body{
       </div>
 
           <!-- Deadline Note -->
-    <div class="card" id="deadlineNote" style="display:none;background:#FFF8E1;border-left:4px solid var(--amber);margin-bottom:12px">
+    <div class="card" id="deadlineNote" style="background:#FFF8E1;border-left:4px solid var(--amber);margin-bottom:12px">
       <div style="font-size:.8rem;font-weight:700;color:var(--orange);margin-bottom:4px">⏰ LƯU Ý — DEADLINE 11H00 HÀNG NGÀY</div>
       <div style="font-size:.75rem;color:var(--text);line-height:1.5">
         🛑➕ <b>Dừng thịt & Bổ sung thịt:</b><br>
@@ -701,14 +701,14 @@ function setNgayNhanHang(){
   if(now.getHours()>=11){ear.setDate(ear.getDate()+1);}
   ear.setDate(ear.getDate()+ddDays);
   var maxd=new Date(ear);
-  maxd.setDate(maxd.getDate()+5);
+  maxd.setDate(maxd.getDate()+3);
   var f=function(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
   var defStr=f(ear);
   var maxStr=f(maxd);
   var el=document.getElementById("ngayNhanHang");
   if(el){el.value=defStr;el.setAttribute("min",defStr);el.setAttribute("max",maxStr);}
   var info=document.getElementById("ngayNhanInfo");
-  if(info)info.textContent="Chọn ngày từ "+defStr+" đến "+maxStr;
+  if(info)info.textContent="Chọn ngày từ "+defStr+" den "+maxStr;
 }
 
 // INIT
@@ -969,7 +969,7 @@ function selectAction(action, el){
   document.getElementById('dungThitForm').style.display = action==='dung' ? 'block' : 'none';
   document.getElementById('boSungThitForm').style.display = action==='bo-sung' ? 'block' : 'none';
   if(action==='bo-sung')setNgayNhanHang();
-  document.getElementById('deadlineNote').style.display = 'block';
+  
   
   if(action==='dung'){
     document.getElementById('packWarning').classList.remove('visible');
