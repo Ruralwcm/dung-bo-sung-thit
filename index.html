@@ -1203,6 +1203,14 @@ async function submitForm(){
     const lyDo = (document.getElementById('lyDoBoSung').value||'').trim();
     if(!lyDo){ showToast('⚠️ Vui lòng chọn lý do bổ sung', 'error'); return; }
     
+    // Validate thong tin khach hang when ly do = Khach dat
+    const thongTinKhachEl2 = document.getElementById('thongTinKhach');
+    const thongTinKhach = thongTinKhachEl2 ? thongTinKhachEl2.value.trim() : '';
+    if(lyDo === 'Khách đặt' && !thongTinKhach){
+      showToast('⚠️ Vui lòng nhập thông tin khách hàng', 'error');
+      return;
+    }
+    
     const records = [];
     document.querySelectorAll('#skuLines .sku-line').forEach(function(line){
       const codeEl = line.querySelector('.sku-code-input');
@@ -1231,6 +1239,7 @@ async function submitForm(){
           so_pack: soPack,
           vuot_muc: vuotMuc,
           ly_do: lyDo,
+          thong_tin_khach: (lyDo === 'Khách đặt' ? thongTinKhach : ''),
           nguoi_khai: nguoiKhai,
           ghi_chu: ghiChu,
           created_at: new Date().toISOString(),
