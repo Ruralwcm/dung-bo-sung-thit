@@ -445,6 +445,20 @@ body{
           <span class="warn-icon">⚠️</span>
           <span class="warn-text" id="packWarnText"></span>
         </div>
+        <div class="form-group">
+          <label class="form-label">Lý do bổ sung</label>
+          <select class="form-select" id="lyDoBoSung">
+            <option value="">-- Chọn lý do --</option>
+            <option value="Khách đặt">Khách đặt</option>
+            <option value="CTKM">CTKM</option>
+            <option value="Adhoc">Adhoc</option>
+            <option value="Hội chợ">Hội chợ</option>
+            <option value="Dự án">Dự án</option>
+            <option value="Renovate">Renovate</option>
+            <option value="NSO">NSO</option>
+            <option value="FC Rau">FC Rau</option>
+          </select>
+        </div>
       </div>
 
       <!-- Common fields -->
@@ -525,7 +539,7 @@ body{
             <thead><tr>
               <th>Ngày</th><th>Mã CH</th><th>Tên CH</th><th>Nhóm DT</th>
               <th>Loại thịt</th><th>SKU</th><th>Số Pack</th>
-              <th>Vượt mức</th><th>Người khai</th><th>Ghi chú</th>
+              <th>Lý do</th><th>Vượt mức</th><th>Người khai</th><th>Ghi chú</th>
             </tr></thead>
             <tbody id="tbodyBosung"></tbody>
           </table>
@@ -1061,6 +1075,8 @@ async function submitForm(){
     sku = state.selectedSKU.code + ' — ' + state.selectedSKU.name;
     loaiThit = state.selectedSKU.group;
     vuotMuc = (max > 0 && soPack > max);
+    const lyDoEl = document.getElementById('lyDoBoSung');
+    const lyDo = lyDoEl ? lyDoEl.value : '';
   }
   
   const record = {
@@ -1075,6 +1091,7 @@ async function submitForm(){
     sku: sku,
     so_pack: soPack,
     vuot_muc: vuotMuc,
+    ly_do: lyDo || '',
     nguoi_khai: nguoiKhai,
     ghi_chu: document.getElementById('ghiChu').value.trim(),
     created_at: new Date().toISOString(),
@@ -1130,6 +1147,8 @@ function resetForm(){
   document.getElementById('skuSearch').value = '';
   document.getElementById('skuDropdown').classList.remove('active');
   document.getElementById('soPack').value = 1;
+  const lyDoEl2 = document.getElementById('lyDoBoSung');
+  if(lyDoEl2) lyDoEl2.value = '';
   document.getElementById('packWarning').classList.remove('visible');
   document.getElementById('packInfo').textContent = '';
   document.getElementById('nguoiKhai').value = '';
@@ -1266,7 +1285,7 @@ function renderBosungTable(data){
   var vuotCount = data.filter(function(r){return r.vuot_muc===true||r.vuot_muc==='true';}).length;
   document.getElementById('summaryBosung').textContent = '➕ Bổ sung thịt: '+data.length+' khai báo'+(vuotCount>0?' | ⚠️ Vượt mức: '+vuotCount:'');
   if(data.length===0){
-    tbody.innerHTML = '<tr><td colspan="10" class="data-empty"><span class="empty-icon">📭</span>Chưa có khai báo bổ sung thịt</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="11" class="data-empty"><span class="empty-icon">📭</span>Chưa có khai báo bổ sung thịt</td></tr>';
     return;
   }
   tbody.innerHTML = data.map(function(r){
@@ -1280,6 +1299,7 @@ function renderBosungTable(data){
       + '<td>'+escH(r.loai_thit||'')+'</td>'
       + '<td>'+escH(r.sku||'—')+'</td>'
       + '<td>'+escH(String(r.so_pack||'—'))+'</td>'
+      + '<td>'+escH(r.ly_do||'—')+'</td>'
       + '<td>'+vuotBadge+'</td>'
       + '<td>'+escH(r.nguoi_khai||'')+'</td>'
       + '<td>'+escH(r.ghi_chu||'')+'</td>'
@@ -1317,7 +1337,7 @@ function exportCSV(tab){
     if(bCH) data = data.filter(function(r){return (r.ten_ch||'').toLowerCase().indexOf(bCH)>=0||(r.ma_ch||'').toLowerCase().indexOf(bCH)>=0;});
     if(dashState.bsVuotOnly) data = data.filter(function(r){return r.vuot_muc===true||r.vuot_muc==='true';});
     data.sort(function(a,b){return (b.created_at||'').localeCompare(a.created_at||'');});
-    headers = ['Ngày tạo','Mã CH','Tên CH','Nhóm DT','Loại thịt','SKU','Số Pack','Vượt mức','Người khai','Ghi chú'];
+    headers = ['Ngày tạo','Mã CH','Tên CH','Nhóm DT','Loại thịt','SKU','Số Pack','Lý do','Vượt mức','Người khai','Ghi chú'];
     filename = 'bo_sung_thit_';
   }
 
@@ -1330,7 +1350,7 @@ function exportCSV(tab){
   }else{
     rows = data.map(function(r){return [
       formatDate(r.created_at),r.ma_ch||'',r.ten_ch||'',r.nhom_dt||'',
-      r.loai_thit||'',r.sku||'',r.so_pack||'',
+      r.loai_thit||'',r.sku||'',r.so_pack||'',r.ly_do||'',
       (r.vuot_muc===true||r.vuot_muc==='true')?'CÓ':'Không',
       r.nguoi_khai||'',r.ghi_chu||''
     ];});
