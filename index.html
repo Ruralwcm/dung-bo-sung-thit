@@ -400,14 +400,7 @@ body{
       </button>
     </div>
 
-    <!-- Config Bar (hidden by default, shown on toggle) -->
-    <div class="card" style="padding:8px 12px" id="configCard">
-      <div class="config-bar">
-        <span style="color:var(--text2);white-space:nowrap">GAS URL:</span>
-        <input type="text" class="config-input" id="gasUrl" placeholder="Nhập GAS Web App URL...">
-        <button class="config-btn" onclick="saveConfig()">Lưu</button>
-      </div>
-    </div>
+    <!-- Config removed for testing -->
   </div>
 
   <!-- ============ DASHBOARD TAB ============ -->
@@ -566,7 +559,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
   });
   // Config
-  // GAS URL loaded silently (hidden config)
+  // GAS URL loaded silently (config hidden)
   // Load storelist
   loadStorelist().then(()=>{ document.getElementById('manualStoreSection').style.display='block'; });
   // Init nhóm thịt dropdown
@@ -1332,6 +1325,70 @@ function highlightText(text, q){
 function escapeQuote(str){
   return (str||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
 }
+
+
+// ============================================================
+// MANUAL STORE SELECTION
+// ============================================================
+function filterManualStore(){
+  var q = (document.getElementById('manualStoreSearch').value||'').toLowerCase();
+  var dropdown = document.getElementById('manualStoreDropdown');
+  if(!state.storelist || state.storelist.length===0){
+    dropdown.innerHTML = '<div class="sku-option" style="color:var(--text2)">Đang tải danh sách CH...</div>';
+    dropdown.classList.add('active');
+    return;
+  }
+  if(!q){
+    var top = state.storelist.slice(0,50);
+    dropdown.innerHTML = top.map(function(s){
+      return '<div class="sku-option" onclick="selectManualStore(\''+escQ(s.ma_sap)+'\')">'
+        + '<span>'+escH(s.ma_sap)+' — '+escH(s.ten_ch)+'</span>'
+        + '<span class="sku-group">'+escH(s.nhom_dt||'--')+'</span>'
+        + '</div>';
+    }).join('');
+  }else{
+    var filtered = state.storelist.filter(function(s){
+      return (s.ten_ch||'').toLowerCase().indexOf(q)>=0 || (s.ma_sap||'').toLowerCase().indexOf(q)>=0;
+    }).slice(0,50);
+    dropdown.innerHTML = filtered.length>0
+      ? filtered.map(function(s){
+          return '<div class="sku-option" onclick="selectManualStore(\''+escQ(s.ma_sap)+'\')">'
+            + '<span>'+hlText(s.ma_sap+' — '+s.ten_ch, q)+'</span>'
+            + '<span class="sku-group">'+escH(s.nhom_dt||'--')+'</span>'
+            + '</div>';
+        }).join('')
+      : '<div class="sku-option" style="color:var(--text2)">Không tìm thấy CH</div>';
+  }
+  dropdown.classList.add('active');
+}
+
+function selectManualStore(ma_sap){
+  var store = state.storelist.find(function(s){ return s.ma_sap===ma_sap; });
+  if(!store) return;
+  
+  state.currentStore = Object.assign({}, store, {distance: 0});
+  document.getElementById('manualStoreSearch').value = store.ma_sap + ' — ' + store.ten_ch;
+  document.getElementById('manualStoreDropdown').classList.remove('active');
+  
+  displayStoreInfo(store, 0);
+  document.getElementById('actionSection').classList.add('visible');
+  document.getElementById('noStoreCard').classList.remove('visible');
+  
+  var btn = document.getElementById('gpsBtn');
+  btn.classList.remove('searching');
+  btn.classList.add('success');
+  btn.innerHTML = '<span class="gps-icon">✅</span> ĐÃ CHỌN CH';
+  document.getElementById('gpsStatus').textContent = '✅ Chọn thủ công: '+store.ma_sap;
+  document.getElementById('gpsStatus').className = 'gps-status';
+}
+
+function hlText(text, q){
+  var idx = text.toLowerCase().indexOf(q.toLowerCase());
+  if(idx<0) return escH(text);
+  return escH(text.slice(0,idx)) + '<b style="color:var(--red)">' + escH(text.slice(idx,idx+q.length)) + '</b>' + escH(text.slice(idx+q.length));
+}
+
+function escQ(str){ return (str||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 
 // ============================================================
 // UTILITIES
