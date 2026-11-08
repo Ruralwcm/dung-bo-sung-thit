@@ -1127,7 +1127,7 @@ function createSkuLineHTML(lineIndex){
 function addSkuLine(){
   const container = document.getElementById('skuLines');
   const count = container.children.length;
-  if(count >= 10){
+  if(count >= 50){
     showToast('⚠️ Tối đa 10 sản phẩm mỗi lần khai báo', 'error');
     return;
   }
@@ -1166,11 +1166,11 @@ function updateAddLineBtn(){
   const container = document.getElementById('skuLines');
   const btn = document.getElementById('addLineBtn');
   if(btn){
-    if(container.children.length >= 10){
+    if(container.children.length >= 50){
       btn.style.display = 'none';
     }else{
       btn.style.display = '';
-      btn.textContent = '+ Thêm sản phẩm ('+container.children.length+'/10)';
+      btn.textContent = '+ Thêm sản phẩm ('+container.children.length+'/50)';
     }
   }
 }
