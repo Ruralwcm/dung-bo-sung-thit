@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Dừng / Bổ Sung Thịt MDL — WinMart</title>
+<style>
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#C00000;--red-light:#E53935;--red-dark:#9B0000;
+  --green:#2E7D32;--amber:#F57F17;--orange:#E65100;
+  --bg:#F5F5F5;--white:#fff;--text:#212121;--text2:#616161;
+  --border:#E0E0E0;--shadow:0 2px 8px rgba(0,0,0,.08);
+  --radius:10px;--radius-sm:8px;
+}
+html{font-size:16px}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* ===== HEADER ===== */
+.header{
+  background:linear-gradient(135deg,var(--red-dark),var(--red));
+  color:#fff;padding:14px 16px;display:flex;align-items:center;
+  gap:12px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(192,0,0,.25);
+}
+.header .logo{
+  width:42px;height:42px;background:#fff;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:14px;color:var(--red);flex-shrink:0;
+}
+.header h1{font-size:1rem;font-weight:700;line-height:1.3}
+.header h1 span{font-size:.75rem;font-weight:400;opacity:.85;display:block}
+
+/* ===== TABS ===== */
+.tabs{
+  display:flex;background:var(--white);border-bottom:2px solid var(--border);
+  position:sticky;top:72px;z-index:99;
+}
+.tab-btn{
+  flex:1;padding:12px;text-align:center;font-size:.9rem;font-weight:600;
+  border:none;background:none;color:var(--text2);cursor:pointer;
+  border-bottom:3px solid transparent;transition:all .2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.tab-btn.active{color:var(--red);border-bottom-color:var(--red)}
+.tab-btn:hover{color:var(--red-light)}
+
+/* ===== MAIN CONTAINER ===== */
+.container{max-width:640px;margin:0 auto;padding:16px}
+
+/* ===== CARDS ===== */
+.card{
+  background:var(--white);border-radius:var(--radius);
+  padding:16px;margin-bottom:12px;box-shadow:var(--shadow);
+}
+
+/* ===== GPS BUTTON ===== */
+.gps-section{text-align:center;padding:20px 16px}
+.gps-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--red);color:#fff;border:none;
+  border-radius:50px;padding:14px 28px;
+  font-size:1.05rem;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 18px rgba(192,0,0,.35);
+  transition:all .2s;-webkit-tap-highlight-color:transparent;
+}
+.gps-btn:active{transform:scale(.96)}
+.gps-btn.searching{
+  background:var(--text2);pointer-events:none;
+  animation:pulse 1.2s infinite;
+}
+.gps-btn.success{background:var(--green)}
+.gps-btn .gps-icon{font-size:1.4rem}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+.gps-status{margin-top:12px;font-size:.85rem;color:var(--text2)}
+.gps-status.error{color:var(--red-light)}
+
+/* ===== STORE INFO CARD ===== */
+.store-card{border-left:4px solid var(--red);display:none}
+.store-card.visible{display:block}
+.store-name{font-size:1.1rem;font-weight:700;color:var(--red-dark)}
+.store-meta{font-size:.8rem;color:var(--text2);margin-top:2px}
+.store-row{display:flex;gap:16px;margin-top:8px;flex-wrap:wrap}
+.store-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  background:#FFF3E0;color:var(--orange);padding:4px 10px;
+  border-radius:20px;font-size:.75rem;font-weight:600;
+}
+.store-badge.nhom{background:#E8F5E9;color:var(--green)}
+
+/* ===== ACTION SELECTION ===== */
+.action-section{display:none}
+.action-section.visible{display:block}
+.action-title{font-size:.95rem;font-weight:700;margin-bottom:12px;color:var(--text)}
+.action-radios{display:flex;gap:8px;margin-bottom:16px}
+.action-radio{
+  flex:1;text-align:center;padding:12px 8px;
+  border:2px solid var(--border);border-radius:var(--radius-sm);
+  cursor:pointer;font-weight:600;font-size:.85rem;transition:all .2s;
+  -webkit-tap-highlight-color:transparent;background:var(--white);
+}
+.action-radio.selected{border-color:var(--red);background:#FFF5F5;color:var(--red)}
+.action-radio .emoji{font-size:1.3rem;display:block;margin-bottom:4px}
+
+/* ===== FORM FIELDS ===== */
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:.8rem;font-weight:600;color:var(--text2);margin-bottom:4px}
+.form-input,.form-select,.form-textarea{
+  width:100%;padding:10px 12px;border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);font-size:.9rem;font-family:inherit;
+  transition:border .2s;background:var(--white);-webkit-appearance:none;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{
+  outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(192,0,0,.08);
+}
+.form-textarea{min-height:60px;resize:vertical}
+
+/* ===== SKU SEARCH ===== */
+.sku-search-wrap{position:relative}
+.sku-dropdown{
+  position:absolute;top:100%;left:0;right:0;z-index:50;
+  background:var(--white);border:1px solid var(--border);
+  border-radius:0 0 var(--radius-sm) var(--radius-sm);
+  max-height:200px;overflow-y:auto;display:none;box-shadow:0 4px 12px rgba(0,0,0,.1);
+}
+.sku-dropdown.active{display:block}
+.sku-option{
+  padding:10px 12px;cursor:pointer;font-size:.85rem;border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.sku-option:last-child{border-bottom:none}
+.sku-option:hover,.sku-option.highlight{background:#FFF5F5}
+.sku-option .sku-group{
+  font-size:.7rem;background:var(--red);color:#fff;padding:1px 6px;
+  border-radius:10px;margin-left:6px;
+}
+
+/* ===== PACK LIMIT WARNING ===== */
+.pack-info{font-size:.8rem;color:var(--text2);margin-top:4px}
+.pack-warning{
+  display:none;background:#FFF5F5;border:2px solid var(--red-light);
+  border-radius:var(--radius-sm);padding:12px;margin-top:8px;
+  animation:shake .4s ease-in-out;
+}
+.pack-warning.visible{display:flex;align-items:center;gap:8px}
+.pack-warning .warn-icon{font-size:1.5rem;flex-shrink:0}
+.pack-warning .warn-text{font-size:.82rem;color:var(--red-dark);font-weight:600}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-6px)}
+  40%{transform:translateX(6px)}
+  60%{transform:translateX(-4px)}
+  80%{transform:translateX(4px)}
+}
+
+/* ===== SUBMIT BUTTON ===== */
+.submit-btn{
+  width:100%;padding:14px;background:var(--red);color:#fff;
+  border:none;border-radius:var(--radius-sm);font-size:1rem;font-weight:700;
+  cursor:pointer;transition:all .2s;margin-top:8px;
+  -webkit-tap-highlight-color:transparent;
+}
+.submit-btn:active{transform:scale(.97)}
+.submit-btn:disabled{background:#BDBDBD;pointer-events:none}
+
+/* ===== TOAST ===== */
+.toast{
+  position:fixed;top:20px;left:50%;transform:translateX(-50%);
+  background:#212121;color:#fff;padding:12px 24px;border-radius:50px;
+  font-size:.85rem;font-weight:600;z-index:999;opacity:0;transition:opacity .3s;
+  pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.3);
+}
+.toast.show{opacity:1}
+.toast.success{background:var(--green)}
+.toast.error{background:var(--red-light)}
+
+/* ===== DASHBOARD ===== */
+.dashboard-section{display:none}
+.dashboard-section.visible{display:block}
+.filter-row{
+  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;
+}
+.filter-row .form-input,.filter-row .form-select{flex:1;min-width:120px}
+.filter-btn{
+  padding:10px 16px;background:var(--white);border:1.5px solid var(--red);
+  border-radius:var(--radius-sm);color:var(--red);font-weight:600;
+  cursor:pointer;font-size:.85rem;-webkit-tap-highlight-color:transparent;
+}
+.filter-btn.active{background:var(--red);color:#fff}
+
+/* ===== DATA TABLE ===== */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:8px}
+.data-table{
+  width:100%;border-collapse:collapse;font-size:.78rem;min-width:700px;
+}
+.data-table th{
+  background:var(--red);color:#fff;padding:8px 6px;text-align:left;
+  font-weight:600;font-size:.72rem;position:sticky;top:0;white-space:nowrap;
+}
+.data-table td{padding:7px 6px;border-bottom:1px solid var(--border);white-space:nowrap}
+.data-table tr:hover{background:#FFF5F5}
+.data-table tr.warning-row{background:#FFF3E0}
+.data-table tr.warning-row:hover{background:#FFE0B2}
+.vuot-badge{
+  display:inline-block;background:var(--red-light);color:#fff;
+  padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;
+  animation:blink 1.5s infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+.data-empty{
+  text-align:center;padding:32px 16px;color:var(--text2);font-size:.9rem;
+}
+.data-empty .empty-icon{font-size:3rem;display:block;margin-bottom:8px}
+
+/* ===== EXPORT ===== */
+.export-bar{
+  display:flex;gap:8px;justify-content:flex-end;margin-bottom:12px;flex-wrap:wrap;
+}
+.export-btn{
+  padding:8px 16px;background:var(--green);color:#fff;
+  border:none;border-radius:20px;font-size:.8rem;font-weight:600;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+.export-btn:active{opacity:.8}
+.summary-text{font-size:.8rem;color:var(--text2);margin:8px 0}
+
+/* ===== LOADING OVERLAY ===== */
+.loading-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);
+  z-index:200;justify-content:center;align-items:center;
+}
+.loading-overlay.visible{display:flex}
+.loading-box{
+  background:var(--white);border-radius:var(--radius);padding:24px 32px;
+  text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.2);
+}
+.spinner{
+  width:36px;height:36px;border:4px solid var(--border);
+  border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;
+  margin:0 auto 12px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:.9rem;font-weight:600;color:var(--text)}
+
+/* ===== NO STORE FOUND ===== */
+.no-store{
+  text-align:center;padding:20px;display:none;
+}
+.no-store.visible{display:block}
+.no-store .icon{font-size:3rem;margin-bottom:8px}
+.no-store .msg{font-size:.9rem;color:var(--text2);font-weight:600}
+
+/* ===== CONFIG SECTION ===== */
+.config-bar{
+  display:flex;gap:8px;align-items:center;margin-top:8px;font-size:.75rem;
+}
+.config-bar .config-input{
+  flex:1;padding:6px 10px;border:1px solid var(--border);
+  border-radius:4px;font-size:.75rem;
+}
+.config-bar .config-btn{
+  padding:6px 12px;background:var(--text2);color:#fff;border:none;
+  border-radius:4px;font-size:.75rem;cursor:pointer;
+}
+
+/* ===== RESPONSIVE ===== */
+@media(min-width:768px){
+  .container{padding:20px 24px}
+  .store-row{gap:24px}
+  .data-table{font-size:.82rem}
+  .data-table th{font-size:.76rem}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">WM</div>
+  <h1>Dừng / Bổ Sung Thịt MDL<span>WinMart — Quản lý đơn thịt tươi sống</span></h1>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" data-tab="declare" id="tabDeclare">📋 Khai báo</button>
+  <button class="tab-btn" data-tab="dashboard" id="tabDashboard">📊 Dashboard</button>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-box">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">Đang xử lý...</div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MAIN CONTENT -->
+<div class="container" id="mainContent">
+
+  <!-- ============ DECLARE TAB ============ -->
+  <div id="declareSection">
+
+    <!-- GPS Section -->
+    <div class="card gps-section" id="gpsCard">
+      <button class="gps-btn" id="gpsBtn" onclick="getLocation()">
+        <span class="gps-icon">📍</span> ĐỊNH VỊ CỬA HÀNG
+      </button>
+      <div class="gps-status" id="gpsStatus">Bấm nút để xác định cửa hàng đang đứng</div>
+    </div>
+
+    <!-- No Store Found -->
+    <div class="card no-store" id="noStoreCard">
+      <div class="icon">📭</div>
+      <div class="msg">Không tìm thấy cửa hàng trong phạm vi 50m</div>
+    </div>
+
+    <!-- Store Info -->
+    <div class="card store-card" id="storeCard">
+      <div class="store-name" id="storeName">--</div>
+      <div class="store-meta" id="storeMeta">--</div>
+      <div class="store-row">
+        <span class="store-badge nhom" id="storeNhom">--</span>
+        <span class="store-badge" id="storeDist">--</span>
+      </div>
+    </div>
+
+    <!-- Action Selection -->
+    <div class="card action-section" id="actionSection">
+      <div class="action-title">Chọn hành động:</div>
+      <div class="action-radios">
+        <div class="action-radio" data-action="dung" onclick="selectAction('dung',this)">
+          <span class="emoji">🛑</span> Dừng thịt
+        </div>
+        <div class="action-radio" data-action="bo-sung" onclick="selectAction('bo-sung',this)">
+          <span class="emoji">➕</span> Bổ sung thịt
+        </div>
+      </div>
+
+      <!-- DỪNG THỊT Form -->
+      <div id="dungThitForm" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Loại thịt dừng</label>
+          <select class="form-select" id="loaiThitDung">
+            <option value="">-- Chọn loại --</option>
+            <option value="Gà">🐔 Gà</option>
+            <option value="Heo">🐖 Heo</option>
+            <option value="Cả hai">🐔🐖 Cả Gà & Heo</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ngày dừng</label>
+          <input type="date" class="form-input" id="ngayDung">
+        </div>
+      </div>
+
+      <!-- BỔ SUNG THỊT Form -->
+      <div id="boSungThitForm" style="display:none">
+        <div class="form-group">
+          <label class="form-label">SKU thịt cần bổ sung</label>
+          <div class="sku-search-wrap">
+            <input type="text" class="form-input" id="skuSearch"
+              placeholder="Tìm SKU (gõ để tìm...)" autocomplete="off"
+              oninput="filterSKU()" onfocus="filterSKU()">
+            <div class="sku-dropdown" id="skuDropdown"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Số pack bổ sung</label>
+          <input type="number" class="form-input" id="soPack" min="1" value="1"
+            placeholder="Nhập số pack" oninput="checkPackLimit()">
+          <div class="pack-info" id="packInfo"></div>
+        </div>
+        <div class="pack-warning" id="packWarning">
+          <span class="warn-icon">⚠️</span>
+          <span class="warn-text" id="packWarnText"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Loại thịt</label>
+          <select class="form-select" id="loaiThitBoSung">
+            <option value="">-- Tự động theo SKU --</option>
+            <option value="Gà">🐔 Gà</option>
+            <option value="Heo">🐖 Heo</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Common fields -->
+      <div class="form-group">
+        <label class="form-label">Người khai báo</label>
+        <input type="text" class="form-input" id="nguoiKhai" placeholder="Tên nhân viên khai báo">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ghi chú</label>
+        <textarea class="form-textarea" id="ghiChu" placeholder="Ghi chú thêm (nếu có)"></textarea>
+      </div>
+
+      <button class="submit-btn" id="submitBtn" onclick="submitForm()" disabled>
+        💾 LƯU KHAI BÁO
+      </button>
+      <button class="submit-btn" style="background:var(--text2);margin-top:6px" onclick="resetForm()">
+        ↩️ Làm mới
+      </button>
+    </div>
+
+    <!-- Config Bar (hidden by default, shown on toggle) -->
+    <div class="card" style="padding:8px 12px" id="configCard">
+      <div class="config-bar">
+        <span style="color:var(--text2);white-space:nowrap">GAS URL:</span>
+        <input type="text" class="config-input" id="gasUrl" placeholder="Nhập GAS Web App URL...">
+        <button class="config-btn" onclick="saveConfig()">Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ DASHBOARD TAB ============ -->
+  <div class="dashboard-section" id="dashboardSection">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div style="font-weight:700;font-size:1rem">📊 Báo cáo khai báo</div>
+        <button class="export-btn" onclick="exportCSV()">📥 Export CSV</button>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-row">
+        <input type="date" class="form-input" id="filterDateFrom" onchange="applyDashboardFilter()" style="min-width:120px">
+        <input type="date" class="form-input" id="filterDateTo" onchange="applyDashboardFilter()" style="min-width:120px">
+        <select class="form-select" id="filterAction" onchange="applyDashboardFilter()" style="min-width:130px">
+          <option value="">Tất cả hành động</option>
+          <option value="Dừng thịt">🛑 Dừng thịt</option>
+          <option value="Bổ sung thịt">➕ Bổ sung thịt</option>
+        </select>
+        <input type="text" class="form-input" id="filterCH" placeholder="Tìm CH..." oninput="applyDashboardFilter()" style="min-width:140px">
+        <button class="filter-btn" onclick="clearDashboardFilters()">↩ Xoá lọc</button>
+        <button class="filter-btn" id="btnShowVuot" onclick="toggleVuotFilter()">⚠️ Chỉ vượt mức</button>
+      </div>
+
+      <div class="summary-text" id="dashboardSummary"></div>
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <table class="data-table" id="dataTable">
+          <thead>
+            <tr>
+              <th>Ngày</th>
+              <th>Mã CH</th>
+              <th>Tên CH</th>
+              <th>Nhóm DT</th>
+              <th>Hành động</th>
+              <th>Loại thịt</th>
+              <th>Ngày dừng</th>
+              <th>SKU</th>
+              <th>Số Pack</th>
+              <th>Vượt mức</th>
+              <th>Người khai</th>
+              <th>Ghi chú</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr><td colspan="12" class="data-empty"><span class="empty-icon">📭</span>Chưa có dữ liệu. Bấm nút 🔄 để tải.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONFIG & STATE
+// ============================================================
+const STORELIST_CSV = 'https://docs.google.com/spreadsheets/d/1fMmEm1GC9aei_3oeu2vcadPVsUM9ms9eVhm99d7pF8A/gviz/tq?tqx=out:csv&sheet=Store_list';
+const STORELIST_CACHE_KEY = 'thitmdl_storelist';
+const STORELIST_CACHE_TS = 'thitmdl_storelist_ts';
+const CACHE_TTL = 24*60*60*1000; // 24h
+const RADIUS_M = 50;
+
+let state = {
+  storelist: [],
+  currentStore: null,
+  currentAction: null, // 'dung' | 'bo-sung'
+  selectedSKU: null,
+  dashboardData: [],
+  showVuotOnly: false,
+  gasUrl: localStorage.getItem('thitmdl_gas_url') || ''
+};
+
+// ============================================================
+// SKU DATABASE
+// ============================================================
+const SKU_LIST = [
+  { code:'HEO001', name:'Heo đùi', group:'Heo' },
+  { code:'HEO002', name:'Heo ba chỉ', group:'Heo' },
+  { code:'HEO003', name:'Heo nạc vai', group:'Heo' },
+  { code:'HEO004', name:'Heo sườn non', group:'Heo' },
+  { code:'HEO005', name:'Heo cốt lết', group:'Heo' },
+  { code:'HEO006', name:'Heo xay', group:'Heo' },
+  { code:'HEO007', name:'Heo chân giò', group:'Heo' },
+  { code:'HEO008', name:'Heo mỡ', group:'Heo' },
+  { code:'HEO009', name:'Heo nạc thăn', group:'Heo' },
+  { code:'HEO010', name:'Heo sườn già', group:'Heo' },
+  { code:'HEO011', name:'Heo tai', group:'Heo' },
+  { code:'HEO012', name:'Heo lòng', group:'Heo' },
+  { code:'GA001', name:'Gà nguyên con', group:'Gà' },
+  { code:'GA002', name:'Gà đùi', group:'Gà' },
+  { code:'GA003', name:'Gà ức', group:'Gà' },
+  { code:'GA004', name:'Gà cánh', group:'Gà' },
+  { code:'GA005', name:'Gà xay', group:'Gà' },
+  { code:'GA006', name:'Gà chân', group:'Gà' },
+  { code:'GA007', name:'Gà lườn', group:'Gà' },
+  { code:'GA008', name:'Gà đầu cổ', group:'Gà' },
+];
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', ()=>{
+  // Tab switching
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>switchTab(btn.dataset.tab));
+  });
+  // Close SKU dropdown on outside click
+  document.addEventListener('click',(e)=>{
+    if(!e.target.closest('.sku-search-wrap')){
+      document.getElementById('skuDropdown').classList.remove('active');
+    }
+  });
+  // Config
+  document.getElementById('gasUrl').value = state.gasUrl;
+  // Load storelist
+  loadStorelist();
+  // Set default dates
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById('ngayDung').value = today;
+  document.getElementById('filterDateFrom').value = today;
+  document.getElementById('filterDateTo').value = today;
+});
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function switchTab(tab){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(tab==='declare'?'tabDeclare':'tabDashboard').classList.add('active');
+  
+  document.getElementById('declareSection').style.display = tab==='declare'?'block':'none';
+  document.getElementById('dashboardSection').classList.toggle('visible', tab==='dashboard');
+  
+  if(tab==='dashboard'){
+    loadDashboard();
+  }
+}
+
+// ============================================================
+// STORELIST LOADING
+// ============================================================
+async function loadStorelist(){
+  // Check cache first
+  const cached = localStorage.getItem(STORELIST_CACHE_KEY);
+  const cachedTs = parseInt(localStorage.getItem(STORELIST_CACHE_TS)||'0');
+  if(cached && (Date.now()-cachedTs < CACHE_TTL)){
+    try{
+      state.storelist = JSON.parse(cached);
+      console.log('Storelist loaded from cache:', state.storelist.length, 'stores');
+      return;
+    }catch(e){/* ignore */}
+  }
+  // Fetch fresh
+  try{
+    console.log('Fetching storelist...');
+    const resp = await fetch(STORELIST_CSV);
+    const csvText = await resp.text();
+    state.storelist = parseStorelistCSV(csvText);
+    if(state.storelist.length > 0){
+      localStorage.setItem(STORELIST_CACHE_KEY, JSON.stringify(state.storelist));
+      localStorage.setItem(STORELIST_CACHE_TS, String(Date.now()));
+      console.log('Storelist loaded:', state.storelist.length, 'stores');
+    }
+  }catch(e){
+    console.error('Failed to load storelist:', e);
+    // Use cached even if expired
+    if(cached){
+      try{ state.storelist = JSON.parse(cached); }catch(e2){/* ignore */}
+    }
+  }
+}
+
+function parseStorelistCSV(csv){
+  const lines = csv.split('\n').filter(l=>l.trim());
+  if(lines.length < 2) return [];
+  
+  const headers = parseCSVLine(lines[0]).map(h=>h.trim().toLowerCase());
+  const idxMaSAP = headers.findIndex(h=>h.includes('mã sap')||h.includes('sap')||h==='mã');
+  const idxTenCH = headers.findIndex(h=>h.includes('tên')||h.includes('ch')||h.includes('cửa hàng'));
+  const idxLat = headers.findIndex(h=>h.includes('vĩ độ')||h.includes('lat')||h.includes('latitude'));
+  const idxLng = headers.findIndex(h=>h.includes('kinh độ')||h.includes('lng')||h.includes('longitude'));
+  const idxNhom = headers.findIndex(h=>h.includes('nhóm dt')||h.includes('nhóm')||h.includes('nhom'));
+  
+  const stores = [];
+  for(let i=1;i<lines.length;i++){
+    const vals = parseCSVLine(lines[i]);
+    const lat = parseFloat(vals[idxLat]);
+    const lng = parseFloat(vals[idxLng]);
+    if(!isNaN(lat) && !isNaN(lng) && lat!==0 && lng!==0){
+      stores.push({
+        ma_sap: (vals[idxMaSAP]||'').trim(),
+        ten_ch: (vals[idxTenCH]||'').trim(),
+        lat: lat,
+        lng: lng,
+        nhom_dt: (vals[idxNhom]||'').trim(),
+      });
+    }
+  }
+  return stores;
+}
+
+function parseCSVLine(line){
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for(let i=0;i<line.length;i++){
+    const ch = line[i];
+    if(ch === '"'){
+      if(inQuotes && i+1<line.length && line[i+1]==='"'){
+        current += '"'; i++;
+      }else{
+        inQuotes = !inQuotes;
+      }
+    }else if(ch === ',' && !inQuotes){
+      result.push(current);
+      current = '';
+    }else{
+      current += ch;
+    }
+  }
+  result.push(current);
+  return result;
+}
+
+// ============================================================
+// GPS LOCATION
+// ============================================================
+function getLocation(){
+  const btn = document.getElementById('gpsBtn');
+  const status = document.getElementById('gpsStatus');
+  
+  if(!navigator.geolocation){
+    status.textContent = '❌ Trình duyệt không hỗ trợ định vị';
+    status.className = 'gps-status error';
+    return;
+  }
+  
+  btn.classList.add('searching');
+  btn.innerHTML = '<span class="gps-icon">🔄</span> ĐANG ĐỊNH VỊ...';
+  status.textContent = 'Đang lấy vị trí GPS...';
+  status.className = 'gps-status';
+  
+  navigator.geolocation.getCurrentPosition(
+    (pos)=>{
+      const {latitude, longitude, accuracy} = pos.coords;
+      console.log('GPS:', latitude, longitude, '±'+accuracy+'m');
+      findNearestStore(latitude, longitude, accuracy);
+    },
+    (err)=>{
+      btn.classList.remove('searching');
+      btn.innerHTML = '<span class="gps-icon">📍</span> ĐỊNH VỊ CỬA HÀNG';
+      status.textContent = '❌ ' + getGPSError(err);
+      status.className = 'gps-status error';
+    },
+    {enableHighAccuracy: true, timeout: 15000, maximumAge: 60000}
+  );
+}
+
+function getGPSError(err){
+  switch(err.code){
+    case err.PERMISSION_DENIED: return 'Bạn chưa cấp quyền định vị. Vào Cài đặt > Quyền > Vị trí để bật.';
+    case err.POSITION_UNAVAILABLE: return 'Không lấy được vị trí. Thử lại ở nơi thoáng hơn.';
+    case err.TIMEOUT: return 'Hết thời gian chờ. Thử lại.';
+    default: return 'Lỗi định vị. Thử lại.';
+  }
+}
+
+function findNearestStore(lat, lng, accuracy){
+  if(state.storelist.length === 0){
+    showToast('⚠️ Chưa tải được danh sách CH. Thử lại sau.', 'error');
+    document.getElementById('gpsBtn').classList.remove('searching');
+    document.getElementById('gpsBtn').innerHTML = '<span class="gps-icon">📍</span> ĐỊNH VỊ CỬA HÀNG';
+    return;
+  }
+  
+  let nearest = null, minDist = Infinity;
+  for(const s of state.storelist){
+    const d = haversine(lat, lng, s.lat, s.lng);
+    if(d < minDist){ minDist = d; nearest = s; }
+  }
+  
+  const btn = document.getElementById('gpsBtn');
+  const status = document.getElementById('gpsStatus');
+  
+  if(nearest && minDist <= RADIUS_M){
+    btn.classList.remove('searching');
+    btn.classList.add('success');
+    btn.innerHTML = '<span class="gps-icon">✅</span> ĐÃ ĐỊNH VỊ';
+    status.textContent = `✅ Cách ${Math.round(minDist)}m (±${Math.round(accuracy)}m GPS)`;
+    status.className = 'gps-status';
+    
+    state.currentStore = {...nearest, distance: minDist};
+    displayStoreInfo(nearest, minDist);
+    document.getElementById('actionSection').classList.add('visible');
+    document.getElementById('noStoreCard').classList.remove('visible');
+  }else{
+    btn.classList.remove('searching');
+    btn.innerHTML = '<span class="gps-icon">📍</span> THỬ LẠI';
+    status.textContent = `❌ Không tìm thấy CH trong ${RADIUS_M}m. CH gần nhất: ${nearest?Math.round(minDist)+'m':'--'}`;
+    status.className = 'gps-status error';
+    
+    document.getElementById('noStoreCard').classList.add('visible');
+    document.getElementById('actionSection').classList.remove('visible');
+    document.getElementById('storeCard').classList.remove('visible');
+    state.currentStore = null;
+  }
+}
+
+// Haversine formula — returns distance in meters
+function haversine(lat1, lng1, lat2, lng2){
+  const R = 6371000; // Earth radius in meters
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+function toRad(deg){ return deg * Math.PI / 180; }
+
+function displayStoreInfo(store, dist){
+  document.getElementById('storeCard').classList.add('visible');
+  document.getElementById('storeName').textContent = store.ten_ch || store.ma_sap;
+  document.getElementById('storeMeta').textContent = `Mã SAP: ${store.ma_sap} | Cách ${Math.round(dist)}m`;
+  
+  const nhom = store.nhom_dt || '--';
+  document.getElementById('storeNhom').textContent = `📊 ${nhom}`;
+  
+  // Extract N from nhom_dt (e.g., "N3" -> 3)
+  const nMatch = nhom.match(/N(\d+)/i);
+  const n = nMatch ? parseInt(nMatch[1]) : 0;
+  const maxPack = n * 8;
+  document.getElementById('storeDist').textContent = n ? `📦 Max ${maxPack} pack/ngày (${nhom})` : '📦 Limit: --';
+  
+  // Update pack info
+  updatePackInfo();
+}
+
+// ============================================================
+// ACTION SELECTION
+// ============================================================
+function selectAction(action, el){
+  state.currentAction = action;
+  document.querySelectorAll('.action-radio').forEach(r=>r.classList.remove('selected'));
+  el.classList.add('selected');
+  
+  document.getElementById('dungThitForm').style.display = action==='dung' ? 'block' : 'none';
+  document.getElementById('boSungThitForm').style.display = action==='bo-sung' ? 'block' : 'none';
+  
+  if(action==='dung'){
+    state.selectedSKU = null;
+    document.getElementById('packWarning').classList.remove('visible');
+    document.getElementById('soPack').value = 1;
+  }
+  
+  updateSubmitBtn();
+}
+
+// ============================================================
+// SKU SEARCH
+// ============================================================
+function filterSKU(){
+  const q = (document.getElementById('skuSearch').value||'').toLowerCase();
+  const dropdown = document.getElementById('skuDropdown');
+  
+  if(!q){
+    dropdown.innerHTML = SKU_LIST.map(s=>
+      `<div class="sku-option" onclick="selectSKU('${s.code}','${s.name}','${s.group}')">
+        <span>${s.name}</span><span class="sku-group">${s.group}</span>
+      </div>`
+    ).join('');
+  }else{
+    const filtered = SKU_LIST.filter(s=>
+      s.name.toLowerCase().includes(q)||s.code.toLowerCase().includes(q)
+    );
+    dropdown.innerHTML = filtered.length > 0
+      ? filtered.map(s=>
+          `<div class="sku-option" onclick="selectSKU('${s.code}','${s.name}','${s.group}')">
+            <span>${highlightMatch(s.name,q)}</span><span class="sku-group">${s.group}</span>
+          </div>`
+        ).join('')
+      : `<div class="sku-option" style="color:var(--text2)">Không tìm thấy SKU</div>`;
+  }
+  
+  dropdown.classList.add('active');
+}
+
+function highlightMatch(text, q){
+  const idx = text.toLowerCase().indexOf(q.toLowerCase());
+  if(idx < 0) return text;
+  return text.slice(0,idx) + '<b style="color:var(--red)">' + text.slice(idx,idx+q.length) + '</b>' + text.slice(idx+q.length);
+}
+
+function selectSKU(code, name, group){
+  state.selectedSKU = {code, name, group};
+  document.getElementById('skuSearch').value = `${code} — ${name} (${group})`;
+  document.getElementById('skuDropdown').classList.remove('active');
+  document.getElementById('loaiThitBoSung').value = group;
+  updatePackInfo();
+  updateSubmitBtn();
+}
+
+// ============================================================
+// PACK LIMIT CHECKING
+// ============================================================
+function getMaxPacks(){
+  if(!state.currentStore) return 0;
+  const nhom = state.currentStore.nhom_dt;
+  const nMatch = (nhom||'').match(/N(\d+)/i);
+  return nMatch ? parseInt(nMatch[1]) * 8 : 0;
+}
+
+function updatePackInfo(){
+  const max = getMaxPacks();
+  const info = document.getElementById('packInfo');
+  info.textContent = max > 0 ? `Giới hạn: tối đa ${max} pack/ngày (${state.currentStore?.nhom_dt||'--'})` : '';
+}
+
+function checkPackLimit(){
+  const max = getMaxPacks();
+  const soPack = parseInt(document.getElementById('soPack').value) || 0;
+  const warning = document.getElementById('packWarning');
+  const warnText = document.getElementById('packWarnText');
+  
+  if(max > 0 && soPack > max){
+    warning.classList.add('visible');
+    warnText.textContent = `⚠️ VƯỢT GIỚI HẠN! Tối đa ${max} pack (${state.currentStore.nhom_dt} × 8). Cần phê duyệt từ cấp quản lý!`;
+  }else{
+    warning.classList.remove('visible');
+  }
+  updateSubmitBtn();
+}
+
+function updateSubmitBtn(){
+  const btn = document.getElementById('submitBtn');
+  if(!state.currentStore || !state.currentAction){
+    btn.disabled = true;
+    return;
+  }
+  if(state.currentAction === 'dung'){
+    const loai = document.getElementById('loaiThitDung').value;
+    btn.disabled = !loai;
+  }else{
+    btn.disabled = !state.selectedSKU;
+  }
+}
+
+// ============================================================
+// FORM SUBMISSION
+// ============================================================
+async function submitForm(){
+  if(!state.currentStore || !state.currentAction){
+    showToast('⚠️ Vui lòng định vị CH và chọn hành động', 'error');
+    return;
+  }
+  
+  const nguoiKhai = document.getElementById('nguoiKhai').value.trim();
+  if(!nguoiKhai){
+    showToast('⚠️ Vui lòng nhập tên người khai báo', 'error');
+    return;
+  }
+  
+  const max = getMaxPacks();
+  let vuotMuc = false;
+  let soPack = 0;
+  let loaiThit = '';
+  let ngayDung = '';
+  let sku = '';
+  
+  if(state.currentAction === 'dung'){
+    loaiThit = document.getElementById('loaiThitDung').value;
+    ngayDung = document.getElementById('ngayDung').value;
+    if(!loaiThit){ showToast('⚠️ Vui lòng chọn loại thịt dừng', 'error'); return; }
+    if(!ngayDung){ showToast('⚠️ Vui lòng chọn ngày dừng', 'error'); return; }
+  }else{
+    soPack = parseInt(document.getElementById('soPack').value) || 0;
+    if(!state.selectedSKU){ showToast('⚠️ Vui lòng chọn SKU', 'error'); return; }
+    if(soPack <= 0){ showToast('⚠️ Vui lòng nhập số pack > 0', 'error'); return; }
+    sku = state.selectedSKU.code + ' — ' + state.selectedSKU.name;
+    loaiThit = state.selectedSKU.group;
+    vuotMuc = (max > 0 && soPack > max);
+  }
+  
+  const record = {
+    ma_ch: state.currentStore.ma_sap,
+    ten_ch: state.currentStore.ten_ch,
+    nhom_dt: state.currentStore.nhom_dt,
+    lat: state.currentStore.lat,
+    lng: state.currentStore.lng,
+    hanh_dong: state.currentAction === 'dung' ? 'Dừng thịt' : 'Bổ sung thịt',
+    loai_thit: loaiThit,
+    ngay_dung: ngayDung || '',
+    sku: sku,
+    so_pack: soPack,
+    vuot_muc: vuotMuc,
+    nguoi_khai: nguoiKhai,
+    ghi_chu: document.getElementById('ghiChu').value.trim(),
+    created_at: new Date().toISOString(),
+  };
+  
+  // Save to GAS backend
+  showLoading('Đang lưu khai báo...');
+  try{
+    const result = await saveToGAS(record);
+    hideLoading();
+    if(result && result.success){
+      showToast('✅ Đã lưu khai báo thành công!', 'success');
+      resetForm();
+    }else{
+      showToast('❌ Lỗi lưu: ' + (result?.error || 'Vui lòng thử lại'), 'error');
+      // Fallback: save locally
+      saveLocal(record);
+      showToast('⚠️ Đã lưu tạm vào máy. Sẽ đồng bộ khi có kết nối.', 'error');
+    }
+  }catch(e){
+    console.error('Submit error:', e);
+    hideLoading();
+    saveLocal(record);
+    showToast('⚠️ Đã lưu tạm vào máy. Kiểm tra GAS URL hoặc kết nối mạng.', 'error');
+  }
+}
+
+async function saveToGAS(record){
+  if(!state.gasUrl){
+    throw new Error('Chưa cấu hình GAS URL');
+  }
+  const resp = await fetch(state.gasUrl, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({action:'save', data:record}),
+  });
+  if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  return await resp.json();
+}
+
+function saveLocal(record){
+  const local = JSON.parse(localStorage.getItem('thitmdl_local_pending')||'[]');
+  local.push(record);
+  localStorage.setItem('thitmdl_local_pending', JSON.stringify(local));
+}
+
+function resetForm(){
+  state.currentAction = null;
+  state.selectedSKU = null;
+  document.querySelectorAll('.action-radio').forEach(r=>r.classList.remove('selected'));
+  document.getElementById('dungThitForm').style.display = 'none';
+  document.getElementById('boSungThitForm').style.display = 'none';
+  document.getElementById('skuSearch').value = '';
+  document.getElementById('skuDropdown').classList.remove('active');
+  document.getElementById('soPack').value = 1;
+  document.getElementById('packWarning').classList.remove('visible');
+  document.getElementById('packInfo').textContent = '';
+  document.getElementById('nguoiKhai').value = '';
+  document.getElementById('ghiChu').value = '';
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('loaiThitDung').value = '';
+  document.getElementById('loaiThitBoSung').value = '';
+  updatePackInfo();
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+async function loadDashboard(){
+  showLoading('Đang tải dữ liệu...');
+  try{
+    if(state.gasUrl){
+      const resp = await fetch(state.gasUrl + '?action=list');
+      const result = await resp.json();
+      if(result && result.data){
+        state.dashboardData = result.data;
+      }
+    }
+    // Merge local pending
+    const local = JSON.parse(localStorage.getItem('thitmdl_local_pending')||'[]');
+    state.dashboardData = [...state.dashboardData, ...local.map(r=>({...r, local:true}))];
+  }catch(e){
+    console.error('Dashboard load error:', e);
+    // Fallback: local only
+    state.dashboardData = JSON.parse(localStorage.getItem('thitmdl_local_pending')||'[]').map(r=>({...r, local:true}));
+  }
+  hideLoading();
+  applyDashboardFilter();
+}
+
+function applyDashboardFilter(){
+  const dateFrom = document.getElementById('filterDateFrom').value;
+  const dateTo = document.getElementById('filterDateTo').value;
+  const actionFilter = document.getElementById('filterAction').value;
+  const chFilter = (document.getElementById('filterCH').value||'').toLowerCase();
+  
+  let data = [...state.dashboardData];
+  
+  // Filter by date range (using created_at)
+  if(dateFrom) data = data.filter(r=>{
+    const d = (r.created_at||'').slice(0,10);
+    return d >= dateFrom;
+  });
+  if(dateTo) data = data.filter(r=>{
+    const d = (r.created_at||'').slice(0,10);
+    return d <= dateTo;
+  });
+  
+  // Filter by action type
+  if(actionFilter) data = data.filter(r=>r.hanh_dong === actionFilter);
+  
+  // Filter by CH name/code
+  if(chFilter) data = data.filter(r=>
+    (r.ten_ch||'').toLowerCase().includes(chFilter)||
+    (r.ma_ch||'').toLowerCase().includes(chFilter)
+  );
+  
+  // Filter vượt mức only
+  if(state.showVuotOnly) data = data.filter(r=>r.vuot_muc===true||r.vuot_muc==='true');
+  
+  // Sort by created_at descending
+  data.sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
+  
+  renderDashboardTable(data);
+}
+
+function toggleVuotFilter(){
+  state.showVuotOnly = !state.showVuotOnly;
+  const btn = document.getElementById('btnShowVuot');
+  btn.classList.toggle('active', state.showVuotOnly);
+  btn.textContent = state.showVuotOnly ? '⚠️ Đang lọc vượt mức (bỏ)' : '⚠️ Chỉ vượt mức';
+  applyDashboardFilter();
+}
+
+function clearDashboardFilters(){
+  document.getElementById('filterDateFrom').value = new Date().toISOString().slice(0,10);
+  document.getElementById('filterDateTo').value = new Date().toISOString().slice(0,10);
+  document.getElementById('filterAction').value = '';
+  document.getElementById('filterCH').value = '';
+  state.showVuotOnly = false;
+  document.getElementById('btnShowVuot').classList.remove('active');
+  document.getElementById('btnShowVuot').textContent = '⚠️ Chỉ vượt mức';
+  applyDashboardFilter();
+}
+
+function renderDashboardTable(data){
+  const tbody = document.getElementById('tableBody');
+  const summary = document.getElementById('dashboardSummary');
+  
+  const totalDung = data.filter(r=>r.hanh_dong==='Dừng thịt').length;
+  const totalBoSung = data.filter(r=>r.hanh_dong==='Bổ sung thịt').length;
+  const totalVuot = data.filter(r=>r.vuot_muc===true||r.vuot_muc==='true').length;
+  
+  summary.textContent = `Tổng: ${data.length} khai báo | 🛑 Dừng: ${totalDung} | ➕ Bổ sung: ${totalBoSung} | ⚠️ Vượt mức: ${totalVuot}`;
+  
+  if(data.length === 0){
+    tbody.innerHTML = `<tr><td colspan="12" class="data-empty"><span class="empty-icon">📭</span>${state.showVuotOnly?'Không có khai báo vượt mức':'Chưa có dữ liệu khai báo'}</td></tr>`;
+    return;
+  }
+  
+  tbody.innerHTML = data.map(r=>{
+    const vuotClass = (r.vuot_muc===true||r.vuot_muc==='true') ? ' warning-row' : '';
+    const vuotBadge = (r.vuot_muc===true||r.vuot_muc==='true') ? '<span class="vuot-badge">VƯỢT MỨC</span>' : '—';
+    const localBadge = r.local ? ' 📱' : '';
+    return `<tr class="${vuotClass}">
+      <td>${escapeHTML(formatDate(r.created_at))}${localBadge}</td>
+      <td>${escapeHTML(r.ma_ch||'')}</td>
+      <td>${escapeHTML(r.ten_ch||'')}</td>
+      <td>${escapeHTML(r.nhom_dt||'')}</td>
+      <td>${r.hanh_dong==='Dừng thịt'?'🛑':'➕'} ${escapeHTML(r.hanh_dong||'')}</td>
+      <td>${escapeHTML(r.loai_thit||'')}</td>
+      <td>${formatDate(r.ngay_dung)}</td>
+      <td>${escapeHTML(r.sku||'—')}</td>
+      <td>${r.so_pack||'—'}</td>
+      <td>${vuotBadge}</td>
+      <td>${escapeHTML(r.nguoi_khai||'')}</td>
+      <td>${escapeHTML(r.ghi_chu||'')}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ============================================================
+// EXPORT CSV
+// ============================================================
+function exportCSV(){
+  // Get currently filtered data
+  const dateFrom = document.getElementById('filterDateFrom').value;
+  const dateTo = document.getElementById('filterDateTo').value;
+  const actionFilter = document.getElementById('filterAction').value;
+  const chFilter = (document.getElementById('filterCH').value||'').toLowerCase();
+  
+  let data = [...state.dashboardData];
+  if(dateFrom) data = data.filter(r=>(r.created_at||'').slice(0,10) >= dateFrom);
+  if(dateTo) data = data.filter(r=>(r.created_at||'').slice(0,10) <= dateTo);
+  if(actionFilter) data = data.filter(r=>r.hanh_dong === actionFilter);
+  if(chFilter) data = data.filter(r=>(r.ten_ch||'').toLowerCase().includes(chFilter)||(r.ma_ch||'').toLowerCase().includes(chFilter));
+  if(state.showVuotOnly) data = data.filter(r=>r.vuot_muc===true||r.vuot_muc==='true');
+  data.sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
+  
+  const headers = ['Ngày tạo','Mã CH','Tên CH','Nhóm DT','Hành động','Loại thịt','Ngày dừng','SKU','Số Pack','Vượt mức','Người khai','Ghi chú'];
+  const rows = data.map(r=>[
+    formatDate(r.created_at),
+    r.ma_ch||'',
+    r.ten_ch||'',
+    r.nhom_dt||'',
+    r.hanh_dong||'',
+    r.loai_thit||'',
+    formatDate(r.ngay_dung),
+    r.sku||'',
+    r.so_pack||'',
+    (r.vuot_muc===true||r.vuot_muc==='true')?'CÓ':'Không',
+    r.nguoi_khai||'',
+    r.ghi_chu||'',
+  ]);
+  
+  const csvContent = [headers,...rows].map(row=>row.map(cell=>'"'+String(cell).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const BOM = '\uFEFF';
+  const blob = new Blob([BOM+csvContent], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `thit_mdl_khai_bao_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('✅ Đã export CSV!', 'success');
+}
+
+// Clean up local pending after successful sync
+async function syncLocalToGAS(){
+  const local = JSON.parse(localStorage.getItem('thitmdl_local_pending')||'[]');
+  if(local.length === 0 || !state.gasUrl) return;
+  
+  showLoading(`Đang đồng bộ ${local.length} khai báo...`);
+  let synced = 0;
+  for(const record of local){
+    try{
+      await saveToGAS(record);
+      synced++;
+    }catch(e){console.error('Sync error:', e);}
+  }
+  // Remove synced
+  const remaining = local.slice(synced);
+  localStorage.setItem('thitmdl_local_pending', JSON.stringify(remaining));
+  hideLoading();
+  if(synced > 0){
+    showToast(`✅ Đã đồng bộ ${synced}/${local.length} khai báo`, 'success');
+  }
+}
+
+// ============================================================
+// CONFIG
+// ============================================================
+function saveConfig(){
+  const url = document.getElementById('gasUrl').value.trim();
+  state.gasUrl = url;
+  localStorage.setItem('thitmdl_gas_url', url);
+  showToast('✅ Đã lưu cấu hình!', 'success');
+  // Try to sync local data
+  if(url) syncLocalToGAS();
+}
+
+// ============================================================
+// UTILITIES
+// ============================================================
+function showToast(msg, type=''){
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast ' + type + ' show';
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(()=>toast.classList.remove('show'), 3000);
+}
+
+function showLoading(text){
+  document.getElementById('loadingText').textContent = text;
+  document.getElementById('loadingOverlay').classList.add('visible');
+}
+
+function hideLoading(){
+  document.getElementById('loadingOverlay').classList.remove('visible');
+}
+
+function formatDate(d){
+  if(!d) return '—';
+  const s = String(d).slice(0,10);
+  if(!s.includes('-')) return s;
+  const [y,m,day] = s.split('-');
+  return `${day}/${m}/${y}`;
+}
+
+function escapeHTML(str){
+  if(!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+</script>
+</body>
+</html>
