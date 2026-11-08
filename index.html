@@ -588,16 +588,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 // ============================================================
 // TAB SWITCHING
 // ============================================================
-function switchTab(tab){
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById(tab==='declare'?'tabDeclare':'tabDashboard').classList.add('active');
-  
-  document.getElementById('declareSection').style.display = tab==='declare'?'block':'none';
-  document.getElementById('dashboardSection').classList.toggle('visible', tab==='dashboard');
-  
-  if(tab==='dashboard'){
-    loadDashboard();
-  }
+function switchTab(tab){}
 }
 
 // ============================================================
