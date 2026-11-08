@@ -427,7 +427,7 @@ body{
       <div id="dungThitForm" style="display:none">
         <div class="form-group">
           <label class="form-label">Loại thịt dừng</label>
-          <select class="form-select" id="loaiThitDung">
+          <select class="form-select" id="loaiThitDung" onchange="updateSubmitBtn()">
             <option value="">-- Chọn loại --</option>
             <option value="Gà">🐔 Gà</option>
             <option value="Heo">🐖 Heo</option>
@@ -436,7 +436,7 @@ body{
         </div>
         <div class="form-group">
           <label class="form-label">Ngày dừng</label>
-          <input type="date" class="form-input" id="ngayDung">
+          <input type="date" class="form-input" id="ngayDung" onchange="updateSubmitBtn()">
         </div>
       </div>
 
