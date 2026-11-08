@@ -688,6 +688,29 @@ function getStoreArticles(ma_sap){
 }
 
 // ============================================================
+// ============================================================
+// SET DEFAULT NGAY NHAN HANG
+// ============================================================
+function setNgayNhanHang(){
+  if(!state.currentStore)return;
+  var mien=(state.currentStore.mien||state.currentStore["Mien"]||"").trim();
+  var ddDays=2;
+  if(mien.toLowerCase().indexOf("trung")>=0&&mien.toLowerCase().indexOf("nam trung")<0)ddDays=3;
+  var now=new Date();
+  var ear=new Date(now);
+  if(now.getHours()>=11){ear.setDate(ear.getDate()+1);}
+  ear.setDate(ear.getDate()+ddDays);
+  var maxd=new Date(ear);
+  maxd.setDate(maxd.getDate()+5);
+  var f=function(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
+  var defStr=f(ear);
+  var maxStr=f(maxd);
+  var el=document.getElementById("ngayNhanHang");
+  if(el){el.value=defStr;el.setAttribute("min",defStr);el.setAttribute("max",maxStr);}
+  var info=document.getElementById("ngayNhanInfo");
+  if(info)info.textContent="Chọn ngày từ "+defStr+" đến "+maxStr;
+}
+
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded', ()=>{
