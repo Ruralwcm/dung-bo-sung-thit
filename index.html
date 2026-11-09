@@ -532,7 +532,7 @@ body{
           </div>
           <div class="form-group">
             <label class="form-label">Ngày nhận hàng</label>
-            <input type="date" class="form-input" id="ngayNhanHang" onchange="updateDeadlineNote()">
+            <input type="date" class="form-input" id="ngayNhanHang" onchange="updateDeadlineNote();updateSubmitBtn()">
           </div>
         </div>
       </div>
@@ -776,6 +776,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // Set default dates
   const today = new Date().toISOString().slice(0,10);
   document.getElementById('ngayDung').value = today;
+  document.getElementById('ngayNhanHang').value = today;
   document.getElementById('filterDateFrom').value = today;
   document.getElementById('filterDateTo').value = today;
 });
@@ -1184,7 +1185,8 @@ function updateSubmitBtn(){
   }else{
     const hasSKU = state.productLines.some(function(l){ return l.sku && l.pack > 0; });
     const lyDo = document.getElementById('lyDoBoSung').value;
-    btn.disabled = !hasSKU || !lyDo;
+    const ngayNhan = document.getElementById('ngayNhanHang').value;
+    btn.disabled = !hasSKU || !lyDo || !ngayNhan;
     // Show/hide customer info field
     const khachInfo = document.getElementById('khachDatInfo');
     khachInfo.style.display = lyDo === 'Khách đặt' ? 'block' : 'none';
@@ -1232,6 +1234,7 @@ async function submitForm(){
     const lyDo = document.getElementById('lyDoBoSung').value;
     const ngayNhan = document.getElementById('ngayNhanHang').value;
     if(!lyDo){ showToast('⚠️ Vui lòng chọn lý do bổ sung', 'error'); return; }
+    if(!ngayNhan){ showToast('⚠️ Vui lòng chọn ngày nhận hàng', 'error'); return; }
     
     // Customer info for Khách đặt
     let bsGhiChu = ghiChu;
@@ -1307,7 +1310,8 @@ function resetForm(){
   document.getElementById('submitBtn').disabled = true;
   document.getElementById('loaiThitDung').value = '';
   document.getElementById('lyDoBoSung').value = '';
-  document.getElementById('ngayNhanHang').value = '';
+  const todayReset = new Date().toISOString().slice(0,10);
+  document.getElementById('ngayNhanHang').value = todayReset;
   document.getElementById('nguoiKhaiDung').value = '';
   document.getElementById('thongTinKhach').value = '';
   document.getElementById('khachDatInfo').style.display = 'none';
