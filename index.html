@@ -541,6 +541,11 @@ body{
               <option value="NSO">7️⃣ NSO</option>
               <option value="FC Rau">8️⃣ FC Rau</option>
             </select>
+            <!-- Customer info — only shown when Khách đặt -->
+            <div id="khachDatInfo" style="display:none;margin-top:8px">
+              <input type="text" class="form-input" id="thongTinKhach" 
+                placeholder="Nhập tên/SĐT khách hàng..." oninput="updateSubmitBtn()">
+            </div>
           </div>
           <div class="form-group">
             <label class="form-label">Ngày nhận hàng</label>
@@ -1252,6 +1257,13 @@ function updateSubmitBtn(){
     const hasSKU = state.productLines.some(function(l){ return l.sku && l.pack > 0; });
     const lyDo = document.getElementById('lyDoBoSung').value;
     btn.disabled = !hasSKU || !lyDo;
+    // Show/hide customer info field
+    const khachInfo = document.getElementById('khachDatInfo');
+    khachInfo.style.display = lyDo === 'Khách đặt' ? 'block' : 'none';
+    if(lyDo === 'Khách đặt'){
+      const tt = document.getElementById('thongTinKhach').value.trim();
+      if(!tt) btn.disabled = true;
+    }
   }
 }
 
@@ -1293,6 +1305,14 @@ async function submitForm(){
     const ngayNhan = document.getElementById('ngayNhanHang').value;
     if(!lyDo){ showToast('⚠️ Vui lòng chọn lý do bổ sung', 'error'); return; }
     
+    // Customer info for Khách đặt
+    let bsGhiChu = ghiChu;
+    if(lyDo === 'Khách đặt'){
+      const ttKhach = document.getElementById('thongTinKhach').value.trim();
+      if(!ttKhach){ showToast('⚠️ Vui lòng nhập thông tin khách hàng', 'error'); return; }
+      bsGhiChu = '[Khách: '+ttKhach+']' + (ghiChu ? ' '+ghiChu : '');
+    }
+    
     const validLines = state.productLines.filter(function(l){ return l.sku && l.pack > 0; });
     if(validLines.length === 0){ showToast('⚠️ Cần ít nhất 1 sản phẩm với số pack > 0', 'error'); return; }
     
@@ -1305,7 +1325,7 @@ async function submitForm(){
         ngay_dung: '', sku: l.sku.code+' — '+l.sku.name,
         so_pack: l.pack, vuot_muc: vuotMuc,
         ly_do: lyDo, ngay_nhan_hang: ngayNhan,
-        nguoi_khai: '', ghi_chu: ghiChu, created_at: now,
+        nguoi_khai: '', ghi_chu: bsGhiChu, created_at: now,
       });
     });
   }
@@ -1361,6 +1381,8 @@ function resetForm(){
   document.getElementById('lyDoBoSung').value = '';
   document.getElementById('ngayNhanHang').value = '';
   document.getElementById('nguoiKhaiDung').value = '';
+  document.getElementById('thongTinKhach').value = '';
+  document.getElementById('khachDatInfo').style.display = 'none';
   document.getElementById('productLines').innerHTML = '';
   document.getElementById('skuCount').textContent = '0';
   document.getElementById('deadlineNoteDung').style.display = 'none';
