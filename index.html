@@ -1009,7 +1009,7 @@ function displayStoreInfo(store, dist){
   const nMatch = nhom.match(/N(\d+)/i);
   const n = nMatch ? parseInt(nMatch[1]) : 0;
   const maxPack = n * 8;
-  document.getElementById('storeDist').textContent = n ? `📦 Max ${maxPack} pack/ngày (2×${nhom})` : '📦 Limit: --';
+  document.getElementById('storeDist').textContent = n ? `📦 Max ${n*20} pack/ngày (20×${nhom})` : '📦 Limit: --';
 }
 
 // ============================================================
@@ -1187,7 +1187,7 @@ function getMaxPacks(){
   if(!state.currentStore) return 0;
   const nhom = state.currentStore.nhom_dt;
   const nMatch = (nhom||'').match(/N(\d+)/i);
-  return nMatch ? parseInt(nMatch[1]) * 2 : 0;
+  return nMatch ? parseInt(nMatch[1]) * 20 : 0;
 }
 
 function updateSubmitBtn(){
@@ -1281,7 +1281,7 @@ async function submitForm(){
     if(lyDo !== 'Khách đặt'){
       const totalPacks = validLines.reduce((s,l)=>s+l.pack,0);
       if(max > 0 && totalPacks > max){
-        showToast('🚫 Tổng '+totalPacks+' pack vượt giới hạn '+max+' pack (2×'+state.currentStore.nhom_dt+'). Vui lòng giảm!', 'error');
+        showToast('🚫 Tổng '+totalPacks+' pack vượt giới hạn '+max+' pack (20×'+state.currentStore.nhom_dt+'). Vui lòng giảm!', 'error');
         return;
       }
     }
