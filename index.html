@@ -1131,7 +1131,7 @@ async function saveToGAS(record){
   }
   const resp = await fetch(state.gasUrl, {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: {'Content-Type': 'text/plain'},
     body: JSON.stringify({action:'save', data:record}),
   });
   if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
