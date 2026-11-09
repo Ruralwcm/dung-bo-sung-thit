@@ -553,8 +553,8 @@ body{
         </div>
       </div>
 
-      <!-- Common fields (no nguoiKhai) -->
-      <div class="form-group">
+      <!-- Common fields (only for Bổ sung thịt) -->
+      <div class="form-group" id="ghiChuGroup">
         <label class="form-label">Thông tin khách hàng</label>
         <textarea class="form-textarea" id="ghiChu" placeholder="Nhập tên/SĐT khách hàng (nếu có)"></textarea>
       </div>
@@ -1069,6 +1069,7 @@ function selectAction(action, el){
   
   document.getElementById('dungThitForm').style.display = action==='dung' ? 'block' : 'none';
   document.getElementById('boSungThitForm').style.display = action==='bo-sung' ? 'block' : 'none';
+  document.getElementById('ghiChuGroup').style.display = action==='bo-sung' ? 'block' : 'none';
   
   if(action==='bo-sung'){
     // Start with 1 empty product line
@@ -1277,7 +1278,7 @@ async function submitForm(){
   }
   
   const max = getMaxPacks();
-  const ghiChu = document.getElementById('ghiChu').value.trim();
+  const ghiChu = state.currentAction === 'dung' ? '' : document.getElementById('ghiChu').value.trim();
   const now = localISO();
   
   let records = [];
