@@ -488,6 +488,18 @@ body{
           <input type="date" class="form-input" id="ngayDung" onchange="updateDeadlineNote();updateSubmitBtn()">
         </div>
         <div class="form-group">
+          <label class="form-label">Lý do dừng</label>
+          <select class="form-select" id="lyDoDung" onchange="updateSubmitBtn()">
+            <option value="">-- Chọn lý do --</option>
+            <option value="Doanh số thấp">Doanh số thấp</option>
+            <option value="Hết hàng NCC">Hết hàng NCC</option>
+            <option value="Chất lượng kém">Chất lượng kém</option>
+            <option value="Tồn kho cao">Tồn kho cao</option>
+            <option value="Theo yêu cầu GĐV">Theo yêu cầu GĐV</option>
+            <option value="Khác">Khác</option>
+          </select>
+        </div>
+        <div class="form-group">
           <label class="form-label">Người khai báo</label>
           <input type="text" class="form-input" id="nguoiKhaiDung" placeholder="Tên nhân viên khai báo">
         </div>
@@ -533,6 +545,10 @@ body{
           <div class="form-group">
             <label class="form-label">Ngày nhận hàng</label>
             <input type="date" class="form-input" id="ngayNhanHang" onchange="updateDeadlineNote();updateSubmitBtn()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Người khai báo</label>
+            <input type="text" class="form-input" id="nguoiKhaiBoSung" placeholder="Tên nhân viên khai báo" oninput="updateSubmitBtn()">
           </div>
         </div>
       </div>
@@ -1181,18 +1197,21 @@ function updateSubmitBtn(){
   if(state.currentAction === 'dung'){
     const loai = document.getElementById('loaiThitDung').value;
     const ngayDung = document.getElementById('ngayDung').value;
-    btn.disabled = !loai || !ngayDung;
+    const lyDoDung = document.getElementById('lyDoDung').value;
+    const nguoiKhaiDung = document.getElementById('nguoiKhaiDung').value.trim();
+    btn.disabled = !loai || !ngayDung || !lyDoDung || !nguoiKhaiDung;
   }else{
     const hasSKU = state.productLines.some(function(l){ return l.sku && l.pack > 0; });
     const lyDo = document.getElementById('lyDoBoSung').value;
     const ngayNhan = document.getElementById('ngayNhanHang').value;
+    const nguoiKhaiBS = document.getElementById('nguoiKhaiBoSung').value.trim();
     let blockedByLimit = false;
     if(hasSKU){
       const totalPacks = state.productLines.reduce((s,l)=>s+(l.sku?l.pack:0),0);
       const maxP = getMaxPacks();
       if(maxP > 0 && totalPacks > maxP) blockedByLimit = true;
     }
-    btn.disabled = !hasSKU || !lyDo || !ngayNhan || blockedByLimit;
+    btn.disabled = !hasSKU || !lyDo || !ngayNhan || !nguoiKhaiBS || blockedByLimit;
     // Show/hide customer info field
     const khachInfo = document.getElementById('khachDatInfo');
     khachInfo.style.display = lyDo === 'Khách đặt' ? 'block' : 'none';
@@ -1220,9 +1239,11 @@ async function submitForm(){
   if(state.currentAction === 'dung'){
     const loaiThit = document.getElementById('loaiThitDung').value;
     const ngayDung = document.getElementById('ngayDung').value;
+    const lyDoDung = document.getElementById('lyDoDung').value;
     const nguoiKhai = document.getElementById('nguoiKhaiDung').value.trim();
     if(!loaiThit){ showToast('⚠️ Vui lòng chọn loại thịt dừng', 'error'); return; }
     if(!ngayDung){ showToast('⚠️ Vui lòng chọn ngày dừng', 'error'); return; }
+    if(!lyDoDung){ showToast('⚠️ Vui lòng chọn lý do dừng', 'error'); return; }
     if(!nguoiKhai){ showToast('⚠️ Vui lòng nhập tên người khai báo', 'error'); return; }
     
     const loais = loaiThit === 'Cả hai' ? ['Gà','Heo'] : [loaiThit];
@@ -1232,15 +1253,17 @@ async function submitForm(){
         nhom_dt: state.currentStore.nhom_dt, lat: state.currentStore.lat, lng: state.currentStore.lng,
         hanh_dong: 'Dừng thịt', loai_thit: lt, ngay_dung: ngayDung,
         sku: '', so_pack: 0, vuot_muc: false,
-        ly_do: '', ngay_nhan_hang: '',
+        ly_do: lyDoDung, ngay_nhan_hang: '',
         nguoi_khai: nguoiKhai, ghi_chu: ghiChu, created_at: now,
       });
     });
   }else{
     const lyDo = document.getElementById('lyDoBoSung').value;
     const ngayNhan = document.getElementById('ngayNhanHang').value;
+    const nguoiKhaiBS = document.getElementById('nguoiKhaiBoSung').value.trim();
     if(!lyDo){ showToast('⚠️ Vui lòng chọn lý do bổ sung', 'error'); return; }
     if(!ngayNhan){ showToast('⚠️ Vui lòng chọn ngày nhận hàng', 'error'); return; }
+    if(!nguoiKhaiBS){ showToast('⚠️ Vui lòng nhập tên người khai báo', 'error'); return; }
     
     // Customer info for Khách đặt
     let bsGhiChu = ghiChu;
@@ -1269,7 +1292,7 @@ async function submitForm(){
         ngay_dung: '', sku: l.sku.code+' — '+l.sku.name,
         so_pack: l.pack, vuot_muc: vuotMuc,
         ly_do: lyDo, ngay_nhan_hang: ngayNhan,
-        nguoi_khai: '', ghi_chu: bsGhiChu, created_at: now,
+        nguoi_khai: nguoiKhaiBS, ghi_chu: bsGhiChu, created_at: now,
       });
     });
   }
@@ -1323,9 +1346,11 @@ function resetForm(){
   document.getElementById('submitBtn').disabled = true;
   document.getElementById('loaiThitDung').value = '';
   document.getElementById('lyDoBoSung').value = '';
+  document.getElementById('lyDoDung').value = '';
   const todayReset = new Date().toISOString().slice(0,10);
   document.getElementById('ngayNhanHang').value = todayReset;
   document.getElementById('nguoiKhaiDung').value = '';
+  document.getElementById('nguoiKhaiBoSung').value = '';
   document.getElementById('thongTinKhach').value = '';
   document.getElementById('khachDatInfo').style.display = 'none';
   document.getElementById('productLines').innerHTML = '';
