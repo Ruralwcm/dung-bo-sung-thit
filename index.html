@@ -1207,7 +1207,7 @@ function updateSubmitBtn(){
     const ngayNhan = document.getElementById('ngayNhanHang').value;
     const nguoiKhaiBS = document.getElementById('nguoiKhaiBoSung').value.trim();
     let blockedByLimit = false;
-    if(hasSKU){
+    if(hasSKU && lyDo !== 'Khách đặt'){
       const totalPacks = state.productLines.reduce((s,l)=>s+(l.sku?l.pack:0),0);
       const maxP = getMaxPacks();
       if(maxP > 0 && totalPacks > maxP) blockedByLimit = true;
@@ -1277,11 +1277,13 @@ async function submitForm(){
     const validLines = state.productLines.filter(function(l){ return l.sku && l.pack > 0; });
     if(validLines.length === 0){ showToast('⚠️ Cần ít nhất 1 sản phẩm với số pack > 0', 'error'); return; }
     
-    // Chặn nếu tổng pack vượt 2×N
-    const totalPacks = validLines.reduce((s,l)=>s+l.pack,0);
-    if(max > 0 && totalPacks > max){
-      showToast('🚫 Tổng '+totalPacks+' pack vượt giới hạn '+max+' pack (2×'+state.currentStore.nhom_dt+'). Vui lòng giảm!', 'error');
-      return;
+    // Chặn nếu tổng pack vượt 2×N (trừ Khách đặt)
+    if(lyDo !== 'Khách đặt'){
+      const totalPacks = validLines.reduce((s,l)=>s+l.pack,0);
+      if(max > 0 && totalPacks > max){
+        showToast('🚫 Tổng '+totalPacks+' pack vượt giới hạn '+max+' pack (2×'+state.currentStore.nhom_dt+'). Vui lòng giảm!', 'error');
+        return;
+      }
     }
     
     validLines.forEach(function(l){
