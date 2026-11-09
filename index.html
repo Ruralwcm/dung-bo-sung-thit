@@ -159,6 +159,92 @@ body{
   80%{transform:translateX(4px)}
 }
 
+/* ===== DEADLINE NOTE ===== */
+.deadline-note{
+  background:linear-gradient(135deg,#FFF8E1,#FFF3E0);border:2px solid var(--amber);
+  border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:16px;
+  display:flex;align-items:flex-start;gap:8px;font-size:.82rem;font-weight:600;
+}
+.deadline-note .dn-icon{font-size:1.2rem;flex-shrink:0}
+.deadline-note .dn-text{color:#E65100;line-height:1.4}
+
+/* ===== PRODUCT CARDS (multi-SKU) ===== */
+.product-lines{margin-bottom:8px}
+.product-card{
+  background:#FAFAFA;border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  padding:12px;margin-bottom:8px;position:relative;transition:all .2s
+}
+.product-card:last-child{margin-bottom:0}
+.product-card .card-header{
+  display:flex;justify-content:space-between;align-items:center;margin-bottom:8px
+}
+.product-card .card-idx{font-size:.75rem;font-weight:700;color:var(--red);background:#FFF5F5;padding:2px 8px;border-radius:10px}
+.product-card .card-remove{
+  background:none;border:none;color:var(--red-light);font-size:.85rem;cursor:pointer;
+  padding:4px 8px;border-radius:4px;font-weight:600;-webkit-tap-highlight-color:transparent
+}
+.product-card .card-remove:hover{background:#FFEBEE}
+.product-card .card-remove:disabled{color:#BDBDBD;pointer-events:none}
+.product-card .card-row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.product-card .card-row>*{flex:1;min-width:80px}
+.product-card .card-row .sku-col{flex:2;min-width:140px}
+.product-card .card-row .pack-col{flex:0 0 80px;min-width:70px}
+.product-card .card-pack-warn{
+  display:none;color:var(--red-light);font-size:.72rem;font-weight:600;margin-top:4px
+}
+.product-card .card-pack-warn.visible{display:block}
+
+/* ===== SKU POPUP ===== */
+.sku-popup-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;
+  justify-content:center;align-items:flex-end
+}
+.sku-popup-overlay.visible{display:flex}
+.sku-popup{
+  background:var(--white);border-radius:var(--radius) var(--radius) 0 0;
+  width:100%;max-width:640px;max-height:70vh;display:flex;flex-direction:column;
+  animation:slideUp .25s ease-out
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sku-popup .popup-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 16px;border-bottom:1px solid var(--border)
+}
+.sku-popup .popup-title{font-size:.95rem;font-weight:700}
+.sku-popup .popup-close{
+  background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text2);
+  padding:4px 8px
+}
+.sku-popup .popup-search{padding:10px 16px}
+.sku-popup .popup-search input{
+  width:100%;padding:10px 12px;border:1.5px solid var(--border);
+  border-radius:20px;font-size:.9rem;-webkit-appearance:none
+}
+.sku-popup .popup-search input:focus{outline:none;border-color:var(--red)}
+.sku-popup .popup-group-tabs{
+  display:flex;overflow-x:auto;gap:6px;padding:0 16px 10px
+}
+.sku-popup .popup-group-tab{
+  padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);
+  font-size:.78rem;font-weight:600;cursor:pointer;white-space:nowrap;
+  -webkit-tap-highlight-color:transparent;background:var(--white)
+}
+.sku-popup .popup-group-tab.selected{background:var(--red);color:#fff;border-color:var(--red)}
+.sku-popup .popup-list{flex:1;overflow-y:auto;padding:0 16px 16px}
+.sku-popup .popup-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px;border-bottom:1px solid #F5F5F5;cursor:pointer;
+  -webkit-tap-highlight-color:transparent
+}
+.sku-popup .popup-item:active{background:#FFF5F5}
+.sku-popup .popup-item.selected{background:#E8F5E9}
+.sku-popup .popup-item-name{font-size:.85rem;font-weight:500;flex:1}
+.sku-popup .popup-item-code{font-size:.7rem;color:var(--text2);margin-right:8px}
+
+/* ===== REASON + DATE ROW ===== */
+.reason-row{display:flex;gap:8px;margin-top:12px}
+.reason-row>*{flex:1}
+
 /* ===== SUBMIT BUTTON ===== */
 .submit-btn{
   width:100%;padding:14px;background:var(--red);color:#fff;
@@ -376,9 +462,14 @@ body{
 
       <!-- DỪNG THỊT Form -->
       <div id="dungThitForm" style="display:none">
+        <!-- ⏰ Deadline Note -->
+        <div class="deadline-note" id="deadlineNoteDung">
+          <span class="dn-icon">⏰</span>
+          <span class="dn-text" id="deadlineTextDung"></span>
+        </div>
         <div class="form-group">
           <label class="form-label">Loại thịt dừng</label>
-          <select class="form-select" id="loaiThitDung">
+          <select class="form-select" id="loaiThitDung" onchange="updateDeadlineNote()">
             <option value="">-- Chọn loại --</option>
             <option value="Gà">🐔 Gà</option>
             <option value="Heo">🐖 Heo</option>
@@ -387,44 +478,50 @@ body{
         </div>
         <div class="form-group">
           <label class="form-label">Ngày dừng</label>
-          <input type="date" class="form-input" id="ngayDung">
+          <input type="date" class="form-input" id="ngayDung" onchange="updateDeadlineNote()">
         </div>
       </div>
 
-      <!-- BỔ SUNG THỊT Form -->
+      <!-- BỔ SUNG THỊT Form — Multi-SKU -->
       <div id="boSungThitForm" style="display:none">
-        <div class="form-group">
-          <label class="form-label">Nhóm thịt</label>
-          <select class="form-select" id="nhomThit" onchange="onNhomThitChange()">
-            <option value="">-- Chọn nhóm thịt --</option>
-          </select>
+        <!-- ⏰ Deadline Note -->
+        <div class="deadline-note" id="deadlineNoteBS">
+          <span class="dn-icon">⏰</span>
+          <span class="dn-text" id="deadlineTextBS"></span>
         </div>
-        <div class="form-group">
-          <label class="form-label">Sản phẩm</label>
-          <div class="sku-search-wrap">
-            <input type="text" class="form-input" id="skuSearch"
-              placeholder="Chọn nhóm thịt trước..." autocomplete="off" disabled
-              oninput="filterSKU()" onfocus="filterSKU()">
-            <div class="sku-dropdown" id="skuDropdown"></div>
+
+        <!-- Product Lines -->
+        <div class="product-lines" id="productLines"></div>
+
+        <!-- Add Product Button -->
+        <button class="submit-btn" style="background:var(--white);color:var(--red);border:2px dashed var(--red);margin-top:4px;font-size:.9rem" id="btnAddProduct" onclick="addProductLine()">
+          ➕ Thêm sản phẩm (<span id="skuCount">0</span>/50)
+        </button>
+
+        <!-- Reason + Date Row -->
+        <div class="reason-row">
+          <div class="form-group">
+            <label class="form-label">Lý do bổ sung</label>
+            <select class="form-select" id="lyDoBoSung" onchange="updateSubmitBtn()">
+              <option value="">-- Chọn lý do --</option>
+              <option value="Khách đặt">1️⃣ Khách đặt</option>
+              <option value="CTKM">2️⃣ CTKM</option>
+              <option value="Adhoc">3️⃣ Adhoc</option>
+              <option value="Hội chợ">4️⃣ Hội chợ</option>
+              <option value="Dự án">5️⃣ Dự án</option>
+              <option value="Renovate">6️⃣ Renovate</option>
+              <option value="NSO">7️⃣ NSO</option>
+              <option value="FC Rau">8️⃣ FC Rau</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ngày nhận hàng</label>
+            <input type="date" class="form-input" id="ngayNhanHang" onchange="updateDeadlineNote()">
           </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Số pack bổ sung</label>
-          <input type="number" class="form-input" id="soPack" min="1" value="1"
-            placeholder="Nhập số pack" oninput="checkPackLimit()">
-          <div class="pack-info" id="packInfo"></div>
-        </div>
-        <div class="pack-warning" id="packWarning">
-          <span class="warn-icon">⚠️</span>
-          <span class="warn-text" id="packWarnText"></span>
-        </div>
       </div>
 
-      <!-- Common fields -->
-      <div class="form-group">
-        <label class="form-label">Người khai báo</label>
-        <input type="text" class="form-input" id="nguoiKhai" placeholder="Tên nhân viên khai báo">
-      </div>
+      <!-- Common fields (no nguoiKhai) -->
       <div class="form-group">
         <label class="form-label">Ghi chú</label>
         <textarea class="form-textarea" id="ghiChu" placeholder="Ghi chú thêm (nếu có)"></textarea>
@@ -567,11 +664,14 @@ let state = {
   storelist: [],
   currentStore: null,
   currentAction: null, // 'dung' | 'bo-sung'
-  selectedSKU: null,
+  productLines: [], // [{group:'',sku:null,pack:1}] — multi-SKU
+  selectedSKU: null, // legacy (for dung thit)
   dashboardData: [],
   showVuotOnly: false,
   showVuotOnly2: false,
   dashboardSubTab: 'detail', // 'detail' | 'summary'
+  skuPopupLine: -1, // which line's SKU popup is open
+  skuPopupFilterGroup: '', // current group filter in popup
   gasUrl: localStorage.getItem('thitmdl_gas_url') || 'https://script.google.com/macros/s/AKfycbwWA-uReD1Mnp-wHDT4Pvtz0Mi-R5a2gUfj0uWz0TKDG4h7XYZKTnEaDUsnQAeoQRY_/exec'
 };
 
@@ -661,8 +761,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('gasUrl').value = state.gasUrl;
   // Load storelist
   loadStorelist();
-  // Init nhóm thịt dropdown
-  initNhomThit();
+  // Init nhóm thịt dropdown for popup
+  // All groups are built in the SKU popup dynamically
   // Set default dates
   const today = new Date().toISOString().slice(0,10);
   document.getElementById('ngayDung').value = today;
@@ -892,111 +992,175 @@ function displayStoreInfo(store, dist){
 // ============================================================
 function selectAction(action, el){
   state.currentAction = action;
+  state.productLines = [];
   document.querySelectorAll('.action-radio').forEach(r=>r.classList.remove('selected'));
   el.classList.add('selected');
   
   document.getElementById('dungThitForm').style.display = action==='dung' ? 'block' : 'none';
   document.getElementById('boSungThitForm').style.display = action==='bo-sung' ? 'block' : 'none';
   
-  if(action==='dung'){
-    state.selectedSKU = null;
-    document.getElementById('packWarning').classList.remove('visible');
-    document.getElementById('soPack').value = 1;
+  if(action==='bo-sung'){
+    // Start with 1 empty product line
+    addProductLine();
+    updateDeadlineNote();
   }
-  
   updateSubmitBtn();
 }
 
 // ============================================================
-// NHÓM THỊT & SKU
+// DEADLINE NOTE
 // ============================================================
-function initNhomThit(){
-  const sel = document.getElementById('nhomThit');
-  DANH_MUC_THIT.forEach(function(g){
-    const opt = document.createElement('option');
-    opt.value = g.group;
-    opt.textContent = g.group + ' (' + g.items.length + ' SP)';
-    sel.appendChild(opt);
-  });
+function updateDeadlineNote(){
+  const action = state.currentAction;
+  if(action==='dung'){
+    const ngayDung = document.getElementById('ngayDung').value;
+    if(!ngayDung){ document.getElementById('deadlineNoteDung').style.display='none'; return; }
+    document.getElementById('deadlineNoteDung').style.display='flex';
+    const [y,m,d] = ngayDung.split('-').map(Number);
+    const cutoffH = new Date(y,m-1,d,11,0,0); // 11h ngày D
+    const now = new Date();
+    const hrsLeft = Math.round((cutoffH-now)/3600000*10)/10;
+    if(hrsLeft < 0){
+      document.getElementById('deadlineTextDung').textContent = '⏰ Đã quá hạn khai báo ngày '+d+'/'+m+'/'+y+'. Vui lòng chọn ngày khác.';
+    }else{
+      document.getElementById('deadlineTextDung').textContent = '⏰ Hạn khai báo: trước 11h ngày '+d+'/'+m+'/'+y+' (còn ~'+Math.round(hrsLeft)+' giờ). Khai báo sau 11h sẽ áp dụng cho ngày hôm sau.';
+    }
+  }else if(action==='bo-sung'){
+    const ngayNhan = document.getElementById('ngayNhanHang').value;
+    if(!ngayNhan){ document.getElementById('deadlineNoteBS').style.display='none'; return; }
+    document.getElementById('deadlineNoteBS').style.display='flex';
+    const [y,m,d] = ngayNhan.split('-').map(Number);
+    const now = new Date();
+    // D-2 cutoff: 11h (MB) / D-3: 11h (MT, MN)
+    // Simplified: D-2 deadline
+    const cutoffD = new Date(y,m-1,d-2,11,0,0);
+    const hrsLeft = Math.round((cutoffD-now)/3600000*10)/10;
+    if(hrsLeft < 0){
+      document.getElementById('deadlineTextBS').textContent = '⏰ Đã quá hạn đặt bổ sung. Ngày nhận hàng cần trước ít nhất 2 ngày.';
+    }else{
+      document.getElementById('deadlineTextBS').textContent = '⏰ Hạn đặt bổ sung: trước 11h ngày '+cutoffD.getDate()+'/'+(cutoffD.getMonth()+1)+'/'+cutoffD.getFullYear()+' (D-2). Còn ~'+Math.round(hrsLeft)+' giờ.';
+    }
+  }
 }
 
-function onNhomThitChange(){
-  const nhom = document.getElementById('nhomThit').value;
-  const skuInput = document.getElementById('skuSearch');
-  const dropdown = document.getElementById('skuDropdown');
+// ============================================================
+// MULTI-SKU PRODUCT LINES
+// ============================================================
+function addProductLine(skuData){
+  if(state.productLines.length >= 50){
+    showToast('⚠️ Tối đa 50 sản phẩm', 'error'); return;
+  }
+  state.productLines.push({
+    group: skuData ? skuData.group : '',
+    sku: skuData || null,
+    pack: skuData ? (skuData.pack||1) : 1
+  });
+  renderProductLines();
+}
+
+function removeProductLine(idx){
+  state.productLines.splice(idx,1);
+  renderProductLines();
+}
+
+function renderProductLines(){
+  const container = document.getElementById('productLines');
+  const max = getMaxPacks();
   
-  // Reset SKU selection
-  state.selectedSKU = null;
-  skuInput.value = '';
-  dropdown.classList.remove('active');
+  container.innerHTML = state.productLines.map((line, i)=>{
+    const skuName = line.sku ? (line.sku.code+' — '+line.sku.name) : '';
+    const overMax = max > 0 && (line.pack||0) > max;
+    return '<div class="product-card">'
+      + '<div class="card-header">'
+        + '<span class="card-idx">#'+(i+1)+'</span>'
+        + (state.productLines.length > 1
+          ? '<button class="card-remove" onclick="removeProductLine('+i+')">🗑 Xoá</button>'
+          : '<span></span>')
+      + '</div>'
+      + '<div class="card-row">'
+        + '<div class="sku-col">'
+          + '<label class="form-label">Sản phẩm</label>'
+          + '<button class="form-input" style="text-align:left;cursor:pointer;color:'+(line.sku?'var(--text)':'var(--text2)')+';height:42px" onclick="openSkuPopup('+i+')">'
+            + (line.sku ? ('<b>'+escapeHTML(line.sku.code)+'</b> '+escapeHTML(line.sku.name)) : '📦 Chọn sản phẩm...')
+          + '</button>'
+        + '</div>'
+        + '<div class="pack-col">'
+          + '<label class="form-label">Số pack</label>'
+          + '<input type="number" class="form-input" min="1" value="'+line.pack+'" style="height:42px;text-align:center" onchange="updateProductPack('+i+',this.value)" oninput="updateProductPack('+i+',this.value)">'
+        + '</div>'
+      + '</div>'
+      + (overMax ? '<div class="card-pack-warn visible">⚠️ Vượt giới hạn '+max+' pack ('+state.currentStore?.nhom_dt+'×8)!</div>' : '<div class="card-pack-warn"></div>')
+      + '</div>';
+  }).join('');
   
-  if(!nhom){
-    skuInput.disabled = true;
-    skuInput.placeholder = 'Chọn nhóm thịt trước...';
+  document.getElementById('skuCount').textContent = state.productLines.length;
+  document.getElementById('btnAddProduct').style.display = state.productLines.length >= 50 ? 'none' : '';
+  updateSubmitBtn();
+}
+
+function updateProductPack(idx, val){
+  const v = parseInt(val) || 0;
+  state.productLines[idx].pack = v;
+  renderProductLines();
+}
+
+function openSkuPopup(idx){
+  state.skuPopupLine = idx;
+  state.skuPopupFilterGroup = state.productLines[idx].group || '';
+  document.getElementById('skuPopupLineIdx').textContent = idx+1;
+  document.getElementById('skuPopupSearch').value = '';
+  renderSkuPopupTabs();
+  renderSkuPopupList();
+  document.getElementById('skuPopupOverlay').classList.add('visible');
+}
+
+function closeSkuPopup(){
+  document.getElementById('skuPopupOverlay').classList.remove('visible');
+}
+
+function renderSkuPopupTabs(){
+  const tabs = document.getElementById('skuPopupTabs');
+  tabs.innerHTML = '<button class="popup-group-tab'+(state.skuPopupFilterGroup==''?' selected':'')+'" onclick="state.skuPopupFilterGroup=\'\';renderSkuPopupTabs();renderSkuPopupList()">Tất cả</button>'
+    + DANH_MUC_THIT.map(function(g){
+        return '<button class="popup-group-tab'+(state.skuPopupFilterGroup===g.group?' selected':'')+'" onclick="state.skuPopupFilterGroup=\''+g.group.replace(/'/g,"\\'")+'\';renderSkuPopupTabs();renderSkuPopupList()">'+g.group+'</button>';
+      }).join('');
+}
+
+function renderSkuPopupList(){
+  const q = (document.getElementById('skuPopupSearch').value||'').toLowerCase();
+  const list = document.getElementById('skuPopupList');
+  let items = [];
+  DANH_MUC_THIT.forEach(function(g){
+    if(state.skuPopupFilterGroup && g.group !== state.skuPopupFilterGroup) return;
+    g.items.forEach(function(s){
+      if(!q || s.name.toLowerCase().indexOf(q)>=0 || s.code.indexOf(q)>=0){
+        items.push({...s, group: g.group, groupName: g.group});
+      }
+    });
+  });
+  
+  if(items.length === 0){
+    list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text2)">Không tìm thấy sản phẩm</div>';
     return;
   }
   
-  skuInput.disabled = false;
-  skuInput.placeholder = 'Gõ để tìm hoặc chọn bên dưới...';
-  
-  // Find group items
-  const group = DANH_MUC_THIT.find(function(g){ return g.group === nhom; });
-  if(!group) return;
-  
-  // Show all SP in group (keep order)
-  dropdown.innerHTML = group.items.map(function(s){
-    return '<div class="sku-option" onclick="selectSKU(\'' + s.code + '\',\'' + s.name.replace(/'/g,"\\'") + '\',\'' + nhom.replace(/'/g,"\\'") + '\',' + s.qc + ')">'
-      + '<span>' + s.code + ' — ' + s.name + '</span>'
-      + '<span class="sku-group">QC: ' + s.qc + '</span>'
+  const curSku = state.productLines[state.skuPopupLine]?.sku;
+  list.innerHTML = items.map(function(s){
+    const sel = curSku && curSku.code === s.code ? ' selected' : '';
+    return '<div class="popup-item'+sel+'" onclick="selectSkuPopupItem(\''+s.code+'\',\''+s.name.replace(/'/g,"\\'")+'\',\''+s.group.replace(/'/g,"\\'")+'\','+s.qc+')">'
+      + '<span class="popup-item-code">'+s.code+'</span>'
+      + '<span class="popup-item-name">'+s.name+'</span>'
+      + '<span style="font-size:.7rem;color:var(--text2)">QC:'+s.qc+'</span>'
       + '</div>';
   }).join('');
-  dropdown.classList.add('active');
-  
-  updatePackInfo();
-  updateSubmitBtn();
 }
 
-function filterSKU(){
-  const nhom = document.getElementById('nhomThit').value;
-  const q = (document.getElementById('skuSearch').value||'').toLowerCase();
-  const dropdown = document.getElementById('skuDropdown');
-  
-  if(!nhom) return;
-  
-  const group = DANH_MUC_THIT.find(function(g){ return g.group === nhom; });
-  if(!group) return;
-  
-  if(!q){
-    // Show all in group (keep order)
-    dropdown.innerHTML = group.items.map(function(s){
-      return '<div class="sku-option" onclick="selectSKU(\'' + s.code + '\',\'' + s.name.replace(/'/g,"\\'") + '\',\'' + nhom.replace(/'/g,"\\'") + '\',' + s.qc + ')">'
-        + '<span>' + s.code + ' — ' + s.name + '</span>'
-        + '<span class="sku-group">QC: ' + s.qc + '</span>'
-        + '</div>';
-    }).join('');
-  }else{
-    const filtered = group.items.filter(function(s){
-      return s.name.toLowerCase().indexOf(q) >= 0 || s.code.toLowerCase().indexOf(q) >= 0;
-    });
-    dropdown.innerHTML = filtered.length > 0
-      ? filtered.map(function(s){
-          return '<div class="sku-option" onclick="selectSKU(\'' + s.code + '\',\'' + s.name.replace(/'/g,"\\'") + '\',\'' + nhom.replace(/'/g,"\\'") + '\',' + s.qc + ')">'
-            + '<span>' + highlightMatch(s.code + ' — ' + s.name, q) + '</span>'
-            + '<span class="sku-group">QC: ' + s.qc + '</span>'
-            + '</div>';
-        }).join('')
-      : '<div class="sku-option" style="color:var(--text2)">Không tìm thấy SP</div>';
-  }
-  
-  dropdown.classList.add('active');
-}
-
-function selectSKU(code, name, group, qc){
-  state.selectedSKU = {code: code, name: name, group: group, qc: qc};
-  document.getElementById('skuSearch').value = code + ' — ' + name;
-  document.getElementById('skuDropdown').classList.remove('active');
-  updatePackInfo();
-  updateSubmitBtn();
+function selectSkuPopupItem(code, name, group, qc){
+  const idx = state.skuPopupLine;
+  state.productLines[idx].group = group;
+  state.productLines[idx].sku = {code: code, name: name, group: group, qc: qc};
+  closeSkuPopup();
+  renderProductLines();
 }
 
 // ============================================================
@@ -1009,132 +1173,104 @@ function getMaxPacks(){
   return nMatch ? parseInt(nMatch[1]) * 8 : 0;
 }
 
-function highlightMatch(text, q){
-  const idx = text.toLowerCase().indexOf(q.toLowerCase());
-  if(idx < 0) return text;
-  return text.slice(0,idx) + '<b style="color:var(--red)">' + text.slice(idx,idx+q.length) + '</b>' + text.slice(idx+q.length);
-}
-
-function updatePackInfo(){
-  const max = getMaxPacks();
-  const info = document.getElementById('packInfo');
-  info.textContent = max > 0 ? `Giới hạn: tối đa ${max} pack/ngày (${state.currentStore?.nhom_dt||'--'})` : '';
-}
-
-function checkPackLimit(){
-  const max = getMaxPacks();
-  const soPack = parseInt(document.getElementById('soPack').value) || 0;
-  const warning = document.getElementById('packWarning');
-  const warnText = document.getElementById('packWarnText');
-  
-  if(max > 0 && soPack > max){
-    warning.classList.add('visible');
-    warnText.textContent = `⚠️ VƯỢT GIỚI HẠN! Tối đa ${max} pack (${state.currentStore.nhom_dt} × 8). Cần phê duyệt từ cấp quản lý!`;
-  }else{
-    warning.classList.remove('visible');
-  }
-  updateSubmitBtn();
-}
-
 function updateSubmitBtn(){
   const btn = document.getElementById('submitBtn');
   if(!state.currentStore || !state.currentAction){
-    btn.disabled = true;
-    return;
+    btn.disabled = true; return;
   }
   if(state.currentAction === 'dung'){
     const loai = document.getElementById('loaiThitDung').value;
     btn.disabled = !loai;
   }else{
-    btn.disabled = !state.selectedSKU;
+    const hasSKU = state.productLines.some(function(l){ return l.sku && l.pack > 0; });
+    const lyDo = document.getElementById('lyDoBoSung').value;
+    btn.disabled = !hasSKU || !lyDo;
   }
 }
 
 // ============================================================
-// FORM SUBMISSION
+// FORM SUBMISSION (multi-SKU)
 // ============================================================
 async function submitForm(){
   if(!state.currentStore || !state.currentAction){
-    showToast('⚠️ Vui lòng định vị CH và chọn hành động', 'error');
-    return;
-  }
-  
-  const nguoiKhai = document.getElementById('nguoiKhai').value.trim();
-  if(!nguoiKhai){
-    showToast('⚠️ Vui lòng nhập tên người khai báo', 'error');
-    return;
+    showToast('⚠️ Vui lòng định vị CH và chọn hành động', 'error'); return;
   }
   
   const max = getMaxPacks();
-  let vuotMuc = false;
-  let soPack = 0;
-  let loaiThit = '';
-  let ngayDung = '';
-  let sku = '';
+  const ghiChu = document.getElementById('ghiChu').value.trim();
+  const now = new Date().toISOString();
+  
+  let records = [];
   
   if(state.currentAction === 'dung'){
-    loaiThit = document.getElementById('loaiThitDung').value;
-    ngayDung = document.getElementById('ngayDung').value;
+    const loaiThit = document.getElementById('loaiThitDung').value;
+    const ngayDung = document.getElementById('ngayDung').value;
     if(!loaiThit){ showToast('⚠️ Vui lòng chọn loại thịt dừng', 'error'); return; }
     if(!ngayDung){ showToast('⚠️ Vui lòng chọn ngày dừng', 'error'); return; }
+    
+    const loais = loaiThit === 'Cả hai' ? ['Gà','Heo'] : [loaiThit];
+    loais.forEach(function(lt){
+      records.push({
+        ma_ch: state.currentStore.ma_sap, ten_ch: state.currentStore.ten_ch,
+        nhom_dt: state.currentStore.nhom_dt, lat: state.currentStore.lat, lng: state.currentStore.lng,
+        hanh_dong: 'Dừng thịt', loai_thit: lt, ngay_dung: ngayDung,
+        sku: '', so_pack: 0, vuot_muc: false,
+        ly_do: '', ngay_nhan_hang: '',
+        nguoi_khai: '', ghi_chu: ghiChu, created_at: now,
+      });
+    });
   }else{
-    soPack = parseInt(document.getElementById('soPack').value) || 0;
-    if(!state.selectedSKU){ showToast('⚠️ Vui lòng chọn SKU', 'error'); return; }
-    if(soPack <= 0){ showToast('⚠️ Vui lòng nhập số pack > 0', 'error'); return; }
-    sku = state.selectedSKU.code + ' — ' + state.selectedSKU.name;
-    loaiThit = state.selectedSKU.group;
-    vuotMuc = (max > 0 && soPack > max);
+    const lyDo = document.getElementById('lyDoBoSung').value;
+    const ngayNhan = document.getElementById('ngayNhanHang').value;
+    if(!lyDo){ showToast('⚠️ Vui lòng chọn lý do bổ sung', 'error'); return; }
+    
+    const validLines = state.productLines.filter(function(l){ return l.sku && l.pack > 0; });
+    if(validLines.length === 0){ showToast('⚠️ Cần ít nhất 1 sản phẩm với số pack > 0', 'error'); return; }
+    
+    validLines.forEach(function(l){
+      const vuotMuc = max > 0 && l.pack > max;
+      records.push({
+        ma_ch: state.currentStore.ma_sap, ten_ch: state.currentStore.ten_ch,
+        nhom_dt: state.currentStore.nhom_dt, lat: state.currentStore.lat, lng: state.currentStore.lng,
+        hanh_dong: 'Bổ sung thịt', loai_thit: l.group,
+        ngay_dung: '', sku: l.sku.code+' — '+l.sku.name,
+        so_pack: l.pack, vuot_muc: vuotMuc,
+        ly_do: lyDo, ngay_nhan_hang: ngayNhan,
+        nguoi_khai: '', ghi_chu: ghiChu, created_at: now,
+      });
+    });
   }
   
-  const record = {
-    ma_ch: state.currentStore.ma_sap,
-    ten_ch: state.currentStore.ten_ch,
-    nhom_dt: state.currentStore.nhom_dt,
-    lat: state.currentStore.lat,
-    lng: state.currentStore.lng,
-    hanh_dong: state.currentAction === 'dung' ? 'Dừng thịt' : 'Bổ sung thịt',
-    loai_thit: loaiThit,
-    ngay_dung: ngayDung || '',
-    sku: sku,
-    so_pack: soPack,
-    vuot_muc: vuotMuc,
-    nguoi_khai: nguoiKhai,
-    ghi_chu: document.getElementById('ghiChu').value.trim(),
-    created_at: new Date().toISOString(),
-  };
+  // Save all records
+  showLoading('Đang lưu '+records.length+' khai báo...');
+  let saved = 0, failed = 0;
+  for(const rec of records){
+    try{
+      const result = await saveToGAS(rec);
+      if(result && result.success){ saved++; }
+      else { failed++; saveLocal(rec); }
+    }catch(e){ console.error('Save error:', e); failed++; saveLocal(rec); }
+  }
+  hideLoading();
   
-  // Save to GAS backend
-  showLoading('Đang lưu khai báo...');
-  try{
-    const result = await saveToGAS(record);
-    hideLoading();
-    if(result && result.success){
-      showToast('✅ Đã lưu khai báo thành công!', 'success');
-      resetForm();
-    }else{
-      showToast('❌ Lỗi lưu: ' + (result?.error || 'Vui lòng thử lại'), 'error');
-      // Fallback: save locally
-      saveLocal(record);
-      showToast('⚠️ Đã lưu tạm vào máy. Sẽ đồng bộ khi có kết nối.', 'error');
-    }
-  }catch(e){
-    console.error('Submit error:', e);
-    hideLoading();
-    saveLocal(record);
-    showToast('⚠️ Đã lưu tạm vào máy. Kiểm tra GAS URL hoặc kết nối mạng.', 'error');
+  if(failed === 0){
+    showToast('✅ Đã lưu '+saved+' khai báo thành công!', 'success');
+    resetForm();
+  }else if(saved > 0){
+    showToast('⚠️ Đã lưu '+saved+' vào hệ thống, '+failed+' lưu tạm máy.', 'error');
+  }else{
+    showToast('⚠️ Đã lưu '+failed+' khai báo tạm vào máy. Kiểm tra GAS URL.', 'error');
   }
 }
 
 async function saveToGAS(record){
-  if(!state.gasUrl){
-    throw new Error('Chưa cấu hình GAS URL');
-  }
+  if(!state.gasUrl) throw new Error('Chưa cấu hình GAS URL');
   const resp = await fetch(state.gasUrl, {
     method: 'POST',
     headers: {'Content-Type': 'text/plain'},
     body: JSON.stringify({action:'save', data:record}),
   });
-  if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  if(!resp.ok) throw new Error('HTTP '+resp.status);
   return await resp.json();
 }
 
@@ -1146,21 +1282,19 @@ function saveLocal(record){
 
 function resetForm(){
   state.currentAction = null;
-  state.selectedSKU = null;
+  state.productLines = [];
   document.querySelectorAll('.action-radio').forEach(r=>r.classList.remove('selected'));
   document.getElementById('dungThitForm').style.display = 'none';
   document.getElementById('boSungThitForm').style.display = 'none';
-  document.getElementById('skuSearch').value = '';
-  document.getElementById('skuDropdown').classList.remove('active');
-  document.getElementById('soPack').value = 1;
-  document.getElementById('packWarning').classList.remove('visible');
-  document.getElementById('packInfo').textContent = '';
-  document.getElementById('nguoiKhai').value = '';
   document.getElementById('ghiChu').value = '';
   document.getElementById('submitBtn').disabled = true;
   document.getElementById('loaiThitDung').value = '';
-  document.getElementById('loaiThitBoSung').value = '';
-  updatePackInfo();
+  document.getElementById('lyDoBoSung').value = '';
+  document.getElementById('ngayNhanHang').value = '';
+  document.getElementById('productLines').innerHTML = '';
+  document.getElementById('skuCount').textContent = '0';
+  document.getElementById('deadlineNoteDung').style.display = 'none';
+  document.getElementById('deadlineNoteBS').style.display = 'none';
 }
 
 // ============================================================
@@ -1610,6 +1744,22 @@ function escapeHTML(str){
   return div.innerHTML;
 }
 </script>
+
+<!-- SKU POPUP OVERLAY -->
+<div class="sku-popup-overlay" id="skuPopupOverlay" onclick="if(event.target===this)closeSkuPopup()">
+  <div class="sku-popup">
+    <div class="popup-header">
+      <span class="popup-title">Chọn sản phẩm — dòng <span id="skuPopupLineIdx">1</span></span>
+      <button class="popup-close" onclick="closeSkuPopup()">✕</button>
+    </div>
+    <div class="popup-group-tabs" id="skuPopupTabs"></div>
+    <div class="popup-search">
+      <input type="text" id="skuPopupSearch" placeholder="🔍 Gõ mã hoặc tên SP để tìm nhanh..."
+        oninput="renderSkuPopupList()">
+    </div>
+    <div class="popup-list" id="skuPopupList"></div>
+  </div>
+</div>
 
 <!-- FOOTER -->
 <div style="text-align:center;padding:16px 8px 20px">
