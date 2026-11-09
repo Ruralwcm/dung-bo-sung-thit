@@ -555,8 +555,8 @@ body{
 
       <!-- Common fields (no nguoiKhai) -->
       <div class="form-group">
-        <label class="form-label">Ghi chú</label>
-        <textarea class="form-textarea" id="ghiChu" placeholder="Ghi chú thêm (nếu có)"></textarea>
+        <label class="form-label">Thông tin khách hàng</label>
+        <textarea class="form-textarea" id="ghiChu" placeholder="Nhập tên/SĐT khách hàng (nếu có)"></textarea>
       </div>
 
       <button class="submit-btn" id="submitBtn" onclick="submitForm()" disabled>
@@ -622,7 +622,7 @@ body{
               <th>Ngày nhận hàng</th>
               <th>Lý do</th>
               <th>Người khai</th>
-              <th>Ghi chú</th>
+              <th>Thông tin khách hàng</th>
             </tr>
           </thead>
           <tbody id="tableBody">
@@ -1646,7 +1646,7 @@ function exportDetailCSV(){
   if(state.showVuotOnly) data = data.filter(r=>r.vuot_muc===true||r.vuot_muc==='true');
   data.sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
   
-  const headers = ['Ngày tạo','Mã CH','Tên CH','Nhóm DT','Hành động','Loại thịt','Ngày dừng','SKU','Số Pack','Vượt mức','Ngày nhận hàng','Lý do','Người khai','Ghi chú'];
+  const headers = ['Ngày tạo','Mã CH','Tên CH','Nhóm DT','Hành động','Loại thịt','Ngày dừng','SKU','Số Pack','Vượt mức','Ngày nhận hàng','Lý do','Người khai','Thông tin khách hàng'];
   const rows = data.map(r=>[
     formatDate(r.created_at),
     r.ma_ch||'',
