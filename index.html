@@ -683,8 +683,9 @@ body{
 // CONFIG & STATE
 // ============================================================
 const STORELIST_CSV = 'storelist_latest.csv';
-const STORELIST_CACHE_KEY = 'thitmdl_storelist';
-const STORELIST_CACHE_TS = 'thitmdl_storelist_ts';
+const STORELIST_CACHE_VER = 'v2932_0611';
+const STORELIST_CACHE_KEY = 'thitmdl_storelist_' + STORELIST_CACHE_VER;
+const STORELIST_CACHE_TS = 'thitmdl_storelist_ts_' + STORELIST_CACHE_VER;
 const CACHE_TTL = 24*60*60*1000; // 24h
 const RADIUS_M = 50;
 
