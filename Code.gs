@@ -20,7 +20,7 @@ const TAB_NAME = 'ThitMDL_Data';
 const HEADERS = [
   'id', 'ma_ch', 'ten_ch', 'nhom_dt', 'lat', 'lng',
   'hanh_dong', 'loai_thit', 'ngay_dung', 'sku', 'so_pack',
-  'vuot_muc', 'nguoi_khai', 'ghi_chu', 'created_at'
+  'vuot_muc', 'nguoi_khai', 'ghi_chu', 'ly_do', 'ngay_nhan_hang', 'created_at'
 ];
 
 /**
@@ -102,6 +102,8 @@ function saveRecord(record) {
     record.vuot_muc ? 'TRUE' : 'FALSE',
     record.nguoi_khai || '',
     record.ghi_chu || '',
+    record.ly_do || '',
+    record.ngay_nhan_hang || '',
     record.created_at || new Date().toISOString()
   ];
   sheet.appendRow(row);
@@ -133,7 +135,9 @@ function getRecords(from, to) {
     vuot_muc:     String(row[11] || '').toUpperCase() === 'TRUE',
     nguoi_khai:   String(row[12] || ''),
     ghi_chu:      String(row[13] || ''),
-    created_at:   String(row[14] || '')
+    ly_do:        String(row[14] || ''),
+    ngay_nhan_hang: String(row[15] || ''),
+    created_at:   String(row[16] || '')
   }));
 
   // Filter by date range
