@@ -49,57 +49,6 @@ body{
 .tab-btn.active{color:var(--red);border-bottom-color:var(--red)}
 .tab-btn:hover{color:var(--red-light)}
 .tabs{display:none}
-/* ===== DASHBOARD SUB-TABS ===== */
-.dash-subtabs{
-  display:flex;background:var(--white);border-radius:var(--radius-sm);
-  overflow:hidden;margin-bottom:16px;border:2px solid var(--border);
-}
-.dash-subtab{
-  flex:1;padding:12px 8px;text-align:center;font-size:.9rem;font-weight:600;
-  border:none;background:none;color:var(--text2);cursor:pointer;
-  transition:all .2s;-webkit-tap-highlight-color:transparent;
-  border-bottom:3px solid transparent;
-}
-.dash-subtab.active{
-  color:var(--red);border-bottom-color:var(--red);background:#FFF5F5;
-}
-.dash-subtab .count{
-  display:inline-block;background:var(--border);color:var(--text2);
-  border-radius:20px;padding:2px 10px;font-size:.72rem;margin-left:6px;
-  font-weight:700;
-}
-.dash-subtab.active .count{background:var(--red);color:#fff}
-.dash-panel{display:none}
-.dash-panel.active{display:block}
-
-/* ===== RESPONSIVE: PC LAYOUT ===== */
-@media(min-width:768px){
-  .container{max-width:960px;padding:24px 32px}
-  .header{padding:16px 24px}
-  .header h1{font-size:1.2rem}
-  .tabs{top:80px}
-  .store-row{gap:24px}
-  .data-table{font-size:.82rem;min-width:auto}
-  .data-table th{font-size:.76rem;padding:8px 10px}
-  .data-table td{padding:8px 10px}
-  .action-radios{gap:12px}
-  .action-radio{padding:16px 12px;font-size:.9rem}
-  .action-radio .emoji{font-size:1.5rem}
-  .filter-row{gap:10px}
-  .filter-row .form-input,.filter-row .form-select{min-width:140px}
-  .gps-section{padding:24px 20px}
-  .gps-btn{padding:16px 36px;font-size:1.15rem}
-  .dash-subtabs{max-width:500px}
-  .dash-subtab{padding:14px 12px;font-size:.95rem}
-  /* Two-column declare form on PC */
-  .declare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  .declare-grid .form-group:last-child{grid-column:1/-1}
-  .export-bar{justify-content:flex-end}
-}
-@media(min-width:1024px){
-  .container{max-width:1100px}
-}
-
 
 /* ===== MAIN CONTAINER ===== */
 .container{max-width:640px;margin:0 auto;padding:16px}
@@ -192,17 +141,6 @@ body{
   border-radius:10px;margin-left:6px;
 }
 
-
-/* ===== MULTI-SKU LINES ===== */
-.sku-line{display:flex;gap:6px;align-items:flex-start;margin-bottom:8px}
-.sku-line .sku-search-wrap{flex:1;min-width:0}
-.sku-line .sku-search-wrap .form-input{width:100%}
-.sku-line .pack-input{width:70px;flex-shrink:0}
-.sku-line .rm-line-btn{width:32px;height:38px;flex-shrink:0;border:1px solid var(--red-light);border-radius:6px;background:#fff;color:var(--red);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.sku-line .rm-line-btn:hover{background:#FFF5F5}
-.sku-line:first-child .rm-line-btn{visibility:hidden}
-.add-line-btn{width:100%;padding:8px;border:2px dashed var(--border);border-radius:8px;background:none;color:var(--red);font-weight:600;cursor:pointer;font-size:.85rem;margin-bottom:12px}
-.add-line-btn:hover{background:#FFF5F5;border-color:var(--red-light)}
 /* ===== PACK LIMIT WARNING ===== */
 .pack-info{font-size:.8rem;color:var(--text2);margin-top:4px}
 .pack-warning{
@@ -255,6 +193,35 @@ body{
   cursor:pointer;font-size:.85rem;-webkit-tap-highlight-color:transparent;
 }
 .filter-btn.active{background:var(--red);color:#fff}
+
+/* ===== DASHBOARD SUB-TABS ===== */
+.sub-tabs{
+  display:flex;gap:4px;margin-bottom:12px;background:var(--bg);
+  border-radius:var(--radius-sm);padding:4px;
+}
+.sub-tab-btn{
+  flex:1;padding:8px 12px;text-align:center;font-size:.8rem;font-weight:600;
+  border:none;background:none;color:var(--text2);cursor:pointer;
+  border-radius:6px;transition:all .2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.sub-tab-btn.active{background:var(--white);color:var(--red);box-shadow:var(--shadow)}
+.sub-tab-btn:hover{color:var(--red-light)}
+
+/* ===== STORE SUMMARY TABLE ===== */
+.store-summary-table{width:100%;border-collapse:collapse;font-size:.78rem;min-width:800px}
+.store-summary-table th{
+  background:#5D4037;color:#fff;padding:8px 6px;text-align:left;
+  font-weight:600;font-size:.72rem;position:sticky;top:0;white-space:nowrap;
+}
+.store-summary-table td{padding:7px 6px;border-bottom:1px solid var(--border);white-space:nowrap}
+.store-summary-table tr:hover{background:#FFF5F5}
+.store-summary-table tr.row-dung{background:#FFF3E0}
+.store-summary-table tr.row-dung:hover{background:#FFE0B2}
+.store-summary-table tr.row-bo-sung{background:#E8F5E9}
+.store-summary-table tr.row-bo-sung:hover{background:#C8E6C9}
+.store-summary-table tr.row-both{background:#F3E5F5}
+.store-summary-table tr.row-both:hover{background:#E1BEE7}
 
 /* ===== DATA TABLE ===== */
 .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:8px}
@@ -318,9 +285,18 @@ body{
 .no-store .icon{font-size:3rem;margin-bottom:8px}
 .no-store .msg{font-size:.9rem;color:var(--text2);font-weight:600}
 
-/* ===== MANUAL STORE SELECTOR ===== */
-.manual-store-section{margin-top:8px}
-.manual-store-section .sku-search-wrap{position:relative}
+/* ===== CONFIG SECTION ===== */
+.config-bar{
+  display:flex;gap:8px;align-items:center;margin-top:8px;font-size:.75rem;
+}
+.config-bar .config-input{
+  flex:1;padding:6px 10px;border:1px solid var(--border);
+  border-radius:4px;font-size:.75rem;
+}
+.config-bar .config-btn{
+  padding:6px 12px;background:var(--text2);color:#fff;border:none;
+  border-radius:4px;font-size:.75rem;cursor:pointer;
+}
 
 /* ===== RESPONSIVE ===== */
 @media(min-width:768px){
@@ -370,20 +346,6 @@ body{
       <div class="gps-status" id="gpsStatus">Bấm nút để xác định cửa hàng đang đứng</div>
     </div>
 
-    <!-- Manual Store Selector (always visible) -->
-    <div class="card" id="manualStoreSection" style="background:#FFF8F6;border:2px dashed var(--red-light);border-radius:var(--radius)">
-      <div style="font-size:.85rem;font-weight:700;color:var(--red-dark);margin-bottom:8px;text-align:center">
-        🔍 Hoặc chọn CH thủ công (không cần GPS)
-      </div>
-      <div class="sku-search-wrap">
-        <input type="text" class="form-input" id="manualStoreSearch" 
-          placeholder="Gõ tên hoặc mã CH để tìm..." 
-          oninput="filterManualStore()" onfocus="filterManualStore()"
-          autocomplete="off" style="border-color:var(--red-light)">
-        <div class="sku-dropdown" id="manualStoreDropdown"></div>
-      </div>
-    </div>
-
     <!-- No Store Found -->
     <div class="card no-store" id="noStoreCard">
       <div class="icon">📭</div>
@@ -412,22 +374,11 @@ body{
         </div>
       </div>
 
-          <!-- Deadline Note -->
-    <div class="card" id="deadlineNote" style="background:#FFF8E1;border-left:4px solid var(--amber);margin-bottom:12px">
-      <div style="font-size:.8rem;font-weight:700;color:var(--orange);margin-bottom:4px">⏰ LƯU Ý — DEADLINE 11H00 HÀNG NGÀY</div>
-      <div style="font-size:.75rem;color:var(--text);line-height:1.5">
-        🛑➕ <b>Dừng thịt & Bổ sung thịt:</b><br>
-        &nbsp;&nbsp;• Miền Bắc, Miền Nam, Miền Tây: <b>D-2</b><br>
-        &nbsp;&nbsp;• Miền Trung: <b>D-3</b><br>
-        &nbsp;&nbsp;(D = ngày mong muốn dừng/bổ sung thịt)
-      </div>
-    </div>
-
       <!-- DỪNG THỊT Form -->
       <div id="dungThitForm" style="display:none">
         <div class="form-group">
           <label class="form-label">Loại thịt dừng</label>
-          <select class="form-select" id="loaiThitDung" onchange="updateSubmitBtn()">
+          <select class="form-select" id="loaiThitDung">
             <option value="">-- Chọn loại --</option>
             <option value="Gà">🐔 Gà</option>
             <option value="Heo">🐖 Heo</option>
@@ -436,11 +387,11 @@ body{
         </div>
         <div class="form-group">
           <label class="form-label">Ngày dừng</label>
-          <input type="date" class="form-input" id="ngayDung" onchange="updateSubmitBtn()">
+          <input type="date" class="form-input" id="ngayDung">
         </div>
       </div>
 
-      <!-- BỔ SUNG THỊT Form (Multi-SKU) -->
+      <!-- BỔ SUNG THỊT Form -->
       <div id="boSungThitForm" style="display:none">
         <div class="form-group">
           <label class="form-label">Nhóm thịt</label>
@@ -449,43 +400,32 @@ body{
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">Sản phẩm cần bổ sung</label>
-          <div id="skuLines"></div>
-          <button class="add-line-btn" id="addLineBtn" onclick="addSkuLine()">+ Thêm sản phẩm</button>
+          <label class="form-label">Sản phẩm</label>
+          <div class="sku-search-wrap">
+            <input type="text" class="form-input" id="skuSearch"
+              placeholder="Chọn nhóm thịt trước..." autocomplete="off" disabled
+              oninput="filterSKU()" onfocus="filterSKU()">
+            <div class="sku-dropdown" id="skuDropdown"></div>
+          </div>
         </div>
-        <div class="pack-info" id="packInfo"></div>
+        <div class="form-group">
+          <label class="form-label">Số pack bổ sung</label>
+          <input type="number" class="form-input" id="soPack" min="1" value="1"
+            placeholder="Nhập số pack" oninput="checkPackLimit()">
+          <div class="pack-info" id="packInfo"></div>
+        </div>
         <div class="pack-warning" id="packWarning">
           <span class="warn-icon">⚠️</span>
           <span class="warn-text" id="packWarnText"></span>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Lý do bổ sung</label>
-          <select class="form-select" id="lyDoBoSung" onchange="onLyDoChange()">
-            <option value="">-- Chọn lý do --</option>
-            <option value="Khách đặt">Khách đặt</option>
-            <option value="CTKM">CTKM</option>
-            <option value="Adhoc">Adhoc</option>
-            <option value="Hội chợ">Hội chợ</option>
-            <option value="Dự án">Dự án</option>
-            <option value="Renovate">Renovate</option>
-            <option value="NSO">NSO</option>
-            <option value="FC Rau">FC Rau</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Ngày nhận hàng</label>
-          <input type="date" class="form-input" id="ngayNhanHang">
-          <div style="font-size:.72rem;color:var(--text2);margin-top:4px" id="ngayNhanInfo"></div>
-        </div>
-        <div class="form-group" id="khachHangGroup" style="display:none">
-          <label class="form-label">Thông tin khách hàng <span style="color:var(--red)">*</span></label>
-          <input type="text" class="form-input" id="thongTinKhach" placeholder="Tên, SĐT khách hàng...">
         </div>
       </div>
 
       <!-- Common fields -->
       <div class="form-group">
-        
+        <label class="form-label">Người khai báo</label>
+        <input type="text" class="form-input" id="nguoiKhai" placeholder="Tên nhân viên khai báo">
+      </div>
+      <div class="form-group">
         <label class="form-label">Ghi chú</label>
         <textarea class="form-textarea" id="ghiChu" placeholder="Ghi chú thêm (nếu có)"></textarea>
       </div>
@@ -498,7 +438,14 @@ body{
       </button>
     </div>
 
-    <!-- Config removed for testing -->
+    <!-- Config Bar (hidden by default, shown on toggle) -->
+    <div class="card" style="padding:8px 12px" id="configCard">
+      <div class="config-bar">
+        <span style="color:var(--text2);white-space:nowrap">GAS URL:</span>
+        <input type="text" class="config-input" id="gasUrl" placeholder="Nhập GAS Web App URL...">
+        <button class="config-btn" onclick="saveConfig()">Lưu</button>
+      </div>
+    </div>
   </div>
 
   <!-- ============ DASHBOARD TAB ============ -->
@@ -506,64 +453,102 @@ body{
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
         <div style="font-weight:700;font-size:1rem">📊 Báo cáo khai báo</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <button class="export-btn" onclick="switchTab('declare')">← Quay lại</button>
-          <button class="export-btn" onclick="exportCSV('dung')">📥 Export Dừng</button>
-          <button class="export-btn" onclick="exportCSV('bosung')">📥 Export Bổ sung</button>
-        </div>
+        <button class="export-btn" onclick="switchTab('declare')">← Quay lại</button>
+        <button class="export-btn" onclick="exportCSV()">📥 Export CSV</button>
       </div>
 
-      <!-- Dashboard Sub-Tabs -->
-      <div class="dash-subtabs">
-        <button class="dash-subtab active" onclick="switchDashTab('dung')" id="dashTabDung">
-          🛑 Dừng thịt <span class="count" id="countDung">0</span>
-        </button>
-        <button class="dash-subtab" onclick="switchDashTab('bosung')" id="dashTabBosung">
-          ➕ Bổ sung thịt <span class="count" id="countBosung">0</span>
-        </button>
+      <!-- Sub-tabs -->
+      <div class="sub-tabs">
+        <button class="sub-tab-btn active" id="subTabDetail" onclick="switchSubTab('detail')">📋 Chi tiết khai báo</button>
+        <button class="sub-tab-btn" id="subTabSummary" onclick="switchSubTab('summary')">🏪 Tổng hợp theo CH</button>
       </div>
 
-      <!-- Panel: DỪNG THỊT -->
-      <div class="dash-panel active" id="panelDung">
-        <div class="filter-row">
-          <input type="date" class="form-input" id="dungDateFrom" onchange="applyDashSubFilter()" style="min-width:120px">
-          <input type="date" class="form-input" id="dungDateTo" onchange="applyDashSubFilter()" style="min-width:120px">
-          <input type="text" class="form-input" id="dungFilterCH" placeholder="Tìm CH..." oninput="applyDashSubFilter()" style="min-width:140px">
-          <button class="filter-btn" onclick="clearDashSubFilter('dung')">↩ Xoá lọc</button>
-        </div>
-        <div class="summary-text" id="summaryDung"></div>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead><tr>
-              <th>Ngày</th><th>Mã CH</th><th>Tên CH</th><th>Nhóm DT</th>
-              <th>Loại thịt</th><th>Ngày dừng</th><th>Người khai</th><th>Ghi chú</th>
-            </tr></thead>
-            <tbody id="tbodyDung"></tbody>
-          </table>
-        </div>
+      <!-- Detail Table -->
+      <div id="detailPanel">
+
+      <!-- Filters -->
+      <div class="filter-row">
+        <input type="date" class="form-input" id="filterDateFrom" onchange="applyDashboardFilter()" style="min-width:120px">
+        <input type="date" class="form-input" id="filterDateTo" onchange="applyDashboardFilter()" style="min-width:120px">
+        <select class="form-select" id="filterAction" onchange="applyDashboardFilter()" style="min-width:130px">
+          <option value="">Tất cả hành động</option>
+          <option value="Dừng thịt">🛑 Dừng thịt</option>
+          <option value="Bổ sung thịt">➕ Bổ sung thịt</option>
+        </select>
+        <input type="text" class="form-input" id="filterCH" placeholder="Tìm CH..." oninput="applyDashboardFilter()" style="min-width:140px">
+        <button class="filter-btn" onclick="clearDashboardFilters()">↩ Xoá lọc</button>
+        <button class="filter-btn" id="btnShowVuot" onclick="toggleVuotFilter()">⚠️ Chỉ vượt mức</button>
       </div>
 
-      <!-- Panel: BỔ SUNG THỊT -->
-      <div class="dash-panel" id="panelBosung">
-        <div class="filter-row">
-          <input type="date" class="form-input" id="bsDateFrom" onchange="applyDashSubFilter()" style="min-width:120px">
-          <input type="date" class="form-input" id="bsDateTo" onchange="applyDashSubFilter()" style="min-width:120px">
-          <input type="text" class="form-input" id="bsFilterCH" placeholder="Tìm CH..." oninput="applyDashSubFilter()" style="min-width:140px">
-          <button class="filter-btn" id="btnBsVuot" onclick="toggleBsVuot()">⚠️ Vượt mức</button>
-          <button class="filter-btn" onclick="clearDashSubFilter('bosung')">↩ Xoá lọc</button>
-        </div>
-        <div class="summary-text" id="summaryBosung"></div>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead><tr>
-              <th>Ngày</th><th>Mã CH</th><th>Tên CH</th><th>Nhóm DT</th>
-              <th>Loại thịt</th><th>SKU</th><th>Số Pack</th>
-              <th>Lý do</th><th>Vượt mức</th><th>Người khai</th><th>Ghi chú</th>
-            </tr></thead>
-            <tbody id="tbodyBosung"></tbody>
-          </table>
-        </div>
+      <div class="summary-text" id="dashboardSummary"></div>
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <table class="data-table" id="dataTable">
+          <thead>
+            <tr>
+              <th>Ngày</th>
+              <th>Mã CH</th>
+              <th>Tên CH</th>
+              <th>Nhóm DT</th>
+              <th>Hành động</th>
+              <th>Loại thịt</th>
+              <th>Ngày dừng</th>
+              <th>SKU</th>
+              <th>Số Pack</th>
+              <th>Vượt mức</th>
+              <th>Người khai</th>
+              <th>Ghi chú</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr><td colspan="12" class="data-empty"><span class="empty-icon">📭</span>Chưa có dữ liệu. Bấm nút 📊 Xem Dashboard để tải.</td></tr>
+          </tbody>
+        </table>
       </div>
+    </div><!-- /detailPanel -->
+
+    <!-- Summary Panel -->
+    <div id="summaryPanel" style="display:none">
+
+      <!-- Filters for Summary -->
+      <div class="filter-row">
+        <input type="date" class="form-input" id="filterDateFrom2" onchange="applySummaryFilter()" style="min-width:120px">
+        <input type="date" class="form-input" id="filterDateTo2" onchange="applySummaryFilter()" style="min-width:120px">
+        <select class="form-select" id="filterAction2" onchange="applySummaryFilter()" style="min-width:130px">
+          <option value="">Tất cả hành động</option>
+          <option value="Dừng thịt">🛑 Dừng thịt</option>
+          <option value="Bổ sung thịt">➕ Bổ sung thịt</option>
+        </select>
+        <input type="text" class="form-input" id="filterCH2" placeholder="Tìm CH..." oninput="applySummaryFilter()" style="min-width:140px">
+        <button class="filter-btn" onclick="clearSummaryFilters()">↩ Xoá lọc</button>
+        <button class="filter-btn" id="btnShowVuot2" onclick="toggleSummaryVuotFilter()">⚠️ Chỉ vượt mức</button>
+      </div>
+
+      <div class="summary-text" id="summaryText2"></div>
+
+      <div class="table-wrap">
+        <table class="store-summary-table" id="summaryTable">
+          <thead>
+            <tr>
+              <th>Mã CH</th>
+              <th>Tên CH</th>
+              <th>Nhóm DT</th>
+              <th>🛑 Dừng thịt</th>
+              <th>➕ Bổ sung</th>
+              <th>⚠️ Vượt mức</th>
+              <th>Thịt dừng</th>
+              <th>SKU bổ sung</th>
+              <th>Ngày dừng gần nhất</th>
+              <th>Khai báo gần nhất</th>
+            </tr>
+          </thead>
+          <tbody id="summaryBody">
+            <tr><td colspan="10" class="data-empty"><span class="empty-icon">📭</span>Chưa có dữ liệu. Bấm nút 📊 Xem Dashboard để tải.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div><!-- /summaryPanel -->
     </div>
   </div>
 </div>
@@ -583,10 +568,11 @@ let state = {
   currentStore: null,
   currentAction: null, // 'dung' | 'bo-sung'
   selectedSKU: null,
-  asmData: null,
   dashboardData: [],
   showVuotOnly: false,
-  gasUrl: localStorage.getItem('thitmdl_gas_url') || ''
+  showVuotOnly2: false,
+  dashboardSubTab: 'detail', // 'detail' | 'summary'
+  gasUrl: localStorage.getItem('thitmdl_gas_url') || 'https://script.google.com/macros/s/AKfycbwWA-uReD1Mnp-wHDT4Pvtz0Mi-R5a2gUfj0uWz0TKDG4h7XYZKTnEaDUsnQAeoQRY_/exec'
 };
 
 // ============================================================
@@ -657,60 +643,7 @@ const DANH_MUC_THIT = [
   ]}
 ];
 
-
 // ============================================================
-// ASSORTMENT LOADING (per-store SKU filter)
-// ============================================================
-const ASM_JSON_URL = 'asm_meat.json';
-const ASM_CACHE_KEY = 'thitmdl_asm';
-const ASM_CACHE_TS = 'thitmdl_asm_ts';
-
-async function loadAssortment(){
-  const cached = localStorage.getItem(ASM_CACHE_KEY);
-  const ts = parseInt(localStorage.getItem(ASM_CACHE_TS)||'0');
-  if(cached && (Date.now()-ts < ASM_CACHE_TTL)){
-    try{ state.asmData = JSON.parse(cached); return; }catch(e){/* ignore */}
-  }
-  try{
-    const resp = await fetch(ASM_JSON_URL);
-    state.asmData = await resp.json();
-    localStorage.setItem(ASM_CACHE_KEY, JSON.stringify(state.asmData));
-    localStorage.setItem(ASM_CACHE_TS, String(Date.now()));
-  }catch(e){
-    console.warn('Assortment load failed, showing all SKUs:', e);
-    state.asmData = null;
-  }
-}
-
-function getStoreArticles(ma_sap){
-  if(!state.asmData) return null; // null = no filter (show all)
-  return state.asmData[ma_sap] || null; // null = store not in assortment → show all
-}
-
-// ============================================================
-// ============================================================
-// SET DEFAULT NGAY NHAN HANG
-// ============================================================
-function setNgayNhanHang(){
-  if(!state.currentStore)return;
-  var mien=(state.currentStore.mien||state.currentStore["Mien"]||"").trim();
-  var ddDays=2;
-  if(mien.toLowerCase().indexOf("trung")>=0&&mien.toLowerCase().indexOf("nam trung")<0)ddDays=3;
-  var now=new Date();
-  var ear=new Date(now);
-  if(now.getHours()>=11){ear.setDate(ear.getDate()+1);}
-  ear.setDate(ear.getDate()+ddDays);
-  var maxd=new Date(ear);
-  maxd.setDate(maxd.getDate()+3);
-  var f=function(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
-  var defStr=f(ear);
-  var maxStr=f(maxd);
-  var el=document.getElementById("ngayNhanHang");
-  if(el){el.value=defStr;el.setAttribute("min",defStr);el.setAttribute("max",maxStr);}
-  var info=document.getElementById("ngayNhanInfo");
-  if(info)info.textContent="Chọn ngày từ "+defStr+" den "+maxStr;
-}
-
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded', ()=>{
@@ -721,20 +654,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // Close SKU dropdown on outside click
   document.addEventListener('click',(e)=>{
     if(!e.target.closest('.sku-search-wrap')){
-      document.querySelectorAll('.sku-dropdown').forEach(function(d){d.classList.remove('active');});
-    }
-  });
-  // Close manual store dropdown on outside click
-  document.addEventListener('click',(e)=>{
-    if(!e.target.closest('#manualStoreSection .sku-search-wrap')){
-      document.getElementById('manualStoreDropdown').classList.remove('active');
+      document.getElementById('skuDropdown').classList.remove('active');
     }
   });
   // Config
-  // GAS URL loaded silently (config hidden)
+  document.getElementById('gasUrl').value = state.gasUrl;
   // Load storelist
   loadStorelist();
-  loadAssortment();
   // Init nhóm thịt dropdown
   initNhomThit();
   // Set default dates
@@ -756,6 +682,10 @@ function switchTab(tab){
   
   if(tab==='dashboard'){
     loadDashboard();
+    // Sync summary filter dates from detail
+    document.getElementById('filterDateFrom2').value = document.getElementById('filterDateFrom').value;
+    document.getElementById('filterDateTo2').value = document.getElementById('filterDateTo').value;
+    document.getElementById('filterAction2').value = document.getElementById('filterAction').value;
   }
 }
 
@@ -925,7 +855,6 @@ function findNearestStore(lat, lng, accuracy){
     document.getElementById('noStoreCard').classList.add('visible');
     document.getElementById('actionSection').classList.remove('visible');
     document.getElementById('storeCard').classList.remove('visible');
-    // manualStoreSection always visible
     state.currentStore = null;
   }
 }
@@ -963,27 +892,19 @@ function displayStoreInfo(store, dist){
 // ============================================================
 function selectAction(action, el){
   state.currentAction = action;
-  document.querySelectorAll('.action-radio').forEach(function(r){r.classList.remove('selected');});
+  document.querySelectorAll('.action-radio').forEach(r=>r.classList.remove('selected'));
   el.classList.add('selected');
   
   document.getElementById('dungThitForm').style.display = action==='dung' ? 'block' : 'none';
   document.getElementById('boSungThitForm').style.display = action==='bo-sung' ? 'block' : 'none';
-  if(action==='bo-sung')setNgayNhanHang();
-  
   
   if(action==='dung'){
+    state.selectedSKU = null;
     document.getElementById('packWarning').classList.remove('visible');
-  }else{
-    // Init SKU lines if empty
-    const skuLines = document.getElementById('skuLines');
-    if(skuLines && skuLines.children.length === 0){
-      skuLines.innerHTML = createSkuLineHTML(0);
-    }
-    updateAddLineBtn();
+    document.getElementById('soPack').value = 1;
   }
   
   updateSubmitBtn();
-  if(state.currentAction==='bo-sung')setNgayNhanHang();
 }
 
 // ============================================================
@@ -1001,51 +922,65 @@ function initNhomThit(){
 
 function onNhomThitChange(){
   const nhom = document.getElementById('nhomThit').value;
-  // Reset all SKU line selections for this group change
-  const lines = document.querySelectorAll('#skuLines .sku-line');
-  lines.forEach(function(line, i){
-    const searchEl = line.querySelector('.sku-search-input');
-    const codeEl = line.querySelector('.sku-code-input');
-    const dropdown = line.querySelector('.sku-dropdown');
-    if(searchEl) searchEl.value = '';
-    if(codeEl) codeEl.value = '';
-    if(dropdown) dropdown.classList.remove('active');
-    if(searchEl){
-      searchEl.disabled = !nhom;
-      searchEl.placeholder = nhom ? 'Gõ để tìm SKU...' : 'Chọn nhóm thịt trước...';
-    }
-  });
+  const skuInput = document.getElementById('skuSearch');
+  const dropdown = document.getElementById('skuDropdown');
+  
+  // Reset SKU selection
+  state.selectedSKU = null;
+  skuInput.value = '';
+  dropdown.classList.remove('active');
+  
+  if(!nhom){
+    skuInput.disabled = true;
+    skuInput.placeholder = 'Chọn nhóm thịt trước...';
+    return;
+  }
+  
+  skuInput.disabled = false;
+  skuInput.placeholder = 'Gõ để tìm hoặc chọn bên dưới...';
+  
+  // Find group items
+  const group = DANH_MUC_THIT.find(function(g){ return g.group === nhom; });
+  if(!group) return;
+  
+  // Show all SP in group (keep order)
+  dropdown.innerHTML = group.items.map(function(s){
+    return '<div class="sku-option" onclick="selectSKU(\'' + s.code + '\',\'' + s.name.replace(/'/g,"\\'") + '\',\'' + nhom.replace(/'/g,"\\'") + '\',' + s.qc + ')">'
+      + '<span>' + s.code + ' — ' + s.name + '</span>'
+      + '<span class="sku-group">QC: ' + s.qc + '</span>'
+      + '</div>';
+  }).join('');
+  dropdown.classList.add('active');
+  
   updatePackInfo();
   updateSubmitBtn();
-  if(state.currentAction==='bo-sung')setNgayNhanHang();
 }
 
-function filterSKU(lineIndex){
+function filterSKU(){
   const nhom = document.getElementById('nhomThit').value;
+  const q = (document.getElementById('skuSearch').value||'').toLowerCase();
+  const dropdown = document.getElementById('skuDropdown');
+  
   if(!nhom) return;
-  const line = document.querySelectorAll('#skuLines .sku-line')[lineIndex];
-  if(!line) return;
-  const searchEl = line.querySelector('.sku-search-input');
-  const dropdown = line.querySelector('.sku-dropdown');
-  const q = (searchEl.value||'').toLowerCase();
   
   const group = DANH_MUC_THIT.find(function(g){ return g.group === nhom; });
   if(!group) return;
   
   if(!q){
+    // Show all in group (keep order)
     dropdown.innerHTML = group.items.map(function(s){
-      return '<div class="sku-option" onclick="selectSKU('+lineIndex+',\'' + s.code + '\',\'' + s.name.replace(/'/g,"\\'") + '\',\'' + nhom.replace(/'/g,"\\'") + '\',' + s.qc + ')">'
+      return '<div class="sku-option" onclick="selectSKU(\'' + s.code + '\',\'' + s.name.replace(/'/g,"\\'") + '\',\'' + nhom.replace(/'/g,"\\'") + '\',' + s.qc + ')">'
         + '<span>' + s.code + ' — ' + s.name + '</span>'
         + '<span class="sku-group">QC: ' + s.qc + '</span>'
         + '</div>';
     }).join('');
   }else{
-    const filtered = baseItems.filter(function(s){
+    const filtered = group.items.filter(function(s){
       return s.name.toLowerCase().indexOf(q) >= 0 || s.code.toLowerCase().indexOf(q) >= 0;
     });
     dropdown.innerHTML = filtered.length > 0
       ? filtered.map(function(s){
-          return '<div class="sku-option" onclick="selectSKU('+lineIndex+',\'' + s.code + '\',\'' + s.name.replace(/'/g,"\\'") + '\',\'' + nhom.replace(/'/g,"\\'") + '\',' + s.qc + ')">'
+          return '<div class="sku-option" onclick="selectSKU(\'' + s.code + '\',\'' + s.name.replace(/'/g,"\\'") + '\',\'' + nhom.replace(/'/g,"\\'") + '\',' + s.qc + ')">'
             + '<span>' + highlightMatch(s.code + ' — ' + s.name, q) + '</span>'
             + '<span class="sku-group">QC: ' + s.qc + '</span>'
             + '</div>';
@@ -1056,18 +991,12 @@ function filterSKU(lineIndex){
   dropdown.classList.add('active');
 }
 
-function selectSKU(lineIndex, code, name, group, qc){
-  const line = document.querySelectorAll('#skuLines .sku-line')[lineIndex];
-  if(!line) return;
-  const searchEl = line.querySelector('.sku-search-input');
-  const codeEl = line.querySelector('.sku-code-input');
-  const dropdown = line.querySelector('.sku-dropdown');
-  searchEl.value = code + ' — ' + name;
-  codeEl.value = code;
-  dropdown.classList.remove('active');
+function selectSKU(code, name, group, qc){
+  state.selectedSKU = {code: code, name: name, group: group, qc: qc};
+  document.getElementById('skuSearch').value = code + ' — ' + name;
+  document.getElementById('skuDropdown').classList.remove('active');
   updatePackInfo();
   updateSubmitBtn();
-  if(state.currentAction==='bo-sung')setNgayNhanHang();
 }
 
 // ============================================================
@@ -1089,31 +1018,22 @@ function highlightMatch(text, q){
 function updatePackInfo(){
   const max = getMaxPacks();
   const info = document.getElementById('packInfo');
-  info.textContent = max > 0 ? 'Giới hạn: tối đa ' + max + ' pack/ngày (' + (state.currentStore?state.currentStore.nhom_dt||'--':'--') + ')' : '';
+  info.textContent = max > 0 ? `Giới hạn: tối đa ${max} pack/ngày (${state.currentStore?.nhom_dt||'--'})` : '';
 }
 
-function getTotalPacks(){
-  let total = 0;
-  document.querySelectorAll('#skuLines .sku-line').forEach(function(line){
-    const packEl = line.querySelector('.pack-input');
-    if(packEl) total += parseInt(packEl.value) || 0;
-  });
-  return total;
-}
 function checkPackLimit(){
   const max = getMaxPacks();
-  const totalPacks = getTotalPacks();
+  const soPack = parseInt(document.getElementById('soPack').value) || 0;
   const warning = document.getElementById('packWarning');
   const warnText = document.getElementById('packWarnText');
   
-  if(max > 0 && totalPacks > max){
+  if(max > 0 && soPack > max){
     warning.classList.add('visible');
-    warnText.textContent = '⚠️ VƯỢT GIỚI HẠN! Tổng ' + totalPacks + ' pack vượt mức tối đa ' + max + ' pack (' + (state.currentStore?state.currentStore.nhom_dt||'--':'--') + ' × 8). Cần phê duyệt từ cấp quản lý!';
+    warnText.textContent = `⚠️ VƯỢT GIỚI HẠN! Tối đa ${max} pack (${state.currentStore.nhom_dt} × 8). Cần phê duyệt từ cấp quản lý!`;
   }else{
     warning.classList.remove('visible');
   }
   updateSubmitBtn();
-  if(state.currentAction==='bo-sung')setNgayNhanHang();
 }
 
 function updateSubmitBtn(){
@@ -1126,226 +1046,82 @@ function updateSubmitBtn(){
     const loai = document.getElementById('loaiThitDung').value;
     btn.disabled = !loai;
   }else{
-    // bo-sung: need at least one SKU selected
-    let hasSKU = false;
-    document.querySelectorAll('#skuLines .sku-line').forEach(function(line){
-      const codeEl = line.querySelector('.sku-code-input');
-      if(codeEl && codeEl.value) hasSKU = true;
-    });
-    btn.disabled = !hasSKU;
-  }
-}
-
-
-// ============================================================
-// MULTI-SKU LINE MANAGEMENT
-// ============================================================
-function createSkuLineHTML(lineIndex){
-  return '<div class="sku-line" data-line="'+lineIndex+'">'
-    + '<div class="sku-search-wrap">'
-    + '<input type="text" class="form-input sku-search-input"'
-    + ' placeholder="Gõ để tìm SKU..." autocomplete="off"'
-    + ' oninput="filterSKU('+lineIndex+')" onfocus="filterSKU('+lineIndex+')" disabled>'
-    + '<div class="sku-dropdown"></div>'
-    + '</div>'
-    + '<input type="number" class="form-input pack-input" min="1" value="1"'
-    + ' oninput="checkPackLimit()" placeholder="Pack">'
-    + '<input type="hidden" class="sku-code-input" value="">'
-    + '<button class="rm-line-btn" onclick="removeSkuLine('+lineIndex+')" title="Xóa dòng này">✕</button>'
-    + '</div>';
-}
-function addSkuLine(){
-  const container = document.getElementById('skuLines');
-  const count = container.children.length;
-  if(count >= 50){
-    showToast('⚠️ Tối đa 10 sản phẩm mỗi lần khai báo', 'error');
-    return;
-  }
-  container.insertAdjacentHTML('beforeend', createSkuLineHTML(count));
-  // Enable/disable search input based on nhomThit selection
-  const nhom = document.getElementById('nhomThit').value;
-  const newLine = container.lastElementChild;
-  const searchEl = newLine.querySelector('.sku-search-input');
-  if(searchEl){
-    searchEl.disabled = !nhom;
-    searchEl.placeholder = nhom ? 'Gõ để tìm SKU...' : 'Chọn nhóm thịt trước...';
-  }
-  updateAddLineBtn();
-  updateSubmitBtn();
-  if(state.currentAction==='bo-sung')setNgayNhanHang();
-}
-function removeSkuLine(lineIndex){
-  const container = document.getElementById('skuLines');
-  if(container.children.length <= 1) return; // minimum 1 line
-  const line = container.querySelector('.sku-line[data-line="'+lineIndex+'"]');
-  if(line) line.remove();
-  // Re-index remaining lines
-  Array.from(container.children).forEach(function(l, i){
-    l.setAttribute('data-line', i);
-    const searchEl = l.querySelector('.sku-search-input');
-    if(searchEl){
-      searchEl.setAttribute('oninput', 'filterSKU('+i+')');
-      searchEl.setAttribute('onfocus', 'filterSKU('+i+')');
-    }
-    const rmBtn = l.querySelector('.rm-line-btn');
-    if(rmBtn) rmBtn.setAttribute('onclick', 'removeSkuLine('+i+')');
-  });
-  updateAddLineBtn();
-  checkPackLimit();
-}
-function updateAddLineBtn(){
-  const container = document.getElementById('skuLines');
-  const btn = document.getElementById('addLineBtn');
-  if(btn){
-    if(container.children.length >= 50){
-      btn.style.display = 'none';
-    }else{
-      btn.style.display = '';
-      btn.textContent = '+ Thêm sản phẩm ('+container.children.length+'/50)';
-    }
+    btn.disabled = !state.selectedSKU;
   }
 }
 
 // ============================================================
 // FORM SUBMISSION
 // ============================================================
-
-function onLyDoChange(){
-  var lyDo = document.getElementById('lyDoBoSung').value;
-  var khGroup = document.getElementById('khachHangGroup');
-  if(khGroup) khGroup.style.display = (lyDo === 'Khách đặt') ? 'block' : 'none';
-}
-
 async function submitForm(){
   if(!state.currentStore || !state.currentAction){
     showToast('⚠️ Vui lòng định vị CH và chọn hành động', 'error');
     return;
   }
   
-  const nguoiKhai = ''; // removed
+  const nguoiKhai = document.getElementById('nguoiKhai').value.trim();
+  if(!nguoiKhai){
+    showToast('⚠️ Vui lòng nhập tên người khai báo', 'error');
+    return;
+  }
   
-  const ghiChu = document.getElementById('ghiChu').value.trim();
   const max = getMaxPacks();
+  let vuotMuc = false;
+  let soPack = 0;
+  let loaiThit = '';
+  let ngayDung = '';
+  let sku = '';
   
   if(state.currentAction === 'dung'){
-    const loaiThit = document.getElementById('loaiThitDung').value;
-    const ngayDung = document.getElementById('ngayDung').value;
+    loaiThit = document.getElementById('loaiThitDung').value;
+    ngayDung = document.getElementById('ngayDung').value;
     if(!loaiThit){ showToast('⚠️ Vui lòng chọn loại thịt dừng', 'error'); return; }
     if(!ngayDung){ showToast('⚠️ Vui lòng chọn ngày dừng', 'error'); return; }
-    
-    const record = {
-      ma_ch: state.currentStore.ma_sap,
-      ten_ch: state.currentStore.ten_ch,
-      nhom_dt: state.currentStore.nhom_dt,
-      lat: state.currentStore.lat,
-      lng: state.currentStore.lng,
-      hanh_dong: 'Dừng thịt',
-      loai_thit: loaiThit,
-      ngay_dung: ngayDung,
-      sku: '',
-      so_pack: 0,
-      vuot_muc: false,
-      ly_do: '',
-      ghi_chu: ghiChu,
-      created_at: new Date().toISOString(),
-    };
-    
-    showLoading('Đang lưu khai báo...');
-    try{
-      const result = await saveToGAS(record);
-      hideLoading();
-      if(result && result.success){
-        showToast('✅ Đã lưu khai báo thành công!', 'success');
-        resetForm();
-      }else{
-        showToast('❌ Lỗi lưu: ' + (result?result.error||'Vui lòng thử lại':'Vui lòng thử lại'), 'error');
-        saveLocal(record);
-        showToast('⚠️ Đã lưu tạm vào máy. Sẽ đồng bộ khi có kết nối.', 'error');
-      }
-    }catch(e){
-      console.error('Submit error:', e);
-      hideLoading();
-      saveLocal(record);
-      showToast('⚠️ Đã lưu tạm vào máy. Kiểm tra GAS URL hoặc kết nối mạng.', 'error');
-    }
   }else{
-    // bo-sung: collect all SKU lines
-    const lyDo = (document.getElementById('lyDoBoSung').value||'').trim();
-    if(!lyDo){ showToast('⚠️ Vui lòng chọn lý do bổ sung', 'error'); return; }
-    
-    // Validate thong tin khach hang when ly do = Khach dat
-    const thongTinKhachEl2 = document.getElementById('thongTinKhach');
-    const thongTinKhach = thongTinKhachEl2 ? thongTinKhachEl2.value.trim() : '';
-    if(lyDo === 'Khách đặt' && !thongTinKhach){
-      showToast('⚠️ Vui lòng nhập thông tin khách hàng', 'error');
-      return;
-    }
-    
-    const records = [];
-    document.querySelectorAll('#skuLines .sku-line').forEach(function(line){
-      const codeEl = line.querySelector('.sku-code-input');
-      const packEl = line.querySelector('.pack-input');
-      const searchEl = line.querySelector('.sku-search-input');
-      const code = codeEl ? codeEl.value : '';
-      const soPack = packEl ? (parseInt(packEl.value) || 0) : 0;
-      const displayText = searchEl ? searchEl.value : '';
-      
-      if(code && soPack > 0){
-        // Extract SKU name from display text (code — name)
-        const namePart = displayText.replace(code + ' — ', '');
-        const nhom = document.getElementById('nhomThit').value;
-        const vuotMuc = (max > 0 && soPack > max);
-        
-        records.push({
-          ma_ch: state.currentStore.ma_sap,
-          ten_ch: state.currentStore.ten_ch,
-          nhom_dt: state.currentStore.nhom_dt,
-          lat: state.currentStore.lat,
-          lng: state.currentStore.lng,
-          hanh_dong: 'Bổ sung thịt',
-          loai_thit: nhom,
-          ngay_dung: '',
-          sku: code + ' — ' + namePart,
-          so_pack: soPack,
-          vuot_muc: vuotMuc,
-          ly_do: lyDo,
-          ngay_nhan: (document.getElementById('ngayNhanHang')||{}).value || '',
-          thong_tin_khach: (lyDo === 'Khách đặt' ? thongTinKhach : ''),
-          ghi_chu: ghiChu,
-          created_at: new Date().toISOString(),
-        });
-      }
-    });
-    
-    if(records.length === 0){
-      showToast('⚠️ Vui lòng chọn ít nhất 1 SKU và nhập số pack > 0', 'error');
-      return;
-    }
-    
-    showLoading('Đang lưu ' + records.length + ' sản phẩm...');
-    let saved = 0;
-    let hasGASError = false;
-    for(let i=0; i<records.length; i++){
-      try{
-        const result = await saveToGAS(records[i]);
-        if(result && result.success) saved++;
-        else hasGASError = true;
-      }catch(e){
-        console.error('Submit error (line ' + i + '):', e);
-        saveLocal(records[i]);
-        hasGASError = true;
-      }
-    }
+    soPack = parseInt(document.getElementById('soPack').value) || 0;
+    if(!state.selectedSKU){ showToast('⚠️ Vui lòng chọn SKU', 'error'); return; }
+    if(soPack <= 0){ showToast('⚠️ Vui lòng nhập số pack > 0', 'error'); return; }
+    sku = state.selectedSKU.code + ' — ' + state.selectedSKU.name;
+    loaiThit = state.selectedSKU.group;
+    vuotMuc = (max > 0 && soPack > max);
+  }
+  
+  const record = {
+    ma_ch: state.currentStore.ma_sap,
+    ten_ch: state.currentStore.ten_ch,
+    nhom_dt: state.currentStore.nhom_dt,
+    lat: state.currentStore.lat,
+    lng: state.currentStore.lng,
+    hanh_dong: state.currentAction === 'dung' ? 'Dừng thịt' : 'Bổ sung thịt',
+    loai_thit: loaiThit,
+    ngay_dung: ngayDung || '',
+    sku: sku,
+    so_pack: soPack,
+    vuot_muc: vuotMuc,
+    nguoi_khai: nguoiKhai,
+    ghi_chu: document.getElementById('ghiChu').value.trim(),
+    created_at: new Date().toISOString(),
+  };
+  
+  // Save to GAS backend
+  showLoading('Đang lưu khai báo...');
+  try{
+    const result = await saveToGAS(record);
     hideLoading();
-    if(saved === records.length){
-      showToast('✅ Đã lưu ' + saved + ' sản phẩm!', 'success');
+    if(result && result.success){
+      showToast('✅ Đã lưu khai báo thành công!', 'success');
       resetForm();
-    }else if(saved > 0){
-      showToast('⚠️ Đã lưu ' + saved + '/' + records.length + ' sản phẩm. Phần còn lại lưu tạm.', 'error');
     }else{
-      // All failed, all saved locally
-      showToast('⚠️ Đã lưu tạm ' + records.length + ' sản phẩm vào máy. Sẽ đồng bộ khi có kết nối.', 'error');
+      showToast('❌ Lỗi lưu: ' + (result?.error || 'Vui lòng thử lại'), 'error');
+      // Fallback: save locally
+      saveLocal(record);
+      showToast('⚠️ Đã lưu tạm vào máy. Sẽ đồng bộ khi có kết nối.', 'error');
     }
+  }catch(e){
+    console.error('Submit error:', e);
+    hideLoading();
+    saveLocal(record);
+    showToast('⚠️ Đã lưu tạm vào máy. Kiểm tra GAS URL hoặc kết nối mạng.', 'error');
   }
 }
 
@@ -1370,234 +1146,396 @@ function saveLocal(record){
 
 function resetForm(){
   state.currentAction = null;
-  document.querySelectorAll('.action-radio').forEach(function(r){r.classList.remove('selected');});
+  state.selectedSKU = null;
+  document.querySelectorAll('.action-radio').forEach(r=>r.classList.remove('selected'));
   document.getElementById('dungThitForm').style.display = 'none';
   document.getElementById('boSungThitForm').style.display = 'none';
-  // Reset SKU lines to 1 empty line
-  const skuLines = document.getElementById('skuLines');
-  if(skuLines) skuLines.innerHTML = createSkuLineHTML(0);
-  const lyDoEl2 = document.getElementById('lyDoBoSung');
-  if(lyDoEl2) lyDoEl2.value = '';
-  const ttKhachEl = document.getElementById('thongTinKhach');
-  if(ttKhachEl) ttKhachEl.value = '';
-  const khGroupEl = document.getElementById('khachHangGroup');
-  if(khGroupEl) khGroupEl.style.display = 'none';
-  const nhomThitEl = document.getElementById('nhomThit');
-  if(nhomThitEl) nhomThitEl.value = '';
+  document.getElementById('skuSearch').value = '';
+  document.getElementById('skuDropdown').classList.remove('active');
+  document.getElementById('soPack').value = 1;
   document.getElementById('packWarning').classList.remove('visible');
   document.getElementById('packInfo').textContent = '';
-  
+  document.getElementById('nguoiKhai').value = '';
   document.getElementById('ghiChu').value = '';
   document.getElementById('submitBtn').disabled = true;
   document.getElementById('loaiThitDung').value = '';
+  document.getElementById('loaiThitBoSung').value = '';
   updatePackInfo();
-  updateAddLineBtn();
 }
 
 // ============================================================
-// DASHBOARD (v3: 2 tabs - Dừng / Bổ sung)
+// DASHBOARD
 // ============================================================
-var dashState = {activeTab:'dung', bsVuotOnly:false};
-
 async function loadDashboard(){
   showLoading('Đang tải dữ liệu...');
   try{
     if(state.gasUrl){
       const resp = await fetch(state.gasUrl + '?action=list');
       const result = await resp.json();
-      if(result && result.data){ state.dashboardData = result.data; }
+      if(result && result.data){
+        state.dashboardData = result.data;
+      }
     }
+    // Merge local pending
     const local = JSON.parse(localStorage.getItem('thitmdl_local_pending')||'[]');
-    state.dashboardData = [...state.dashboardData, ...local.map(function(r){return Object.assign({},r,{local:true});})];
+    state.dashboardData = [...state.dashboardData, ...local.map(r=>({...r, local:true}))];
   }catch(e){
     console.error('Dashboard load error:', e);
-    state.dashboardData = JSON.parse(localStorage.getItem('thitmdl_local_pending')||'[]').map(function(r){return Object.assign({},r,{local:true});});
+    // Fallback: local only
+    state.dashboardData = JSON.parse(localStorage.getItem('thitmdl_local_pending')||'[]').map(r=>({...r, local:true}));
   }
   hideLoading();
-  // Set default dates
-  var today = new Date().toISOString().slice(0,10);
-  var el;
-  el=document.getElementById('dungDateFrom');if(el)el.value=today;
-  el=document.getElementById('dungDateTo');if(el)el.value=today;
-  el=document.getElementById('bsDateFrom');if(el)el.value=today;
-  el=document.getElementById('bsDateTo');if(el)el.value=today;
-  applyDashSubFilter();
+  applyDashboardFilter();
+  // Also render summary view so it's ready
+  applySummaryFilter();
 }
 
-function switchDashTab(tab){
-  dashState.activeTab = tab;
-  document.querySelectorAll('.dash-subtab').forEach(function(b){b.classList.remove('active');});
-  document.getElementById(tab==='dung'?'dashTabDung':'dashTabBosung').classList.add('active');
-  document.getElementById('panelDung').classList.toggle('active', tab==='dung');
-  document.getElementById('panelBosung').classList.toggle('active', tab==='bosung');
+function applyDashboardFilter(){
+  const dateFrom = document.getElementById('filterDateFrom').value;
+  const dateTo = document.getElementById('filterDateTo').value;
+  const actionFilter = document.getElementById('filterAction').value;
+  const chFilter = (document.getElementById('filterCH').value||'').toLowerCase();
+  
+  let data = [...state.dashboardData];
+  
+  // Filter by date range (using created_at)
+  if(dateFrom) data = data.filter(r=>{
+    const d = (r.created_at||'').slice(0,10);
+    return d >= dateFrom;
+  });
+  if(dateTo) data = data.filter(r=>{
+    const d = (r.created_at||'').slice(0,10);
+    return d <= dateTo;
+  });
+  
+  // Filter by action type
+  if(actionFilter) data = data.filter(r=>r.hanh_dong === actionFilter);
+  
+  // Filter by CH name/code
+  if(chFilter) data = data.filter(r=>
+    (r.ten_ch||'').toLowerCase().includes(chFilter)||
+    (r.ma_ch||'').toLowerCase().includes(chFilter)
+  );
+  
+  // Filter vượt mức only
+  if(state.showVuotOnly) data = data.filter(r=>r.vuot_muc===true||r.vuot_muc==='true');
+  
+  // Sort by created_at descending
+  data.sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
+  
+  renderDashboardTable(data);
 }
 
-function toggleBsVuot(){
-  dashState.bsVuotOnly = !dashState.bsVuotOnly;
-  var btn = document.getElementById('btnBsVuot');
-  btn.classList.toggle('active', dashState.bsVuotOnly);
-  btn.textContent = dashState.bsVuotOnly ? '⚠️ Đang lọc vượt mức' : '⚠️ Vượt mức';
-  applyDashSubFilter();
+function toggleVuotFilter(){
+  state.showVuotOnly = !state.showVuotOnly;
+  const btn = document.getElementById('btnShowVuot');
+  btn.classList.toggle('active', state.showVuotOnly);
+  btn.textContent = state.showVuotOnly ? '⚠️ Đang lọc vượt mức (bỏ)' : '⚠️ Chỉ vượt mức';
+  applyDashboardFilter();
 }
 
-function clearDashSubFilter(tab){
-  var today = new Date().toISOString().slice(0,10);
-  if(tab==='dung'){
-    document.getElementById('dungDateFrom').value = today;
-    document.getElementById('dungDateTo').value = today;
-    document.getElementById('dungFilterCH').value = '';
-  }else{
-    document.getElementById('bsDateFrom').value = today;
-    document.getElementById('bsDateTo').value = today;
-    document.getElementById('bsFilterCH').value = '';
-    dashState.bsVuotOnly = false;
-    var btn = document.getElementById('btnBsVuot');
-    if(btn){btn.classList.remove('active');btn.textContent='⚠️ Vượt mức';}
-  }
-  applyDashSubFilter();
+function clearDashboardFilters(){
+  document.getElementById('filterDateFrom').value = new Date().toISOString().slice(0,10);
+  document.getElementById('filterDateTo').value = new Date().toISOString().slice(0,10);
+  document.getElementById('filterAction').value = '';
+  document.getElementById('filterCH').value = '';
+  state.showVuotOnly = false;
+  document.getElementById('btnShowVuot').classList.remove('active');
+  document.getElementById('btnShowVuot').textContent = '⚠️ Chỉ vượt mức';
+  applyDashboardFilter();
 }
 
-function applyDashSubFilter(){
-  // Split data
-  var dungData = state.dashboardData.filter(function(r){return r.hanh_dong==='Dừng thịt';});
-  var bsData = state.dashboardData.filter(function(r){return r.hanh_dong==='Bổ sung thịt';});
-
-  // Sort
-  dungData.sort(function(a,b){return (b.created_at||'').localeCompare(a.created_at||'');});
-  bsData.sort(function(a,b){return (b.created_at||'').localeCompare(a.created_at||'');});
-
-  // Filter Dừng
-  var dFrom = document.getElementById('dungDateFrom').value;
-  var dTo = document.getElementById('dungDateTo').value;
-  var dCH = (document.getElementById('dungFilterCH').value||'').toLowerCase();
-  if(dFrom) dungData = dungData.filter(function(r){return (r.created_at||'').slice(0,10) >= dFrom;});
-  if(dTo) dungData = dungData.filter(function(r){return (r.created_at||'').slice(0,10) <= dTo;});
-  if(dCH) dungData = dungData.filter(function(r){return (r.ten_ch||'').toLowerCase().indexOf(dCH)>=0||(r.ma_ch||'').toLowerCase().indexOf(dCH)>=0;});
-
-  // Filter Bổ sung
-  var bFrom = document.getElementById('bsDateFrom').value;
-  var bTo = document.getElementById('bsDateTo').value;
-  var bCH = (document.getElementById('bsFilterCH').value||'').toLowerCase();
-  if(bFrom) bsData = bsData.filter(function(r){return (r.created_at||'').slice(0,10) >= bFrom;});
-  if(bTo) bsData = bsData.filter(function(r){return (r.created_at||'').slice(0,10) <= bTo;});
-  if(bCH) bsData = bsData.filter(function(r){return (r.ten_ch||'').toLowerCase().indexOf(bCH)>=0||(r.ma_ch||'').toLowerCase().indexOf(bCH)>=0;});
-  if(dashState.bsVuotOnly) bsData = bsData.filter(function(r){return r.vuot_muc===true||r.vuot_muc==='true';});
-
-  // Update counts
-  var totalDung = state.dashboardData.filter(function(r){return r.hanh_dong==='Dừng thịt';}).length;
-  var totalBs = state.dashboardData.filter(function(r){return r.hanh_dong==='Bổ sung thịt';}).length;
-  document.getElementById('countDung').textContent = totalDung;
-  document.getElementById('countBosung').textContent = totalBs;
-
-  // Render tables
-  renderDungTable(dungData);
-  renderBosungTable(bsData);
-}
-
-function renderDungTable(data){
-  var tbody = document.getElementById('tbodyDung');
-  document.getElementById('summaryDung').textContent = '🛑 Dừng thịt: '+data.length+' khai báo';
-  if(data.length===0){
-    tbody.innerHTML = '<tr><td colspan="8" class="data-empty"><span class="empty-icon">📭</span>Chưa có khai báo dừng thịt</td></tr>';
+function renderDashboardTable(data){
+  const tbody = document.getElementById('tableBody');
+  const summary = document.getElementById('dashboardSummary');
+  
+  const totalDung = data.filter(r=>r.hanh_dong==='Dừng thịt').length;
+  const totalBoSung = data.filter(r=>r.hanh_dong==='Bổ sung thịt').length;
+  const totalVuot = data.filter(r=>r.vuot_muc===true||r.vuot_muc==='true').length;
+  
+  summary.textContent = `Tổng: ${data.length} khai báo | 🛑 Dừng: ${totalDung} | ➕ Bổ sung: ${totalBoSung} | ⚠️ Vượt mức: ${totalVuot}`;
+  
+  if(data.length === 0){
+    tbody.innerHTML = `<tr><td colspan="12" class="data-empty"><span class="empty-icon">📭</span>${state.showVuotOnly?'Không có khai báo vượt mức':'Chưa có dữ liệu khai báo'}</td></tr>`;
     return;
   }
-  tbody.innerHTML = data.map(function(r){
-    return '<tr>'
-      + '<td>'+escH(fmtD(r.created_at))+(r.local?' 📱':'')+'</td>'
-      + '<td>'+escH(r.ma_ch||'')+'</td>'
-      + '<td>'+escH(r.ten_ch||'')+'</td>'
-      + '<td>'+escH(r.nhom_dt||'')+'</td>'
-      + '<td>'+escH(r.loai_thit||'')+'</td>'
-      + '<td>'+fmtD(r.ngay_dung)+'</td>'
-      + '<td>'+escH(r.nguoi_khai||'')+'</td>'
-      + '<td>'+escH(r.ghi_chu||'')+'</td>'
-      + '</tr>';
+  
+  tbody.innerHTML = data.map(r=>{
+    const vuotClass = (r.vuot_muc===true||r.vuot_muc==='true') ? ' warning-row' : '';
+    const vuotBadge = (r.vuot_muc===true||r.vuot_muc==='true') ? '<span class="vuot-badge">VƯỢT MỨC</span>' : '—';
+    const localBadge = r.local ? ' 📱' : '';
+    return `<tr class="${vuotClass}">
+      <td>${escapeHTML(formatDate(r.created_at))}${localBadge}</td>
+      <td>${escapeHTML(r.ma_ch||'')}</td>
+      <td>${escapeHTML(r.ten_ch||'')}</td>
+      <td>${escapeHTML(r.nhom_dt||'')}</td>
+      <td>${r.hanh_dong==='Dừng thịt'?'🛑':'➕'} ${escapeHTML(r.hanh_dong||'')}</td>
+      <td>${escapeHTML(r.loai_thit||'')}</td>
+      <td>${formatDate(r.ngay_dung)}</td>
+      <td>${escapeHTML(r.sku||'—')}</td>
+      <td>${r.so_pack||'—'}</td>
+      <td>${vuotBadge}</td>
+      <td>${escapeHTML(r.nguoi_khai||'')}</td>
+      <td>${escapeHTML(r.ghi_chu||'')}</td>
+    </tr>`;
   }).join('');
 }
 
-function renderBosungTable(data){
-  var tbody = document.getElementById('tbodyBosung');
-  var vuotCount = data.filter(function(r){return r.vuot_muc===true||r.vuot_muc==='true';}).length;
-  document.getElementById('summaryBosung').textContent = '➕ Bổ sung thịt: '+data.length+' khai báo'+(vuotCount>0?' | ⚠️ Vượt mức: '+vuotCount:'');
-  if(data.length===0){
-    tbody.innerHTML = '<tr><td colspan="11" class="data-empty"><span class="empty-icon">📭</span>Chưa có khai báo bổ sung thịt</td></tr>';
+// ============================================================
+// DASHBOARD SUB-TABS
+// ============================================================
+function switchSubTab(tab){
+  state.dashboardSubTab = tab;
+  document.getElementById('subTabDetail').classList.toggle('active', tab==='detail');
+  document.getElementById('subTabSummary').classList.toggle('active', tab==='summary');
+  document.getElementById('detailPanel').style.display = tab==='detail' ? 'block' : 'none';
+  document.getElementById('summaryPanel').style.display = tab==='summary' ? 'block' : 'none';
+  
+  if(tab==='summary'){
+    // Sync filter values from detail
+    document.getElementById('filterDateFrom2').value = document.getElementById('filterDateFrom').value;
+    document.getElementById('filterDateTo2').value = document.getElementById('filterDateTo').value;
+    document.getElementById('filterAction2').value = document.getElementById('filterAction').value;
+    applySummaryFilter();
+  }
+}
+
+// ============================================================
+// STORE SUMMARY VIEW
+// ============================================================
+function applySummaryFilter(){
+  const dateFrom = document.getElementById('filterDateFrom2').value;
+  const dateTo = document.getElementById('filterDateTo2').value;
+  const actionFilter = document.getElementById('filterAction2').value;
+  const chFilter = (document.getElementById('filterCH2').value||'').toLowerCase();
+  
+  let data = [...state.dashboardData];
+  
+  // Filter by date range
+  if(dateFrom) data = data.filter(r=>(r.created_at||'').slice(0,10) >= dateFrom);
+  if(dateTo) data = data.filter(r=>(r.created_at||'').slice(0,10) <= dateTo);
+  
+  // Filter by action type
+  if(actionFilter) data = data.filter(r=>r.hanh_dong === actionFilter);
+  
+  // Group by store (ma_ch)
+  const storeMap = {};
+  data.forEach(r=>{
+    const key = r.ma_ch||'??';
+    if(chFilter && !(key.toLowerCase().includes(chFilter)||(r.ten_ch||'').toLowerCase().includes(chFilter))) return;
+    
+    if(!storeMap[key]){
+      storeMap[key] = {
+        ma_ch: key,
+        ten_ch: r.ten_ch||'',
+        nhom_dt: r.nhom_dt||'',
+        countDung: 0,
+        countBoSung: 0,
+        countVuot: 0,
+        thitDung: new Set(),
+        skuBoSung: new Set(),
+        lastDungDate: '',
+        lastCreated: '',
+      };
+    }
+    const sm = storeMap[key];
+    if(r.hanh_dong==='Dừng thịt'){
+      sm.countDung++;
+      if(r.loai_thit) sm.thitDung.add(r.loai_thit);
+      if(r.ngay_dung && r.ngay_dung > sm.lastDungDate) sm.lastDungDate = r.ngay_dung;
+    }else if(r.hanh_dong==='Bổ sung thịt'){
+      sm.countBoSung++;
+      if(r.sku) sm.skuBoSung.add(r.sku);
+    }
+    if(r.vuot_muc===true||r.vuot_muc==='true') sm.countVuot++;
+    if(r.created_at > sm.lastCreated) sm.lastCreated = r.created_at;
+  });
+  
+  // Filter by vượt mức
+  let stores = Object.values(storeMap);
+  if(state.showVuotOnly2) stores = stores.filter(s=>s.countVuot > 0);
+  
+  // Apply action filter to store-level (only show stores that have that action)
+  if(actionFilter==='Dừng thịt') stores = stores.filter(s=>s.countDung > 0);
+  if(actionFilter==='Bổ sung thịt') stores = stores.filter(s=>s.countBoSung > 0);
+  
+  // Sort by lastCreated desc
+  stores.sort((a,b)=>b.lastCreated.localeCompare(a.lastCreated));
+  
+  renderSummaryTable(stores);
+}
+
+function renderSummaryTable(stores){
+  const tbody = document.getElementById('summaryBody');
+  const summaryEl = document.getElementById('summaryText2');
+  
+  const totalDung = stores.reduce((s,r)=>s+r.countDung,0);
+  const totalBoSung = stores.reduce((s,r)=>s+r.countBoSung,0);
+  const totalVuot = stores.reduce((s,r)=>s+r.countVuot,0);
+  
+  summaryEl.textContent = `Tổng: ${stores.length} CH | 🛑 Dừng: ${totalDung} | ➕ Bổ sung: ${totalBoSung} | ⚠️ Vượt mức: ${totalVuot}`;
+  
+  if(stores.length === 0){
+    tbody.innerHTML = `<tr><td colspan="10" class="data-empty"><span class="empty-icon">📭</span>${state.showVuotOnly2?'Không có CH vượt mức':'Chưa có dữ liệu khai báo'}</td></tr>`;
     return;
   }
-  tbody.innerHTML = data.map(function(r){
-    var vuotClass = (r.vuot_muc===true||r.vuot_muc==='true')?' warning-row':'';
-    var vuotBadge = (r.vuot_muc===true||r.vuot_muc==='true')?'<span class="vuot-badge">VƯỢT</span>':'—';
-    return '<tr class="'+vuotClass+'">'
-      + '<td>'+escH(fmtD(r.created_at))+(r.local?' 📱':'')+'</td>'
-      + '<td>'+escH(r.ma_ch||'')+'</td>'
-      + '<td>'+escH(r.ten_ch||'')+'</td>'
-      + '<td>'+escH(r.nhom_dt||'')+'</td>'
-      + '<td>'+escH(r.loai_thit||'')+'</td>'
-      + '<td>'+escH(r.sku||'—')+'</td>'
-      + '<td>'+escH(String(r.so_pack||'—'))+'</td>'
-      + '<td>'+escH(r.ly_do||'—')+'</td>'
-      + '<td>'+vuotBadge+'</td>'
-      + '<td>'+escH(r.nguoi_khai||'')+'</td>'
-      + '<td>'+escH(r.ghi_chu||'')+'</td>'
-      + '</tr>';
+  
+  tbody.innerHTML = stores.map(s=>{
+    // Determine row class
+    let rowClass = '';
+    if(s.countDung > 0 && s.countBoSung > 0) rowClass = 'row-both';
+    else if(s.countDung > 0) rowClass = 'row-dung';
+    else if(s.countBoSung > 0) rowClass = 'row-bo-sung';
+    
+    return `<tr class="${rowClass}">
+      <td><b>${escapeHTML(s.ma_ch)}</b></td>
+      <td>${escapeHTML(s.ten_ch)}</td>
+      <td>${escapeHTML(s.nhom_dt)}</td>
+      <td>${s.countDung > 0 ? '<b style="color:#E65100">'+s.countDung+'</b>' : '—'}</td>
+      <td>${s.countBoSung > 0 ? '<b style="color:#2E7D32">'+s.countBoSung+'</b>' : '—'}</td>
+      <td>${s.countVuot > 0 ? '<span class="vuot-badge">'+s.countVuot+'</span>' : '—'}</td>
+      <td>${s.thitDung.size > 0 ? escapeHTML([...s.thitDung].join(', ')) : '—'}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${s.skuBoSung.size > 0 ? escapeHTML([...s.skuBoSung].slice(0,3).join(', ') + (s.skuBoSung.size>3?' +'+ (s.skuBoSung.size-3)+'...':'')) : '—'}</td>
+      <td>${formatDate(s.lastDungDate)}</td>
+      <td>${formatDate(s.lastCreated)}</td>
+    </tr>`;
   }).join('');
 }
 
-// Short aliases for cleaner code
-function fmtD(d){return formatDate(d);}
-function escH(s){return escapeHTML(s);}
+function toggleSummaryVuotFilter(){
+  state.showVuotOnly2 = !state.showVuotOnly2;
+  const btn = document.getElementById('btnShowVuot2');
+  btn.classList.toggle('active', state.showVuotOnly2);
+  btn.textContent = state.showVuotOnly2 ? '⚠️ Đang lọc vượt mức (bỏ)' : '⚠️ Chỉ vượt mức';
+  applySummaryFilter();
+}
+
+function clearSummaryFilters(){
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById('filterDateFrom2').value = today;
+  document.getElementById('filterDateTo2').value = today;
+  document.getElementById('filterAction2').value = '';
+  document.getElementById('filterCH2').value = '';
+  state.showVuotOnly2 = false;
+  document.getElementById('btnShowVuot2').classList.remove('active');
+  document.getElementById('btnShowVuot2').textContent = '⚠️ Chỉ vượt mức';
+  applySummaryFilter();
+}
 
 // ============================================================
-// EXPORT CSV (v3: per-tab)
+// EXPORT CSV (UPDATED — supports summary view)
 // ============================================================
-function exportCSV(tab){
-  var data, headers, filename;
-  if(tab==='dung'){
-    data = state.dashboardData.filter(function(r){return r.hanh_dong==='Dừng thịt';});
-    var dFrom = document.getElementById('dungDateFrom').value;
-    var dTo = document.getElementById('dungDateTo').value;
-    var dCH = (document.getElementById('dungFilterCH').value||'').toLowerCase();
-    if(dFrom) data = data.filter(function(r){return (r.created_at||'').slice(0,10) >= dFrom;});
-    if(dTo) data = data.filter(function(r){return (r.created_at||'').slice(0,10) <= dTo;});
-    if(dCH) data = data.filter(function(r){return (r.ten_ch||'').toLowerCase().indexOf(dCH)>=0||(r.ma_ch||'').toLowerCase().indexOf(dCH)>=0;});
-    data.sort(function(a,b){return (b.created_at||'').localeCompare(a.created_at||'');});
-    headers = ['Ngày tạo','Mã CH','Tên CH','Nhóm DT','Loại thịt','Ngày dừng','Người khai','Ghi chú'];
-    filename = 'dung_thit_';
+function exportCSV(){
+  if(state.dashboardSubTab === 'summary'){
+    exportSummaryCSV();
   }else{
-    data = state.dashboardData.filter(function(r){return r.hanh_dong==='Bổ sung thịt';});
-    var bFrom = document.getElementById('bsDateFrom').value;
-    var bTo = document.getElementById('bsDateTo').value;
-    var bCH = (document.getElementById('bsFilterCH').value||'').toLowerCase();
-    if(bFrom) data = data.filter(function(r){return (r.created_at||'').slice(0,10) >= bFrom;});
-    if(bTo) data = data.filter(function(r){return (r.created_at||'').slice(0,10) <= bTo;});
-    if(bCH) data = data.filter(function(r){return (r.ten_ch||'').toLowerCase().indexOf(bCH)>=0||(r.ma_ch||'').toLowerCase().indexOf(bCH)>=0;});
-    if(dashState.bsVuotOnly) data = data.filter(function(r){return r.vuot_muc===true||r.vuot_muc==='true';});
-    data.sort(function(a,b){return (b.created_at||'').localeCompare(a.created_at||'');});
-    headers = ['Ngày tạo','Mã CH','Tên CH','Nhóm DT','Loại thịt','SKU','Số Pack','Lý do','Vượt mức','Người khai','Ghi chú'];
-    filename = 'bo_sung_thit_';
+    exportDetailCSV();
   }
+}
 
-  var rows;
-  if(tab==='dung'){
-    rows = data.map(function(r){return [
-      formatDate(r.created_at),r.ma_ch||'',r.ten_ch||'',r.nhom_dt||'',
-      r.loai_thit||'',formatDate(r.ngay_dung),r.nguoi_khai||'',r.ghi_chu||''
-    ];});
-  }else{
-    rows = data.map(function(r){return [
-      formatDate(r.created_at),r.ma_ch||'',r.ten_ch||'',r.nhom_dt||'',
-      r.loai_thit||'',r.sku||'',r.so_pack||'',r.ly_do||'',
-      (r.vuot_muc===true||r.vuot_muc==='true')?'CÓ':'Không',
-      r.nguoi_khai||'',r.ghi_chu||''
-    ];});
-  }
+function exportDetailCSV(){
+  // Get currently filtered data
+  const dateFrom = document.getElementById('filterDateFrom').value;
+  const dateTo = document.getElementById('filterDateTo').value;
+  const actionFilter = document.getElementById('filterAction').value;
+  const chFilter = (document.getElementById('filterCH').value||'').toLowerCase();
+  
+  let data = [...state.dashboardData];
+  if(dateFrom) data = data.filter(r=>(r.created_at||'').slice(0,10) >= dateFrom);
+  if(dateTo) data = data.filter(r=>(r.created_at||'').slice(0,10) <= dateTo);
+  if(actionFilter) data = data.filter(r=>r.hanh_dong === actionFilter);
+  if(chFilter) data = data.filter(r=>(r.ten_ch||'').toLowerCase().includes(chFilter)||(r.ma_ch||'').toLowerCase().includes(chFilter));
+  if(state.showVuotOnly) data = data.filter(r=>r.vuot_muc===true||r.vuot_muc==='true');
+  data.sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
+  
+  const headers = ['Ngày tạo','Mã CH','Tên CH','Nhóm DT','Hành động','Loại thịt','Ngày dừng','SKU','Số Pack','Vượt mức','Người khai','Ghi chú'];
+  const rows = data.map(r=>[
+    formatDate(r.created_at),
+    r.ma_ch||'',
+    r.ten_ch||'',
+    r.nhom_dt||'',
+    r.hanh_dong||'',
+    r.loai_thit||'',
+    formatDate(r.ngay_dung),
+    r.sku||'',
+    r.so_pack||'',
+    (r.vuot_muc===true||r.vuot_muc==='true')?'CÓ':'Không',
+    r.nguoi_khai||'',
+    r.ghi_chu||'',
+  ]);
+  
+  downloadCSV(headers, rows, `thit_mdl_chi_tiet_${new Date().toISOString().slice(0,10)}.csv`);
+}
 
-  var csvContent = [headers].concat(rows).map(function(row){return row.map(function(cell){return '"'+String(cell).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
-  var BOM = '\uFEFF';
-  var blob = new Blob([BOM+csvContent], {type:'text/csv;charset=utf-8'});
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
+function exportSummaryCSV(){
+  // Recompute summary data (same logic as applySummaryFilter)
+  const dateFrom = document.getElementById('filterDateFrom2').value;
+  const dateTo = document.getElementById('filterDateTo2').value;
+  const actionFilter = document.getElementById('filterAction2').value;
+  const chFilter = (document.getElementById('filterCH2').value||'').toLowerCase();
+  
+  let data = [...state.dashboardData];
+  if(dateFrom) data = data.filter(r=>(r.created_at||'').slice(0,10) >= dateFrom);
+  if(dateTo) data = data.filter(r=>(r.created_at||'').slice(0,10) <= dateTo);
+  if(actionFilter) data = data.filter(r=>r.hanh_dong === actionFilter);
+  
+  const storeMap = {};
+  data.forEach(r=>{
+    const key = r.ma_ch||'??';
+    if(chFilter && !(key.toLowerCase().includes(chFilter)||(r.ten_ch||'').toLowerCase().includes(chFilter))) return;
+    
+    if(!storeMap[key]){
+      storeMap[key] = {
+        ma_ch: key, ten_ch: r.ten_ch||'', nhom_dt: r.nhom_dt||'',
+        countDung: 0, countBoSung: 0, countVuot: 0,
+        thitDung: new Set(), skuBoSung: new Set(),
+        lastDungDate: '', lastCreated: '',
+      };
+    }
+    const sm = storeMap[key];
+    if(r.hanh_dong==='Dừng thịt'){
+      sm.countDung++;
+      if(r.loai_thit) sm.thitDung.add(r.loai_thit);
+      if(r.ngay_dung && r.ngay_dung > sm.lastDungDate) sm.lastDungDate = r.ngay_dung;
+    }else if(r.hanh_dong==='Bổ sung thịt'){
+      sm.countBoSung++;
+      if(r.sku) sm.skuBoSung.add(r.sku);
+    }
+    if(r.vuot_muc===true||r.vuot_muc==='true') sm.countVuot++;
+    if(r.created_at > sm.lastCreated) sm.lastCreated = r.created_at;
+  });
+  
+  let stores = Object.values(storeMap);
+  if(state.showVuotOnly2) stores = stores.filter(s=>s.countVuot > 0);
+  if(actionFilter==='Dừng thịt') stores = stores.filter(s=>s.countDung > 0);
+  if(actionFilter==='Bổ sung thịt') stores = stores.filter(s=>s.countBoSung > 0);
+  stores.sort((a,b)=>b.lastCreated.localeCompare(a.lastCreated));
+  
+  const headers = ['Mã CH','Tên CH','Nhóm DT','Số lần Dừng thịt','Số lần Bổ sung','Số lần Vượt mức','Thịt dừng','SKU bổ sung','Ngày dừng gần nhất','Khai báo gần nhất'];
+  const rows = stores.map(s=>[
+    s.ma_ch,
+    s.ten_ch,
+    s.nhom_dt,
+    s.countDung,
+    s.countBoSung,
+    s.countVuot,
+    [...s.thitDung].join(', '),
+    [...s.skuBoSung].join(', '),
+    formatDate(s.lastDungDate),
+    formatDate(s.lastCreated),
+  ]);
+  
+  downloadCSV(headers, rows, `thit_mdl_tonghop_CH_${new Date().toISOString().slice(0,10)}.csv`);
+}
+
+function downloadCSV(headers, rows, filename){
+  const csvContent = [headers,...rows].map(row=>row.map(cell=>'"'+String(cell).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const BOM = '\uFEFF';
+  const blob = new Blob([BOM+csvContent], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
   a.href = url;
-  a.download = filename + new Date().toISOString().slice(0,10) + '.csv';
+  a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
   showToast('✅ Đã export CSV!', 'success');
@@ -1636,103 +1574,6 @@ function saveConfig(){
   // Try to sync local data
   if(url) syncLocalToGAS();
 }
-
-
-// ============================================================
-function selectManualStore(ma_sap){
-  const store = state.storelist.find(function(s){ return s.ma_sap===ma_sap; });
-  if(!store) return;
-  
-  state.currentStore = {...store, distance: 0};
-  document.getElementById('manualStoreSearch').value = store.ma_sap + ' — ' + store.ten_ch;
-  document.getElementById('manualStoreDropdown').classList.remove('active');
-  
-  // Display store info
-  displayStoreInfo(store, 0);
-  document.getElementById('actionSection').classList.add('visible');
-  document.getElementById('noStoreCard').classList.remove('visible');
-  
-  // Update GPS button state
-  const btn = document.getElementById('gpsBtn');
-  btn.classList.remove('searching');
-  btn.classList.add('success');
-  btn.innerHTML = '<span class="gps-icon">✅</span> ĐÃ CHỌN CH';
-  document.getElementById('gpsStatus').textContent = '✅ Chọn thủ công: '+store.ma_sap;
-  document.getElementById('gpsStatus').className = 'gps-status';
-}
-
-function highlightText(text, q){
-  const idx = text.toLowerCase().indexOf(q.toLowerCase());
-  if(idx<0) return escapeHTML(text);
-  return escapeHTML(text.slice(0,idx)) + '<b style="color:var(--red)">' + escapeHTML(text.slice(idx,idx+q.length)) + '</b>' + escapeHTML(text.slice(idx+q.length));
-}
-
-function escapeQuote(str){
-  return (str||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-}
-
-
-// ============================================================
-// ============================================================
-function filterManualStore(){
-  var q = (document.getElementById('manualStoreSearch').value||'').toLowerCase();
-  var dropdown = document.getElementById('manualStoreDropdown');
-  if(!state.storelist || state.storelist.length===0){
-    dropdown.innerHTML = '<div class="sku-option" style="color:var(--text2)">Đang tải danh sách CH...</div>';
-    dropdown.classList.add('active');
-    return;
-  }
-  if(!q){
-    var top = state.storelist.slice(0,50);
-    dropdown.innerHTML = top.map(function(s){
-      return '<div class="sku-option" onclick="selectManualStore(\''+escQ(s.ma_sap)+'\')">'
-        + '<span>'+escH(s.ma_sap)+' — '+escH(s.ten_ch)+'</span>'
-        + '<span class="sku-group">'+escH(s.nhom_dt||'--')+'</span>'
-        + '</div>';
-    }).join('');
-  }else{
-    var filtered = state.storelist.filter(function(s){
-      return (s.ten_ch||'').toLowerCase().indexOf(q)>=0 || (s.ma_sap||'').toLowerCase().indexOf(q)>=0;
-    }).slice(0,50);
-    dropdown.innerHTML = filtered.length>0
-      ? filtered.map(function(s){
-          return '<div class="sku-option" onclick="selectManualStore(\''+escQ(s.ma_sap)+'\')">'
-            + '<span>'+hlText(s.ma_sap+' — '+s.ten_ch, q)+'</span>'
-            + '<span class="sku-group">'+escH(s.nhom_dt||'--')+'</span>'
-            + '</div>';
-        }).join('')
-      : '<div class="sku-option" style="color:var(--text2)">Không tìm thấy CH</div>';
-  }
-  dropdown.classList.add('active');
-}
-
-function selectManualStore(ma_sap){
-  var store = state.storelist.find(function(s){ return s.ma_sap===ma_sap; });
-  if(!store) return;
-  
-  state.currentStore = Object.assign({}, store, {distance: 0});
-  document.getElementById('manualStoreSearch').value = store.ma_sap + ' — ' + store.ten_ch;
-  document.getElementById('manualStoreDropdown').classList.remove('active');
-  
-  displayStoreInfo(store, 0);
-  document.getElementById('actionSection').classList.add('visible');
-  document.getElementById('noStoreCard').classList.remove('visible');
-  
-  var btn = document.getElementById('gpsBtn');
-  btn.classList.remove('searching');
-  btn.classList.add('success');
-  btn.innerHTML = '<span class="gps-icon">✅</span> ĐÃ CHỌN CH';
-  document.getElementById('gpsStatus').textContent = '✅ Chọn thủ công: '+store.ma_sap;
-  document.getElementById('gpsStatus').className = 'gps-status';
-}
-
-function hlText(text, q){
-  var idx = text.toLowerCase().indexOf(q.toLowerCase());
-  if(idx<0) return escH(text);
-  return escH(text.slice(0,idx)) + '<b style="color:var(--red)">' + escH(text.slice(idx,idx+q.length)) + '</b>' + escH(text.slice(idx+q.length));
-}
-
-function escQ(str){ return (str||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 
 // ============================================================
 // UTILITIES
