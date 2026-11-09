@@ -701,8 +701,53 @@ let state = {
   dashboardSubTab: 'detail', // 'detail' | 'summary'
   skuPopupLine: -1, // which line's SKU popup is open
   skuPopupFilterGroup: '', // current group filter in popup
+  asmLoaded: false,
+  asmStoreArts: {}, // {store_code: Set of article codes}
   gasUrl: localStorage.getItem('thitmdl_gas_url') || 'https://script.google.com/macros/s/AKfycbwWA-uReD1Mnp-wHDT4Pvtz0Mi-R5a2gUfj0uWz0TKDG4h7XYZKTnEaDUsnQAeoQRY_/exec'
 };
+
+// ============================================================
+// ASM ASSORTMENT — filter SKU list by store assortment
+// ============================================================
+async function loadAsmData(){
+  if(state.asmLoaded) return;
+  try{
+    const cached = localStorage.getItem('thitmdl_asm_data');
+    if(cached){
+      const obj = JSON.parse(cached);
+      for(const [k,v] of Object.entries(obj)){ obj[k] = new Set(v); }
+      state.asmStoreArts = obj;
+      state.asmLoaded = true;
+      return;
+    }
+  }catch(e){/* ignore */}
+  
+  try{
+    const resp = await fetch('asm_store_idx.json?v=1');
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    const data = await resp.json();
+    const lookup = {};
+    for(const [store, indices] of Object.entries(data.stores)){
+      lookup[store] = new Set(indices.map(i => data.articles[i]));
+    }
+    state.asmStoreArts = lookup;
+    state.asmLoaded = true;
+    const cache = {};
+    for(const [k, v] of Object.entries(lookup)){ cache[k] = [...v]; }
+    try{ localStorage.setItem('thitmdl_asm_data', JSON.stringify(cache)); }catch(e){}
+  }catch(e){
+    console.warn('ASM load failed, showing all SKUs');
+    state.asmLoaded = true;
+  }
+}
+
+function getStoreAssortment(storeCode){
+  if(!storeCode) return null;
+  if(state.asmStoreArts[storeCode]) return state.asmStoreArts[storeCode];
+  const stripped = String(storeCode).replace(/^0+/,'');
+  if(stripped !== storeCode && state.asmStoreArts[stripped]) return state.asmStoreArts[stripped];
+  return null;
+}
 
 // ============================================================
 // SKU DATABASE
