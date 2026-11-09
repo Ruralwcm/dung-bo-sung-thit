@@ -610,6 +610,7 @@ body{
           <thead>
             <tr>
               <th>Ngày</th>
+              <th>Giờ KB</th>
               <th>Mã CH</th>
               <th>Tên CH</th>
               <th>Nhóm DT</th>
@@ -626,7 +627,7 @@ body{
             </tr>
           </thead>
           <tbody id="tableBody">
-            <tr><td colspan="14" class="data-empty"><span class="empty-icon">📭</span>Chưa có dữ liệu. Bấm nút 📊 Xem Dashboard để tải.</td></tr>
+            <tr><td colspan="15" class="data-empty"><span class="empty-icon">📭</span>Chưa có dữ liệu. Bấm nút 📊 Xem Dashboard để tải.</td></tr>
           </tbody>
         </table>
       </div>
@@ -1232,7 +1233,7 @@ async function submitForm(){
   
   const max = getMaxPacks();
   const ghiChu = document.getElementById('ghiChu').value.trim();
-  const now = new Date().toISOString();
+  const now = localISO();
   
   let records = [];
   
@@ -1452,7 +1453,7 @@ function renderDashboardTable(data){
   summary.textContent = `Tổng: ${data.length} khai báo | 🛑 Dừng: ${totalDung} | ➕ Bổ sung: ${totalBoSung} | ⚠️ Vượt mức: ${totalVuot}`;
   
   if(data.length === 0){
-    tbody.innerHTML = `<tr><td colspan="14" class="data-empty"><span class="empty-icon">📭</span>${state.showVuotOnly?'Không có khai báo vượt mức':'Chưa có dữ liệu khai báo'}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="15" class="data-empty"><span class="empty-icon">📭</span>${state.showVuotOnly?'Không có khai báo vượt mức':'Chưa có dữ liệu khai báo'}</td></tr>`;
     return;
   }
   
@@ -1462,6 +1463,7 @@ function renderDashboardTable(data){
     const localBadge = r.local ? ' 📱' : '';
     return `<tr class="${vuotClass}">
       <td>${escapeHTML(formatDate(r.created_at))}${localBadge}</td>
+      <td style="font-variant-numeric:tabular-nums">${formatTimeLog(r.created_at)}</td>
       <td>${escapeHTML(r.ma_ch||'')}</td>
       <td>${escapeHTML(r.ten_ch||'')}</td>
       <td>${escapeHTML(r.nhom_dt||'')}</td>
@@ -1646,9 +1648,10 @@ function exportDetailCSV(){
   if(state.showVuotOnly) data = data.filter(r=>r.vuot_muc===true||r.vuot_muc==='true');
   data.sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
   
-  const headers = ['Ngày tạo','Mã CH','Tên CH','Nhóm DT','Hành động','Loại thịt','Ngày dừng','SKU','Số Pack','Vượt mức','Ngày nhận hàng','Lý do','Người khai','Thông tin khách hàng'];
+  const headers = ['Ngày tạo','Giờ khai báo','Mã CH','Tên CH','Nhóm DT','Hành động','Loại thịt','Ngày dừng','SKU','Số Pack','Vượt mức','Ngày nhận hàng','Lý do','Người khai','Thông tin khách hàng'];
   const rows = data.map(r=>[
     formatDate(r.created_at),
+    formatTimeLog(r.created_at),
     r.ma_ch||'',
     r.ten_ch||'',
     r.nhom_dt||'',
@@ -1809,6 +1812,31 @@ function formatDate(d){
     return `${dObj.getDate()}/${dObj.getMonth()+1}/${dObj.getFullYear()}`;
   }
   return s;
+}
+
+function formatTimeLog(d){
+  if(!d) return '—';
+  try{
+    const dObj = new Date(d);
+    if(!isNaN(dObj.getTime())){
+      const hh = String(dObj.getHours()).padStart(2,'0');
+      const mm = String(dObj.getMinutes()).padStart(2,'0');
+      const ss = String(dObj.getSeconds()).padStart(2,'0');
+      return `${hh}:${mm}:${ss}`;
+    }
+  }catch(e){/* fall through */}
+  return '—';
+}
+
+function localISO(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mm = String(d.getMinutes()).padStart(2,'0');
+  const ss = String(d.getSeconds()).padStart(2,'0');
+  return `${y}-${m}-${day}T${hh}:${mm}:${ss}`;
 }
 
 function escapeHTML(str){
