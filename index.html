@@ -470,7 +470,7 @@ body{
         </div>
         <div class="form-group">
           <label class="form-label">Ngày dừng</label>
-          <input type="date" class="form-input" id="ngayDung" onchange="updateDeadlineNote()">
+          <input type="date" class="form-input" id="ngayDung" onchange="updateDeadlineNote();updateSubmitBtn()">
         </div>
         <div class="form-group">
           <label class="form-label">Người khai báo</label>
@@ -1162,7 +1162,8 @@ function updateSubmitBtn(){
   }
   if(state.currentAction === 'dung'){
     const loai = document.getElementById('loaiThitDung').value;
-    btn.disabled = !loai;
+    const ngayDung = document.getElementById('ngayDung').value;
+    btn.disabled = !loai || !ngayDung;
   }else{
     const hasSKU = state.productLines.some(function(l){ return l.sku && l.pack > 0; });
     const lyDo = document.getElementById('lyDoBoSung').value;
@@ -1721,10 +1722,30 @@ function hideLoading(){
 
 function formatDate(d){
   if(!d) return '—';
-  const s = String(d).slice(0,10);
-  if(!s.includes('-')) return s;
-  const [y,m,day] = s.split('-');
-  return `${day}/${m}/${y}`;
+  const s = String(d).trim();
+  // Try ISO/dash format: YYYY-MM-DD
+  if(s.includes('-')){
+    const part = s.slice(0,10);
+    const [y,m,day] = part.split('-');
+    if(y && m && day) return `${parseInt(day)}/${parseInt(m)}/${y}`;
+  }
+  // Try slash format: DD/MM/YYYY or MM/DD/YYYY
+  if(s.includes('/')){
+    const parts = s.split('/');
+    if(parts.length === 3){
+      // Assume DD/MM/YYYY (VN format)
+      const [a,b,c] = parts.map(Number);
+      if(a>12 && b<=12) return `${a}/${b}/${c}`; // DD/MM/YYYY
+      if(b>12 && a<=12) return `${b}/${a}/${c}`; // MM/DD/YYYY → DD/MM
+      return `${a}/${b}/${c}`; // ambiguous, keep as is
+    }
+  }
+  // Try parsing as Date (handles "Mon Nov 09 2026", "11/9/2026", etc.)
+  const dObj = new Date(s);
+  if(!isNaN(dObj.getTime())){
+    return `${dObj.getDate()}/${dObj.getMonth()+1}/${dObj.getFullYear()}`;
+  }
+  return s;
 }
 
 function escapeHTML(str){
