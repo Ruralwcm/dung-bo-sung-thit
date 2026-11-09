@@ -603,12 +603,14 @@ body{
               <th>SKU</th>
               <th>Số Pack</th>
               <th>Vượt mức</th>
+              <th>Ngày nhận hàng</th>
+              <th>Lý do</th>
               <th>Người khai</th>
               <th>Ghi chú</th>
             </tr>
           </thead>
           <tbody id="tableBody">
-            <tr><td colspan="12" class="data-empty"><span class="empty-icon">📭</span>Chưa có dữ liệu. Bấm nút 📊 Xem Dashboard để tải.</td></tr>
+            <tr><td colspan="14" class="data-empty"><span class="empty-icon">📭</span>Chưa có dữ liệu. Bấm nút 📊 Xem Dashboard để tải.</td></tr>
           </tbody>
         </table>
       </div>
@@ -1408,7 +1410,7 @@ function renderDashboardTable(data){
   summary.textContent = `Tổng: ${data.length} khai báo | 🛑 Dừng: ${totalDung} | ➕ Bổ sung: ${totalBoSung} | ⚠️ Vượt mức: ${totalVuot}`;
   
   if(data.length === 0){
-    tbody.innerHTML = `<tr><td colspan="12" class="data-empty"><span class="empty-icon">📭</span>${state.showVuotOnly?'Không có khai báo vượt mức':'Chưa có dữ liệu khai báo'}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="14" class="data-empty"><span class="empty-icon">📭</span>${state.showVuotOnly?'Không có khai báo vượt mức':'Chưa có dữ liệu khai báo'}</td></tr>`;
     return;
   }
   
@@ -1427,6 +1429,8 @@ function renderDashboardTable(data){
       <td>${escapeHTML(r.sku||'—')}</td>
       <td>${r.so_pack||'—'}</td>
       <td>${vuotBadge}</td>
+      <td>${escapeHTML(r.ngay_nhan_hang||'')}</td>
+      <td>${escapeHTML(r.ly_do||'')}</td>
       <td>${escapeHTML(r.nguoi_khai||'')}</td>
       <td>${escapeHTML(r.ghi_chu||'')}</td>
     </tr>`;
@@ -1600,7 +1604,7 @@ function exportDetailCSV(){
   if(state.showVuotOnly) data = data.filter(r=>r.vuot_muc===true||r.vuot_muc==='true');
   data.sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
   
-  const headers = ['Ngày tạo','Mã CH','Tên CH','Nhóm DT','Hành động','Loại thịt','Ngày dừng','SKU','Số Pack','Vượt mức','Người khai','Ghi chú'];
+  const headers = ['Ngày tạo','Mã CH','Tên CH','Nhóm DT','Hành động','Loại thịt','Ngày dừng','SKU','Số Pack','Vượt mức','Ngày nhận hàng','Lý do','Người khai','Ghi chú'];
   const rows = data.map(r=>[
     formatDate(r.created_at),
     r.ma_ch||'',
@@ -1612,6 +1616,8 @@ function exportDetailCSV(){
     r.sku||'',
     r.so_pack||'',
     (r.vuot_muc===true||r.vuot_muc==='true')?'CÓ':'Không',
+    r.ngay_nhan_hang||'',
+    r.ly_do||'',
     r.nguoi_khai||'',
     r.ghi_chu||'',
   ]);
