@@ -703,7 +703,7 @@ let state = {
   skuPopupFilterGroup: '', // current group filter in popup
   asmLoaded: false,
   asmStoreArts: {}, // {store_code: Set of article codes}
-  gasUrl: localStorage.getItem('thitmdl_gas_url') || 'https://script.google.com/macros/s/AKfycbwWA-uReD1Mnp-wHDT4Pvtz0Mi-R5a2gUfj0uWz0TKDG4h7XYZKTnEaDUsnQAeoQRY_/exec'
+  gasUrl: localStorage.getItem('thitmdl_gas_url') || 'https://script.google.com/macros/s/AKfycbwPmh_Erk9eDbpNCMQePscfl067merQamb1xfvKbtjyUmjw3jTUU4Z43LzziuQb7H1X/exec'
 };
 
 // ============================================================
@@ -1373,7 +1373,7 @@ async function saveToGAS(record){
   const resp = await fetch(state.gasUrl, {
     method: 'POST',
     headers: {'Content-Type': 'text/plain'},
-    body: JSON.stringify({action:'save', data:record}),
+    body: JSON.stringify({action:'save', table:'thit_mdl', data:record}),
   });
   if(!resp.ok) throw new Error('HTTP '+resp.status);
   return await resp.json();
@@ -1415,7 +1415,7 @@ async function loadDashboard(){
   showLoading('Đang tải dữ liệu...');
   try{
     if(state.gasUrl){
-      const resp = await fetch(state.gasUrl + '?action=list');
+      const resp = await fetch(state.gasUrl + '?action=list&table=thit_mdl');
       const result = await resp.json();
       if(result && result.data){
         state.dashboardData = result.data;
