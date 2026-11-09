@@ -365,10 +365,25 @@ body{
 
 /* ===== RESPONSIVE ===== */
 @media(min-width:768px){
-  .container{padding:20px 24px}
+  .container{padding:20px 24px;max-width:100%;width:auto}
   .store-row{gap:24px}
-  .data-table{font-size:.82rem}
+  .data-table{font-size:.82rem;min-width:auto}
   .data-table th{font-size:.76rem}
+  .sku-popup{max-width:900px;max-height:85vh}
+  .header h1{font-size:1.15rem}
+}
+@media(min-width:1024px){
+  .container{padding:24px 40px}
+  .data-table,.store-summary-table{font-size:.85rem;min-width:auto}
+  .data-table th,.store-summary-table th{font-size:.78rem}
+  .data-table td,.store-summary-table td{padding:10px 8px}
+  .filter-row{flex-wrap:nowrap}
+  .filter-row .form-input,.filter-row .form-select{min-width:100px}
+  .store-summary-table td{white-space:normal}
+  .reason-row{max-width:500px}
+}
+@media(min-width:1440px){
+  .container{max-width:1400px;margin:0 auto;padding:24px 48px}
 }
 </style>
 </head>
