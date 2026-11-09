@@ -491,6 +491,10 @@ body{
           <label class="form-label">Ngày dừng</label>
           <input type="date" class="form-input" id="ngayDung" onchange="updateDeadlineNote()">
         </div>
+        <div class="form-group">
+          <label class="form-label">Người khai báo</label>
+          <input type="text" class="form-input" id="nguoiKhaiDung" placeholder="Tên nhân viên khai báo">
+        </div>
       </div>
 
       <!-- BỔ SUNG THỊT Form — Multi-SKU -->
@@ -1253,8 +1257,10 @@ async function submitForm(){
   if(state.currentAction === 'dung'){
     const loaiThit = document.getElementById('loaiThitDung').value;
     const ngayDung = document.getElementById('ngayDung').value;
+    const nguoiKhai = document.getElementById('nguoiKhaiDung').value.trim();
     if(!loaiThit){ showToast('⚠️ Vui lòng chọn loại thịt dừng', 'error'); return; }
     if(!ngayDung){ showToast('⚠️ Vui lòng chọn ngày dừng', 'error'); return; }
+    if(!nguoiKhai){ showToast('⚠️ Vui lòng nhập tên người khai báo', 'error'); return; }
     
     const loais = loaiThit === 'Cả hai' ? ['Gà','Heo'] : [loaiThit];
     loais.forEach(function(lt){
@@ -1264,7 +1270,7 @@ async function submitForm(){
         hanh_dong: 'Dừng thịt', loai_thit: lt, ngay_dung: ngayDung,
         sku: '', so_pack: 0, vuot_muc: false,
         ly_do: '', ngay_nhan_hang: '',
-        nguoi_khai: '', ghi_chu: ghiChu, created_at: now,
+        nguoi_khai: nguoiKhai, ghi_chu: ghiChu, created_at: now,
       });
     });
   }else{
@@ -1339,6 +1345,7 @@ function resetForm(){
   document.getElementById('loaiThitDung').value = '';
   document.getElementById('lyDoBoSung').value = '';
   document.getElementById('ngayNhanHang').value = '';
+  document.getElementById('nguoiKhaiDung').value = '';
   document.getElementById('productLines').innerHTML = '';
   document.getElementById('skuCount').textContent = '0';
   document.getElementById('deadlineNoteDung').style.display = 'none';
