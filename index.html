@@ -992,7 +992,7 @@ function displayStoreInfo(store, dist){
   const nMatch = nhom.match(/N(\d+)/i);
   const n = nMatch ? parseInt(nMatch[1]) : 0;
   const maxPack = n * 8;
-  document.getElementById('storeDist').textContent = n ? `📦 Max ${maxPack} pack/ngày (${nhom})` : '📦 Limit: --';
+  document.getElementById('storeDist').textContent = n ? `📦 Max ${maxPack} pack/ngày (2×${nhom})` : '📦 Limit: --';
 }
 
 // ============================================================
@@ -1170,7 +1170,7 @@ function getMaxPacks(){
   if(!state.currentStore) return 0;
   const nhom = state.currentStore.nhom_dt;
   const nMatch = (nhom||'').match(/N(\d+)/i);
-  return nMatch ? parseInt(nMatch[1]) * 8 : 0;
+  return nMatch ? parseInt(nMatch[1]) * 2 : 0;
 }
 
 function updateSubmitBtn(){
@@ -1186,7 +1186,7 @@ function updateSubmitBtn(){
     const hasSKU = state.productLines.some(function(l){ return l.sku && l.pack > 0; });
     const lyDo = document.getElementById('lyDoBoSung').value;
     const ngayNhan = document.getElementById('ngayNhanHang').value;
-    btn.disabled = !hasSKU || !lyDo || !ngayNhan;
+    let blockedByLimit = false;\n    if(hasSKU){\n      const totalPacks = state.productLines.reduce((s,l)=>s+(l.sku?l.pack:0),0);\n      const maxP = getMaxPacks();\n      if(maxP > 0 && totalPacks > maxP) blockedByLimit = true;\n    }\n    btn.disabled = !hasSKU || !lyDo || !ngayNhan || blockedByLimit;
     // Show/hide customer info field
     const khachInfo = document.getElementById('khachDatInfo');
     khachInfo.style.display = lyDo === 'Khách đặt' ? 'block' : 'none';
@@ -1246,6 +1246,13 @@ async function submitForm(){
     
     const validLines = state.productLines.filter(function(l){ return l.sku && l.pack > 0; });
     if(validLines.length === 0){ showToast('⚠️ Cần ít nhất 1 sản phẩm với số pack > 0', 'error'); return; }
+    
+    // Chặn nếu tổng pack vượt 2×N
+    const totalPacks = validLines.reduce((s,l)=>s+l.pack,0);
+    if(max > 0 && totalPacks > max){
+      showToast('🚫 Tổng '+totalPacks+' pack vượt giới hạn '+max+' pack (2×'+state.currentStore.nhom_dt+'). Vui lòng giảm!', 'error');
+      return;
+    }
     
     validLines.forEach(function(l){
       const vuotMuc = max > 0 && l.pack > max;
