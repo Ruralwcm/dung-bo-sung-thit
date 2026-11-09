@@ -993,9 +993,6 @@ function displayStoreInfo(store, dist){
   const n = nMatch ? parseInt(nMatch[1]) : 0;
   const maxPack = n * 8;
   document.getElementById('storeDist').textContent = n ? `📦 Max ${maxPack} pack/ngày (${nhom})` : '📦 Limit: --';
-  
-  // Update pack info
-  updatePackInfo();
 }
 
 // ============================================================
