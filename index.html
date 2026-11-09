@@ -371,19 +371,6 @@ body{
 .no-store .icon{font-size:3rem;margin-bottom:8px}
 .no-store .msg{font-size:.9rem;color:var(--text2);font-weight:600}
 
-/* ===== CONFIG SECTION ===== */
-.config-bar{
-  display:flex;gap:8px;align-items:center;margin-top:8px;font-size:.75rem;
-}
-.config-bar .config-input{
-  flex:1;padding:6px 10px;border:1px solid var(--border);
-  border-radius:4px;font-size:.75rem;
-}
-.config-bar .config-btn{
-  padding:6px 12px;background:var(--text2);color:#fff;border:none;
-  border-radius:4px;font-size:.75rem;cursor:pointer;
-}
-
 /* ===== RESPONSIVE ===== */
 @media(min-width:768px){
   .container{padding:20px 24px}
@@ -557,14 +544,7 @@ body{
       </button>
     </div>
 
-    <!-- Config Bar (hidden by default, shown on toggle) -->
-    <div class="card" style="padding:8px 12px" id="configCard">
-      <div class="config-bar">
-        <span style="color:var(--text2);white-space:nowrap">GAS URL:</span>
-        <input type="text" class="config-input" id="gasUrl" placeholder="Nhập GAS Web App URL...">
-        <button class="config-btn" onclick="saveConfig()">Lưu</button>
-      </div>
-    </div>
+    
   </div>
 
   <!-- ============ DASHBOARD TAB ============ -->
@@ -780,8 +760,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
       document.getElementById('skuDropdown').classList.remove('active');
     }
   });
-  // Config
-  document.getElementById('gasUrl').value = state.gasUrl;
   // Load storelist
   loadStorelist();
   // Init nhóm thịt dropdown for popup
@@ -1737,18 +1715,6 @@ async function syncLocalToGAS(){
   if(synced > 0){
     showToast(`✅ Đã đồng bộ ${synced}/${local.length} khai báo`, 'success');
   }
-}
-
-// ============================================================
-// CONFIG
-// ============================================================
-function saveConfig(){
-  const url = document.getElementById('gasUrl').value.trim();
-  state.gasUrl = url;
-  localStorage.setItem('thitmdl_gas_url', url);
-  showToast('✅ Đã lưu cấu hình!', 'success');
-  // Try to sync local data
-  if(url) syncLocalToGAS();
 }
 
 // ============================================================
