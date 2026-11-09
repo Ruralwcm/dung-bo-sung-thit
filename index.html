@@ -723,7 +723,7 @@ async function loadAsmData(){
   }catch(e){/* ignore */}
   
   try{
-    const resp = await fetch('asm_store_idx.json?v=1');
+    const resp = await fetch('asm_store_idx.json?v=2');
     if(!resp.ok) throw new Error('HTTP '+resp.status);
     const data = await resp.json();
     const lookup = {};
