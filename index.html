@@ -1186,7 +1186,13 @@ function updateSubmitBtn(){
     const hasSKU = state.productLines.some(function(l){ return l.sku && l.pack > 0; });
     const lyDo = document.getElementById('lyDoBoSung').value;
     const ngayNhan = document.getElementById('ngayNhanHang').value;
-    let blockedByLimit = false;\n    if(hasSKU){\n      const totalPacks = state.productLines.reduce((s,l)=>s+(l.sku?l.pack:0),0);\n      const maxP = getMaxPacks();\n      if(maxP > 0 && totalPacks > maxP) blockedByLimit = true;\n    }\n    btn.disabled = !hasSKU || !lyDo || !ngayNhan || blockedByLimit;
+    let blockedByLimit = false;
+    if(hasSKU){
+      const totalPacks = state.productLines.reduce((s,l)=>s+(l.sku?l.pack:0),0);
+      const maxP = getMaxPacks();
+      if(maxP > 0 && totalPacks > maxP) blockedByLimit = true;
+    }
+    btn.disabled = !hasSKU || !lyDo || !ngayNhan || blockedByLimit;
     // Show/hide customer info field
     const khachInfo = document.getElementById('khachDatInfo');
     khachInfo.style.display = lyDo === 'Khách đặt' ? 'block' : 'none';
