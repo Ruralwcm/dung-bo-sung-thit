@@ -172,27 +172,19 @@ body{
 .product-lines{margin-bottom:8px}
 .product-card{
   background:#FAFAFA;border:1.5px solid var(--border);border-radius:var(--radius-sm);
-  padding:12px;margin-bottom:8px;position:relative;transition:all .2s
+  padding:6px 8px;margin-bottom:6px;transition:all .2s
 }
 .product-card:last-child{margin-bottom:0}
-.product-card .card-header{
-  display:flex;justify-content:space-between;align-items:center;margin-bottom:8px
-}
-.product-card .card-idx{font-size:.75rem;font-weight:700;color:var(--red);background:#FFF5F5;padding:2px 8px;border-radius:10px}
+.product-card .card-row{display:flex;gap:6px;align-items:center}
+.product-card .sku-col{flex:1;min-width:0}
 .product-card .card-remove{
-  background:none;border:none;color:var(--red-light);font-size:.85rem;cursor:pointer;
-  padding:4px 8px;border-radius:4px;font-weight:600;-webkit-tap-highlight-color:transparent
+  background:none;border:none;color:var(--red-light);font-size:1.1rem;cursor:pointer;
+  padding:6px 10px;border-radius:4px;font-weight:700;-webkit-tap-highlight-color:transparent;line-height:1
 }
 .product-card .card-remove:hover{background:#FFEBEE}
-.product-card .card-remove:disabled{color:#BDBDBD;pointer-events:none}
-.product-card .card-row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
-.product-card .card-row>*{flex:1;min-width:80px}
-.product-card .card-row .sku-col{flex:2;min-width:140px}
-.product-card .card-row .pack-col{flex:0 0 80px;min-width:70px}
 .product-card .card-pack-warn{
-  display:none;color:var(--red-light);font-size:.72rem;font-weight:600;margin-top:4px
+  font-size:.7rem;color:var(--red-light);font-weight:600;margin-top:3px;padding-left:4px
 }
-.product-card .card-pack-warn.visible{display:block}
 
 /* ===== SKU POPUP ===== */
 .sku-popup-overlay{
@@ -1068,28 +1060,18 @@ function renderProductLines(){
   const max = getMaxPacks();
   
   container.innerHTML = state.productLines.map((line, i)=>{
-    const skuName = line.sku ? (line.sku.code+' — '+line.sku.name) : '';
     const overMax = max > 0 && (line.pack||0) > max;
     return '<div class="product-card">'
-      + '<div class="card-header">'
-        + '<span class="card-idx">#'+(i+1)+'</span>'
-        + (state.productLines.length > 1
-          ? '<button class="card-remove" onclick="removeProductLine('+i+')">🗑 Xoá</button>'
-          : '<span></span>')
-      + '</div>'
       + '<div class="card-row">'
         + '<div class="sku-col">'
-          + '<label class="form-label">Sản phẩm</label>'
-          + '<button class="form-input" style="text-align:left;cursor:pointer;color:'+(line.sku?'var(--text)':'var(--text2)')+';height:42px" onclick="openSkuPopup('+i+')">'
+          + '<button class="form-input" style="text-align:left;cursor:pointer;color:'+(line.sku?'var(--text)':'var(--text2)')+';height:40px;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" onclick="openSkuPopup('+i+')">'
             + (line.sku ? ('<b>'+escapeHTML(line.sku.code)+'</b> '+escapeHTML(line.sku.name)) : '📦 Chọn sản phẩm...')
           + '</button>'
         + '</div>'
-        + '<div class="pack-col">'
-          + '<label class="form-label">Số pack</label>'
-          + '<input type="number" class="form-input" min="1" value="'+line.pack+'" style="height:42px;text-align:center" onchange="updateProductPack('+i+',this.value)" oninput="updateProductPack('+i+',this.value)">'
-        + '</div>'
+        + '<input type="number" class="form-input" min="1" value="'+line.pack+'" style="width:52px;height:40px;text-align:center;font-size:.85rem;flex-shrink:0" onchange="updateProductPack('+i+',this.value)" oninput="updateProductPack('+i+',this.value)">'
+        + '<button class="card-remove" onclick="removeProductLine('+i+')" title="Xoá" style="flex-shrink:0">✕</button>'
       + '</div>'
-      + (overMax ? '<div class="card-pack-warn visible">⚠️ Vượt giới hạn '+max+' pack ('+state.currentStore?.nhom_dt+'×8)!</div>' : '<div class="card-pack-warn"></div>')
+      + (overMax ? '<div class="card-pack-warn visible">⚠️ Vượt '+max+' pack</div>' : '')
       + '</div>';
   }).join('');
   
