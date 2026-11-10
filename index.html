@@ -1524,7 +1524,7 @@ function renderDashboardTable(data){
       <td>${escapeHTML(r.sku||'—')}</td>
       <td>${r.so_pack||'—'}</td>
       <td>${vuotBadge}</td>
-      <td>${escapeHTML(r.ngay_nhan_hang||'')}</td>
+      <td>${formatDate(r.ngay_nhan_hang)}</td>
       <td>${escapeHTML(r.ly_do||'')}</td>
       <td>${escapeHTML(r.nguoi_khai||'')}</td>
       <td>${escapeHTML(r.ghi_chu||'')}</td>
@@ -1712,7 +1712,7 @@ function exportDetailCSV(){
     r.sku||'',
     r.so_pack||'',
     (r.vuot_muc===true||r.vuot_muc==='true')?'CÓ':'Không',
-    r.ngay_nhan_hang||'',
+    formatDate(r.ngay_nhan_hang),
     r.ly_do||'',
     r.nguoi_khai||'',
     r.ghi_chu||'',
