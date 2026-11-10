@@ -720,6 +720,8 @@ let state = {
   productLines: [], // [{group:'',sku:null,pack:1}] — multi-SKU
   selectedSKU: null, // legacy (for dung thit)
   dashboardData: [],
+  existingIds: [],      // id các record cũ trùng (đã khảo sát hôm nay)
+  existingLoaded: false, // true nếu đang sửa record cũ
   showVuotOnly: false,
   showVuotOnly2: false,
   dashboardSubTab: 'detail', // 'detail' | 'summary'
@@ -1098,6 +1100,8 @@ function displayStoreInfo(store, dist){
 function selectAction(action, el){
   state.currentAction = action;
   state.productLines = [];
+  state.existingIds = [];
+  state.existingLoaded = false;
   document.querySelectorAll('.action-radio').forEach(r=>r.classList.remove('selected'));
   el.classList.add('selected');
   
@@ -1108,6 +1112,101 @@ function selectAction(action, el){
   if(action==='bo-sung'){
     // Start with 1 empty product line
     addProductLine();
+    updateDeadlineNote();
+  }
+  updateSubmitBtn();
+  // Check trùng: nếu CH đã khảo sát hôm nay → load dữ liệu cũ để sửa
+  checkExisting();
+}
+
+// ============================================================
+// CHECK TRÙNG (user gửi lặp)
+// ============================================================
+function todayVN(){
+  const d = new Date(Date.now() + 7*3600*1000);
+  return d.toISOString().slice(0,10);
+}
+function normDateStr(s){
+  s = String(s||'').trim();
+  if(!s) return '';
+  if(s.includes('T')) s = s.split('T')[0];
+  if(s.includes(' ')) s = s.split(' ')[0];
+  return s.slice(0,10);
+}
+
+async function checkExisting(){
+  if(!state.currentStore || !state.currentAction) return;
+  const ma = state.currentStore.ma_sap;
+  const hd = state.currentAction === 'dung' ? 'Dừng thịt' : 'Bổ sung thịt';
+  const today = todayVN();
+
+  // Đảm bảo có data list
+  if(!state.dashboardData || state.dashboardData.length === 0){
+    try{
+      if(state.gasUrl){
+        const resp = await fetch(state.gasUrl + '?action=list&table=thit_mdl');
+        const result = await resp.json();
+        if(result && result.data) state.dashboardData = result.data;
+      }
+    }catch(e){ console.error('checkExisting load:', e); }
+  }
+
+  const matches = (state.dashboardData||[]).filter(r =>
+    (r.ma_ch||'') === ma &&
+    (r.hanh_dong||'') === hd &&
+    (normDateStr(r.created_at) === today || normDateStr(r.updated_at) === today)
+  );
+
+  if(matches.length === 0){
+    state.existingIds = [];
+    state.existingLoaded = false;
+    return;
+  }
+
+  state.existingIds = matches.map(r => r.id).filter(Boolean);
+  state.existingLoaded = true;
+  loadExistingIntoForm(matches);
+  showToast('🔄 Đã khảo sát hôm nay — đã nạp dữ liệu cũ, anh/chị sửa rồi LƯU để ghi đè nhé!');
+}
+
+function loadExistingIntoForm(matches){
+  if(!matches || matches.length === 0) return;
+  const first = matches[0];
+
+  if(state.currentAction === 'dung'){
+    const loais = [...new Set(matches.map(r => r.loai_thit).filter(Boolean))];
+    const loaiVal = loais.length >= 2 ? 'Cả hai' : (loais[0] || '');
+    if(loaiVal) document.getElementById('loaiThitDung').value = loaiVal;
+    if(first.ngay_dung) document.getElementById('ngayDung').value = String(first.ngay_dung).slice(0,10);
+    if(first.ly_do) document.getElementById('lyDoDung').value = first.ly_do;
+    if(first.nguoi_khai) document.getElementById('nguoiKhaiDung').value = first.nguoi_khai;
+    updateDeadlineNote();
+  }else{
+    if(first.ly_do) document.getElementById('lyDoBoSung').value = first.ly_do;
+    if(first.ngay_nhan_hang) document.getElementById('ngayNhanHang').value = String(first.ngay_nhan_hang).slice(0,10);
+    if(first.nguoi_khai) document.getElementById('nguoiKhaiBoSung').value = first.nguoi_khai;
+    if(first.ghi_chu){
+      document.getElementById('ghiChu').value = first.ghi_chu;
+      const km = String(first.ghi_chu).match(/\[Khách: ([^\]]+)\]/);
+      if(km) document.getElementById('thongTinKhach').value = km[1];
+    }
+    if(first.ly_do === 'Khách đặt'){
+      document.getElementById('khachDatInfo').style.display = 'block';
+    }
+    // Product lines từ record cũ
+    state.productLines = [];
+    matches.forEach(r => {
+      if(r.sku){
+        const parts = String(r.sku).split(' — ');
+        state.productLines.push({
+          group: r.loai_thit || '',
+          sku: {code: parts[0]||'', name: parts[1]||'', group: r.loai_thit||'', qc: ''},
+          pack: Number(r.so_pack)||1
+        });
+      }
+    });
+    if(state.productLines.length === 0) addProductLine();
+    renderProductLines();
     updateDeadlineNote();
   }
   updateSubmitBtn();
@@ -1380,6 +1479,19 @@ async function submitForm(){
     });
   }
   
+  // Nếu đang sửa record cũ (đã khảo sát hôm nay) → xóa record cũ trước khi lưu lại
+  if(state.existingLoaded && state.existingIds.length > 0){
+    for(const id of state.existingIds){
+      try{
+        await fetch(state.gasUrl, {
+          method: 'POST',
+          headers: {'Content-Type': 'text/plain'},
+          body: JSON.stringify({action:'delete', table:'thit_mdl', id: id}),
+        });
+      }catch(e){ console.error('delete existing error:', e); }
+    }
+  }
+
   // Save all records
   showLoading('Đang lưu '+records.length+' khai báo...');
   let saved = 0, failed = 0;
@@ -1422,6 +1534,8 @@ function saveLocal(record){
 function resetForm(){
   state.currentAction = null;
   state.productLines = [];
+  state.existingIds = [];
+  state.existingLoaded = false;
   document.querySelectorAll('.action-radio').forEach(r=>r.classList.remove('selected'));
   document.getElementById('dungThitForm').style.display = 'none';
   document.getElementById('boSungThitForm').style.display = 'none';
