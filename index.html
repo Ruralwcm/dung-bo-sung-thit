@@ -1100,10 +1100,14 @@ function getDateConstraintsForStore(store){
   
   const minDate = new Date(today);
   minDate.setDate(minDate.getDate() + addDays);
-  minDate.setHours(0,0,0,0);
+  
+  // Build ISO date from LOCAL date components (avoids UTC shift from toISOString)
+  const yyyy = minDate.getFullYear();
+  const mm = String(minDate.getMonth() + 1).padStart(2, '0');
+  const dd = String(minDate.getDate()).padStart(2, '0');
   
   return {
-    min: minDate.toISOString().slice(0,10),
+    min: `${yyyy}-${mm}-${dd}`,
     addDays: addDays,
     mienLabel: store.mien || 'Không xác định'
   };
