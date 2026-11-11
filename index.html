@@ -453,10 +453,11 @@ body{
         <div class="dn-text">
           <b>LƯU Ý — DEADLINE 11H00 HÀNG NGÀY</b><br>
           <span style="font-size:.78rem;font-weight:400">
-            🛑 Dừng thịt & ➕ Bổ sung thịt — chỉ chọn ngày tương lai:<br>
-            &nbsp;&nbsp;• Miền Bắc, Nam, Tây: <b>D+2</b> (hôm nay + 2 ngày)<br>
-            &nbsp;&nbsp;• Miền Trung: <b>D+3</b> (hôm nay + 3 ngày)<br>
-            &nbsp;&nbsp;🔒 Không chọn được ngày quá khứ
+            🛑 Dừng thịt & ➕ Bổ sung thịt:<br>
+            &nbsp;&nbsp;• Ngày dừng / Ngày nhận hàng được <b>tự động tính</b> theo Miền:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- Miền Bắc, Nam, Tây: <b>D+2</b> (hôm nay + 2 ngày)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- Miền Trung: <b>D+3</b> (hôm nay + 3 ngày)<br>
+            &nbsp;&nbsp;🔒 Không chỉnh sửa được ngày — hệ thống tự set
           </span>
         </div>
       </div>
@@ -487,8 +488,9 @@ body{
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">Ngày dừng</label>
-          <input type="date" class="form-input" id="ngayDung" onchange="updateDeadlineNote();updateSubmitBtn()">
+          <label class="form-label">Ngày dừng <span style="font-size:.72rem;color:#888">(tự động D+2/D+3 theo Miền)</span></label>
+          <div class="form-input" id="ngayDungDisplay" style="background:#f0f4f0;font-weight:700;color:#1a7a1a;display:flex;align-items:center">--</div>
+          <input type="hidden" id="ngayDung">
         </div>
         <div class="form-group">
           <label class="form-label">Lý do dừng</label>
@@ -546,8 +548,9 @@ body{
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label">Ngày nhận hàng</label>
-            <input type="date" class="form-input" id="ngayNhanHang" onchange="updateDeadlineNote();updateSubmitBtn()">
+            <label class="form-label">Ngày nhận hàng <span style="font-size:.72rem;color:#888">(tự động D+2/D+3 theo Miền)</span></label>
+            <div class="form-input" id="ngayNhanHangDisplay" style="background:#f0f4f0;font-weight:700;color:#1a7a1a;display:flex;align-items:center">--</div>
+            <input type="hidden" id="ngayNhanHang">
           </div>
           <div class="form-group">
             <label class="form-label">Người khai báo</label>
@@ -1112,13 +1115,18 @@ function updateDateConstraints(){
   
   const dungInput = document.getElementById('ngayDung');
   const bsInput = document.getElementById('ngayNhanHang');
+  const dungDisplay = document.getElementById('ngayDungDisplay');
+  const bsDisplay = document.getElementById('ngayNhanHangDisplay');
   
-  dungInput.min = c.min;
-  bsInput.min = c.min;
+  // Set hidden ISO values
+  dungInput.value = c.min;
+  bsInput.value = c.min;
   
-  // If current value is before min, reset to min
-  if(!dungInput.value || dungInput.value < c.min) dungInput.value = c.min;
-  if(!bsInput.value || bsInput.value < c.min) bsInput.value = c.min;
+  // Set visible formatted dates
+  const [y,m,d] = c.min.split('-');
+  const formatted = d+'/'+m+'/'+y;
+  if(dungDisplay) dungDisplay.textContent = '📅 '+formatted + ' (D+'+c.addDays+')';
+  if(bsDisplay) bsDisplay.textContent = '📅 '+formatted + ' (D+'+c.addDays+')';
   
   updateDeadlineNote();
   updateSubmitBtn();
@@ -1459,6 +1467,12 @@ function resetForm(){
     const c = getDateConstraintsForStore(state.currentStore);
     document.getElementById('ngayDung').value = c.min;
     document.getElementById('ngayNhanHang').value = c.min;
+    const [y,m,d] = c.min.split('-');
+    const formatted = d+'/'+m+'/'+y;
+    const dd = document.getElementById('ngayDungDisplay');
+    const nd = document.getElementById('ngayNhanHangDisplay');
+    if(dd) dd.textContent = '📅 '+formatted + ' (D+'+c.addDays+')';
+    if(nd) nd.textContent = '📅 '+formatted + ' (D+'+c.addDays+')';
   }
   document.getElementById('nguoiKhaiDung').value = '';
   document.getElementById('nguoiKhaiBoSung').value = '';
