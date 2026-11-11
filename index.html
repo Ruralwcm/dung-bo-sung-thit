@@ -841,6 +841,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
   // Load storelist
   loadStorelist();
+  // Load ASM assortment (for SKU filtering)
+  loadAsmData();
   // Init nhóm thịt dropdown for popup
   // All groups are built in the SKU popup dynamically
   // Set default filter dates
@@ -1239,6 +1241,13 @@ function openSkuPopup(idx){
   renderSkuPopupTabs();
   renderSkuPopupList();
   document.getElementById('skuPopupOverlay').classList.add('visible');
+  // Đảm bảo ASM data đã load (nếu chưa) rồi render lại
+  if(!state.asmLoaded){
+    loadAsmData().then(()=>{
+      renderSkuPopupTabs();
+      renderSkuPopupList();
+    });
+  }
 }
 
 function closeSkuPopup(){
@@ -1256,10 +1265,17 @@ function renderSkuPopupTabs(){
 function renderSkuPopupList(){
   const q = (document.getElementById('skuPopupSearch').value||'').toLowerCase();
   const list = document.getElementById('skuPopupList');
+  
+  // Filter by store ASM assortment (if available)
+  const storeAssortment = state.currentStore ? getStoreAssortment(state.currentStore.ma_sap) : null;
+  const hasAsm = storeAssortment && storeAssortment.size > 0;
+  
   let items = [];
   DANH_MUC_THIT.forEach(function(g){
     if(state.skuPopupFilterGroup && g.group !== state.skuPopupFilterGroup) return;
     g.items.forEach(function(s){
+      // Chỉ hiện SKU nằm trong ASM của CH (nếu có data ASM)
+      if(hasAsm && !storeAssortment.has(s.code)) return;
       if(!q || s.name.toLowerCase().indexOf(q)>=0 || s.code.indexOf(q)>=0){
         items.push({...s, group: g.group, groupName: g.group});
       }
@@ -1267,7 +1283,7 @@ function renderSkuPopupList(){
   });
   
   if(items.length === 0){
-    list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text2)">Không tìm thấy sản phẩm</div>';
+    list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text2)">'+(hasAsm?'Không có SKU phù hợp ASM của CH':'Không tìm thấy sản phẩm')+'</div>';
     return;
   }
   
