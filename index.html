@@ -686,7 +686,7 @@ body{
 // CONFIG & STATE
 // ============================================================
 const STORELIST_CSV = 'storelist_latest.csv';
-const STORELIST_CACHE_VER = 'v2932_0611_nd';
+const STORELIST_CACHE_VER = 'v2932_1111_mien';
 const STORELIST_CACHE_KEY = 'thitmdl_storelist_' + STORELIST_CACHE_VER;
 const STORELIST_CACHE_TS = 'thitmdl_storelist_ts_' + STORELIST_CACHE_VER;
 const CACHE_TTL = 24*60*60*1000; // 24h
@@ -1082,6 +1082,7 @@ function selectAction(action, el){
     addProductLine();
     updateDeadlineNote();
   }
+  updateDateConstraints();
   updateSubmitBtn();
 }
 
@@ -1453,8 +1454,12 @@ function resetForm(){
   document.getElementById('loaiThitDung').value = '';
   document.getElementById('lyDoBoSung').value = '';
   document.getElementById('lyDoDung').value = '';
-  const todayReset = new Date().toISOString().slice(0,10);
-  document.getElementById('ngayNhanHang').value = todayReset;
+  // Reset dates to valid min based on Miền (will be set correctly when action selected)
+  if(state.currentStore){
+    const c = getDateConstraintsForStore(state.currentStore);
+    document.getElementById('ngayDung').value = c.min;
+    document.getElementById('ngayNhanHang').value = c.min;
+  }
   document.getElementById('nguoiKhaiDung').value = '';
   document.getElementById('nguoiKhaiBoSung').value = '';
   document.getElementById('thongTinKhach').value = '';
