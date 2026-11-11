@@ -568,6 +568,7 @@ body{
       <button class="submit-btn" id="submitBtn" onclick="submitForm()" disabled>
         💾 LƯU KHAI BÁO
       </button>
+      <div id="submitHint" style="text-align:center;font-size:.75rem;color:var(--red);margin-top:4px;min-height:18px"></div>
       <button class="submit-btn" style="background:var(--text2);margin-top:6px" onclick="resetForm()">
         ↩️ Làm mới
       </button>
@@ -1300,35 +1301,53 @@ function getMaxPacks(){
 
 function updateSubmitBtn(){
   const btn = document.getElementById('submitBtn');
+  const hint = document.getElementById('submitHint');
+  const reasons = [];
+  
   if(!state.currentStore || !state.currentAction){
-    btn.disabled = true; return;
+    btn.disabled = true;
+    if(hint) hint.textContent = !state.currentStore ? '⚠️ Chưa định vị cửa hàng' : '';
+    return;
   }
   if(state.currentAction === 'dung'){
     const loai = document.getElementById('loaiThitDung').value;
     const ngayDung = document.getElementById('ngayDung').value;
     const lyDoDung = document.getElementById('lyDoDung').value;
     const nguoiKhaiDung = document.getElementById('nguoiKhaiDung').value.trim();
-    btn.disabled = !loai || !ngayDung || !lyDoDung || !nguoiKhaiDung;
+    if(!loai) reasons.push('Chọn loại thịt');
+    if(!ngayDung) reasons.push('Ngày dừng chưa có');
+    if(!lyDoDung) reasons.push('Chọn lý do dừng');
+    if(!nguoiKhaiDung) reasons.push('Nhập tên người khai');
+    btn.disabled = reasons.length > 0;
   }else{
     const hasSKU = state.productLines.some(function(l){ return l.sku && l.pack > 0; });
     const lyDo = document.getElementById('lyDoBoSung').value;
     const ngayNhan = document.getElementById('ngayNhanHang').value;
     const nguoiKhaiBS = document.getElementById('nguoiKhaiBoSung').value.trim();
+    if(!hasSKU) reasons.push('Chọn ít nhất 1 sản phẩm (bấm vào ô SP)');
+    if(!lyDo) reasons.push('Chọn lý do bổ sung');
+    if(!ngayNhan) reasons.push('Ngày nhận hàng chưa có (chưa định vị CH?)');
+    if(!nguoiKhaiBS) reasons.push('Nhập tên người khai');
+    
     let blockedByLimit = false;
     if(hasSKU && lyDo !== 'Khách đặt'){
       const totalPacks = state.productLines.reduce((s,l)=>s+(l.sku?l.pack:0),0);
       const maxP = getMaxPacks();
-      if(maxP > 0 && totalPacks > maxP) blockedByLimit = true;
+      if(maxP > 0 && totalPacks > maxP){ blockedByLimit = true; reasons.push('Vượt giới hạn '+maxP+' pack'); }
     }
-    btn.disabled = !hasSKU || !lyDo || !ngayNhan || !nguoiKhaiBS || blockedByLimit;
+    btn.disabled = reasons.length > 0 || blockedByLimit;
+    
     // Show/hide customer info field
     const khachInfo = document.getElementById('khachDatInfo');
-    khachInfo.style.display = lyDo === 'Khách đặt' ? 'block' : 'none';
+    if(khachInfo) khachInfo.style.display = lyDo === 'Khách đặt' ? 'block' : 'none';
     if(lyDo === 'Khách đặt'){
-      const tt = document.getElementById('thongTinKhach').value.trim();
-      if(!tt) btn.disabled = true;
+      const ttEl = document.getElementById('thongTinKhach');
+      const tt = ttEl ? ttEl.value.trim() : '';
+      if(!tt){ btn.disabled = true; reasons.push('Nhập thông tin khách hàng'); }
     }
   }
+  
+  if(hint) hint.textContent = reasons.length > 0 ? '⚠️ '+reasons.join(' | ') : '';
 }
 
 // ============================================================
