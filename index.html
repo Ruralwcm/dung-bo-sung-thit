@@ -690,7 +690,9 @@ body{
 // ============================================================
 // CONFIG & STATE
 // ============================================================
-const STORELIST_CSV = 'storelist_latest.csv';
+// Nguon chuan: Storelist Rural > tab API_Stores_CSV (sinh tu Storeslist)
+const STORELIST_CSV = 'https://docs.google.com/spreadsheets/d/1UMtB9MOxGOaZvxN5VAUGAS1bPaAL2tVVFEViGANd4Tk/gviz/tq?tqx=out:csv&gid=172577252';
+const STORELIST_CSV_FALLBACK = 'storelist_latest.csv';
 const STORELIST_CACHE_VER = 'v2932_1111_mien';
 const STORELIST_CACHE_KEY = 'thitmdl_storelist_' + STORELIST_CACHE_VER;
 const STORELIST_CACHE_TS = 'thitmdl_storelist_ts_' + STORELIST_CACHE_VER;
@@ -887,8 +889,16 @@ async function loadStorelist(){
   // Fetch fresh
   try{
     console.log('Fetching storelist...');
-    const resp = await fetch(STORELIST_CSV);
-    const csvText = await resp.text();
+    let csvText = '';
+    try {
+      const resp = await fetch(STORELIST_CSV, {cache:'no-store'});
+      csvText = await resp.text();
+      if (/^\s*</.test(csvText) || csvText.length < 500) throw new Error('API_Stores_CSV khong hop le');
+    } catch (err) {
+      console.warn('API_Stores_CSV loi, dung file tinh:', err);
+      const resp2 = await fetch(STORELIST_CSV_FALLBACK);
+      csvText = await resp2.text();
+    }
     state.storelist = parseStorelistCSV(csvText);
     if(state.storelist.length > 0){
       localStorage.setItem(STORELIST_CACHE_KEY, JSON.stringify(state.storelist));
